@@ -4,15 +4,21 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 
 import com.epam.aerl.mentoring.entity.Student;
+import com.epam.aerl.mentoring.exception.BusinessLogicException;
 import com.epam.aerl.mentoring.exception.StudentsGeneratorException;
+import com.epam.aerl.mentoring.type.ErrorMessage;
+import com.epam.aerl.mentoring.type.Subject;
 
 public class StudentsGenerator {
 	private static final String STUDENTS_NUM_ERR_MSG = "The number of students is negative.";
+	private static final String PROPERTY_FILE_ERR_MSG = "Can not read properties from file.";
 	
 	private static final String MIN_COURCE = "student.min.course";
 	private static final String MAX_COURCE = "student.max.course";
@@ -37,15 +43,17 @@ public class StudentsGenerator {
 	
 	private static final Properties PROPERTIES = new Properties();
 	
-	private static final Random RANDOM = new Random();
-
-	public StudentsGenerator() throws FileNotFoundException, IOException {
-		PROPERTIES.load(new FileInputStream("resources/students.properties"));
+	public StudentsGenerator() {
+		try {
+			init();
+		} catch (IOException e) {
+			throw new BusinessLogicException(ErrorMessage.PROPERTIES_FILE_ERROR.getCode(), PROPERTY_FILE_ERR_MSG, e);
+		}
 	}
 	
 	public List<Student> generateStudents(int studentsNumber) throws StudentsGeneratorException {
 		if (studentsNumber < 0) {
-			throw new StudentsGeneratorException(STUDENTS_NUM_ERR_MSG);
+			throw new StudentsGeneratorException(ErrorMessage.STUDENTS_NUMBER_ERROR.getCode(), STUDENTS_NUM_ERR_MSG);
 		}
 		
 		List<Student> students = new ArrayList<>();
@@ -57,19 +65,29 @@ public class StudentsGenerator {
 		return students;
 	}
 	
+	private void init() throws FileNotFoundException, IOException {
+		PROPERTIES.load(new FileInputStream("resources/students.properties"));
+	}
+	
+	private int randomIntRange(int min, int max) {
+		Random random = new Random();
+		
+		return random.nextInt((max - min) + 1) + min;
+	}
+	
 	private Student generateStudent() {
 		Student student = null;
 		
 		int course = generateCourse();
 		int age = generateStudentAge(course);
 		
-		if (age > 0) {
-			student = new Student();
-			student.setAge(age);
-			student.setCourse(course);
-			student.setMathMark(generateMark());
-			student.setPhilosophyMark(generateMark());
-			student.setPhysicalEducationMark(generateMark());
+		if (age > 0) {			
+			Map<Subject, Integer> marks = new HashMap<>();
+			marks.put(Subject.MATH, generateMark());
+			marks.put(Subject.PHILOSOPHY, generateMark());
+			marks.put(Subject.PHYSICAL_EDUCATION, generateMark());
+			
+			student = new Student(age, course, marks);
 		}
 		
 		return student;
@@ -80,7 +98,7 @@ public class StudentsGenerator {
 		int minCourse = Integer.valueOf(PROPERTIES.getProperty(MIN_COURCE));
 		int maxCourse = Integer.valueOf(PROPERTIES.getProperty(MAX_COURCE));
 		
-		return RANDOM.nextInt((maxCourse - minCourse) + 1) + minCourse;
+		return randomIntRange(minCourse, maxCourse);
 	}
 	
 	private int generateStudentAge(int course) {
@@ -115,7 +133,11 @@ public class StudentsGenerator {
 				break;
 		}
 		
-		age = minAge != maxAge ? RANDOM.nextInt((maxAge - minAge) + 1) + minAge : minAge;
+		if (minAge != maxAge) {
+			age = randomIntRange(minAge, maxAge);
+		} else {
+			age = minAge;
+		}
 		
 		return age;
 	}
@@ -124,6 +146,6 @@ public class StudentsGenerator {
 		int minMark = Integer.valueOf(PROPERTIES.getProperty(MIN_MARK));
 		int maxMark = Integer.valueOf(PROPERTIES.getProperty(MAX_MARK));
 		
-		return RANDOM.nextInt((maxMark - minMark) + 1) + minMark;
+		return randomIntRange(minMark, maxMark);
 	}
 }
