@@ -8,7 +8,7 @@ import com.epam.aerl.mentoring.entity.Student;
 import com.epam.aerl.mentoring.exception.StudentsGeneratorException;
 import com.epam.aerl.mentoring.filter.CompanyDirectorFilter;
 import com.epam.aerl.mentoring.filter.EmployerFilter;
-import com.epam.aerl.mentoring.filter.MilitaryCommissioner;
+import com.epam.aerl.mentoring.filter.MilitaryCommissionerFilter;
 import com.epam.aerl.mentoring.filter.ProfessorMathFilter;
 import com.epam.aerl.mentoring.util.StudentsGenerator;
 
@@ -21,7 +21,7 @@ public class StudentsService {
 	
 	public StudentsService() {
 		employers.add(new ProfessorMathFilter());
-		employers.add(new MilitaryCommissioner());
+		employers.add(new MilitaryCommissionerFilter());
 		employers.add(new CompanyDirectorFilter());
 		
 		try {

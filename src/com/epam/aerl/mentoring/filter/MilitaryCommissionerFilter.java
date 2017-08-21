@@ -5,7 +5,7 @@ import com.epam.aerl.mentoring.type.Subject;
 import com.epam.aerl.mentoring.util.Printer;
 import com.epam.aerl.mentoring.util.StudentMarksCalculator;
 
-public class MilitaryCommissioner extends EmployerFilter {
+public class MilitaryCommissionerFilter extends EmployerFilter {
 
 	private static final int FIRST_COURSE_STUDENT_MIN_AGE = 18;
 	private static final int FIRST_COURSE_STUDENT_MAX_AGE = 20;
