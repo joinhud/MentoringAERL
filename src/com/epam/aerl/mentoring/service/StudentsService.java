@@ -4,12 +4,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.epam.aerl.mentoring.entity.CompanyDirector;
-import com.epam.aerl.mentoring.entity.Employer;
-import com.epam.aerl.mentoring.entity.MilitaryCommissioner;
-import com.epam.aerl.mentoring.entity.ProfessorMath;
 import com.epam.aerl.mentoring.entity.Student;
 import com.epam.aerl.mentoring.exception.StudentsGeneratorException;
+import com.epam.aerl.mentoring.filter.CompanyDirectorFilter;
+import com.epam.aerl.mentoring.filter.EmployerFilter;
+import com.epam.aerl.mentoring.filter.MilitaryCommissioner;
+import com.epam.aerl.mentoring.filter.ProfessorMathFilter;
 import com.epam.aerl.mentoring.util.StudentsGenerator;
 
 public class StudentsService {
@@ -17,12 +17,12 @@ public class StudentsService {
 	private static final String RAMAIN_STUDENTS_MSG = "Students which will remain:";
 
 	private List<Student> students;
-	private List<Employer> employers = new ArrayList<>();
+	private List<EmployerFilter> employers = new ArrayList<>();
 	
 	public StudentsService() {
-		employers.add(new ProfessorMath());
+		employers.add(new ProfessorMathFilter());
 		employers.add(new MilitaryCommissioner());
-		employers.add(new CompanyDirector());
+		employers.add(new CompanyDirectorFilter());
 		
 		try {
 			StudentsGenerator generator = new StudentsGenerator();
@@ -36,7 +36,7 @@ public class StudentsService {
 	}
 	
 	public void takeStudentsFromUniversity() {
-		for(Employer employer : employers) {
+		for(EmployerFilter employer : employers) {
 			employer.takeAway(students);
 		}
 		
