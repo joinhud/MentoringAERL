@@ -4,6 +4,7 @@ public class BusinessLogicException extends RuntimeException {
 	private String code;
 	
 	public BusinessLogicException() {
+		super();
 	}
 	
 	public BusinessLogicException(String arg0) {

@@ -1,53 +1,49 @@
 package com.epam.aerl.mentoring.service;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.epam.aerl.mentoring.entity.Student;
+import com.epam.aerl.mentoring.exception.EmplyerFilterException;
+import com.epam.aerl.mentoring.exception.ServiceException;
 import com.epam.aerl.mentoring.exception.StudentsGeneratorException;
-import com.epam.aerl.mentoring.filter.CompanyDirectorFilter;
 import com.epam.aerl.mentoring.filter.EmployerFilter;
-import com.epam.aerl.mentoring.filter.MilitaryCommissionerFilter;
-import com.epam.aerl.mentoring.filter.ProfessorMathFilter;
+import com.epam.aerl.mentoring.type.ErrorMessage;
+import com.epam.aerl.mentoring.util.EmployersGenerator;
+import com.epam.aerl.mentoring.util.Printer;
 import com.epam.aerl.mentoring.util.StudentsGenerator;
 
 public class StudentsService {
 	private static final int STUDENTS_COUNT = 50;
-	private static final String RAMAIN_STUDENTS_MSG = "Students which will remain:";
-
-	private List<Student> students;
-	private List<EmployerFilter> employers = new ArrayList<>();
+	private static final String CAPTION = "Students which will remain:";
 	
-	public StudentsService() {
-		employers.add(new ProfessorMathFilter());
-		employers.add(new MilitaryCommissionerFilter());
-		employers.add(new CompanyDirectorFilter());
-		
+	private static final String NOT_GENERATED_STUDENTS_ERR = "Can not generate students.";
+	private static final String NOT_FILTERED_STUDENTS_ERR = "Can not filter list of students.";
+	
+	private EmployersGenerator employersGenerator = new EmployersGenerator();
+	private StudentsGenerator studentsGenerator = new StudentsGenerator();
+	
+	public void takeStudentsFromUniversity() throws ServiceException {
 		try {
-			StudentsGenerator generator = new StudentsGenerator();
-			students = generator.generateStudents(STUDENTS_COUNT);
+			List<EmployerFilter> employers = employersGenerator.generate();
+			List<Student> students = studentsGenerator.generateStudents(STUDENTS_COUNT);
+			
+			for(EmployerFilter employer : employers) {
+				employer.takeAway(students);
+			}
+			
+			printRemainStudents(students);
 		} catch (StudentsGeneratorException e) {
-			System.err.println(e);
-			students = new ArrayList<>();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new ServiceException(ErrorMessage.NOT_GENRATE_ERROR.getCode(), NOT_GENERATED_STUDENTS_ERR, e);
+		} catch (EmplyerFilterException e) {
+			throw new ServiceException(ErrorMessage.NOT_FILTERED_ERROR.getCode(), NOT_FILTERED_STUDENTS_ERR, e);
 		}
 	}
 	
-	public void takeStudentsFromUniversity() {
-		for(EmployerFilter employer : employers) {
-			employer.takeAway(students);
-		}
-		
-		printRemainStudents();
-	}
-	
-	private void printRemainStudents() {
-		System.out.println(RAMAIN_STUDENTS_MSG);
+	private void printRemainStudents(List<Student> students) {
+		Printer.printCaption(CAPTION);
 		
 		for(Student student : students) {
-			System.out.println(student);
+			Printer.printStudentData(student);
 		}
 	}
 	
