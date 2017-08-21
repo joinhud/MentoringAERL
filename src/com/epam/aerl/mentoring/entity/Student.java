@@ -1,22 +1,23 @@
 package com.epam.aerl.mentoring.entity;
 
+import java.util.Map;
+
+import com.epam.aerl.mentoring.type.Subject;
+
 public class Student {
 	private int age;
 	private int course;
-	private int mathMark;
-	private int philosophyMark;
-	private int physicalEducationMark;
+	private Map<Subject, Integer> marks;
 
 	public Student() {
 		super();
 	}
-
-	public Student(int age, int course, int mathMark, int philosophyMark, int physicalEducationMark) {
+	
+	public Student(int age, int course, Map<Subject, Integer> marks) {
+		super();
 		this.age = age;
 		this.course = course;
-		this.mathMark = mathMark;
-		this.philosophyMark = philosophyMark;
-		this.physicalEducationMark = physicalEducationMark;
+		this.marks = marks;
 	}
 
 	public int getAge() {
@@ -34,34 +35,17 @@ public class Student {
 	public void setCourse(int course) {
 		this.course = course;
 	}
-
-	public int getMathMark() {
-		return mathMark;
-	}
-
-	public void setMathMark(int mathMark) {
-		this.mathMark = mathMark;
-	}
-
-	public int getPhilosophyMark() {
-		return philosophyMark;
-	}
-
-	public void setPhilosophyMark(int philosophyMark) {
-		this.philosophyMark = philosophyMark;
-	}
-
-	public int getPhysicalEducationMark() {
-		return physicalEducationMark;
-	}
-
-	public void setPhysicalEducationMark(int physicalEducationMark) {
-		this.physicalEducationMark = physicalEducationMark;
-	}
 	
+	public Map<Subject, Integer> getMarks() {
+		return marks;
+	}
+
+	public void setMarks(Map<Subject, Integer> marks) {
+		this.marks = marks;
+	}
+
 	@Override
 	public String toString() {
-		return "Student [age=" + age + ", course=" + course + ", mathMark=" + mathMark + ", philosophyMark="
-				+ philosophyMark + ", physicalEducationMark=" + physicalEducationMark + "]";
+		return "Student [age=" + age + ", course=" + course + ", marks=" + marks + "]";
 	}
 }
