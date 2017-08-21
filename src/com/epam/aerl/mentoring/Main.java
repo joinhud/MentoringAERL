@@ -1,12 +1,12 @@
 package com.epam.aerl.mentoring;
 
-/*
- * Main class for Hello World app
- */
-public class Main {
+import com.epam.aerl.mentoring.controller.StudentsController;
 
+public class Main {
+	private static StudentsController controller = new StudentsController();
+	
 	public static void main(String[] args) {
-		System.out.println("Hello World!");
+		controller.takeStudents();
 	}
 
 }
