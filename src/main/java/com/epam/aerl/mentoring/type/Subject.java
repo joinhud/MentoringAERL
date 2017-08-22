@@ -5,7 +5,7 @@ public enum Subject {
 	
 	private boolean scienses;
 
-	private Subject(boolean scienses) {
+	Subject(boolean scienses) {
 		this.scienses = scienses;
 	}
 

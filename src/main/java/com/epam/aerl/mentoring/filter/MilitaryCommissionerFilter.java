@@ -48,7 +48,7 @@ public class MilitaryCommissionerFilter extends EmployerFilter {
 		boolean result = false;
 		
 		if (student != null) {
-			final Integer averageMark = CALCULATOR.calculateAvarageMark(student.getMarks());
+			final Integer averageMark = CALCULATOR.calculateAverageMark(student.getMarks());
 			
 			if (averageMark != null) {
 				result = averageMark < EVARAGE_MARK;

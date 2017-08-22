@@ -60,7 +60,7 @@ public class StudentsGenerator {
 	
 	public void init() throws BusinessLogicException {
 		try {
-			PROPERTIES.load(new FileInputStream("resources/students.properties"));
+			PROPERTIES.load(new FileInputStream("src/main/resources/students.properties"));
 		} catch (IOException e) {
 			throw new BusinessLogicException(ErrorMessage.PROPERTIES_FILE_ERROR.getCode(), PROPERTY_FILE_ERR_MSG, e);
 		}

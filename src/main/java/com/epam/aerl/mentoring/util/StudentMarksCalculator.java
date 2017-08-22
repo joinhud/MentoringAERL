@@ -1,14 +1,15 @@
 package com.epam.aerl.mentoring.util;
 
-import java.util.Map;
-
 import com.epam.aerl.mentoring.type.Subject;
+import org.apache.commons.collections4.MapUtils;
+
+import java.util.Map;
 
 public class StudentMarksCalculator {
 	public Double calculateAverageSciensesMark(final Map<Subject, Integer> marks) {
 		Double result = null;
-		
-		if (marks != null && !marks.isEmpty()) {
+
+		if (MapUtils.isNotEmpty(marks)) {
 			int subjectCount = 0;
 			int marksSum = 0;
 			
@@ -30,10 +31,10 @@ public class StudentMarksCalculator {
 		return result;
 	}
 	
-	public Integer calculateAvarageMark(final Map<Subject, Integer> marks) {
+	public Integer calculateAverageMark(final Map<Subject, Integer> marks) {
 		Integer result = null;
 		
-		if (marks != null && !marks.isEmpty()) {
+		if (MapUtils.isNotEmpty(marks)) {
 			int marksSum = 0;
 			
 			for(Map.Entry<Subject, Integer> entry : marks.entrySet()) {

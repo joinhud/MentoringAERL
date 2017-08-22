@@ -7,6 +7,7 @@ import com.epam.aerl.mentoring.exception.ServiceException;
 import com.epam.aerl.mentoring.filter.EmployerFilter;
 import com.epam.aerl.mentoring.type.ErrorMessage;
 import com.epam.aerl.mentoring.util.Printer;
+import org.apache.commons.collections4.CollectionUtils;
 
 public class StudentsService {
 	private static final String CAPTION = "Students which will remain:";
@@ -16,7 +17,7 @@ public class StudentsService {
 	private static final Printer PRINTER = new Printer();
 	
 	public void takeStudentsFromUniversity(final List<EmployerFilter> employers, final List<Student> students) throws ServiceException {
-		if (students != null && !students.isEmpty()) {
+		if (CollectionUtils.isNotEmpty(students)) {
 			for(EmployerFilter employer : employers) {
 				employer.takeAway(students);
 			}
