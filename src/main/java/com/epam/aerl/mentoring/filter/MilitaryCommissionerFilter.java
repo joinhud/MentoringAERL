@@ -9,11 +9,11 @@ public class MilitaryCommissionerFilter extends EmployerFilter {
 
 	private static final int FIRST_COURSE_STUDENT_MIN_AGE = 18;
 	private static final int FIRST_COURSE_STUDENT_MAX_AGE = 20;
-	private static final int EVARAGE_MARK = 6;
+	private static final int AVERAGE_MARK = 6;
 	
 	private static final int FIFTH_COURSE_STUDENT_MIN_AGE = 21;
 	private static final int FIFTH_COURSE_STUDENT_MAX_AGE = 24;
-	private static final int APPROPRIATE_PHISICAL_EDUCATION_MARK = 9;
+	private static final int APPROPRIATE_PHYSICAL_EDUCATION_MARK = 9;
 	
 	private static final String CAPTION = "A military Commissioner took following students:";
 	
@@ -34,7 +34,7 @@ public class MilitaryCommissionerFilter extends EmployerFilter {
 		boolean result = false;
 		
 		if (student != null) {
-			result = checkFirstYearStudentAge(student.getAge()) && checkEverageMark(student);
+			result = checkFirstYearStudentAge(student.getAge()) && checkAverageMark(student);
 		}
 		
 		return result;
@@ -44,14 +44,14 @@ public class MilitaryCommissionerFilter extends EmployerFilter {
 		return studentsAge >= FIRST_COURSE_STUDENT_MIN_AGE && studentsAge <= FIRST_COURSE_STUDENT_MAX_AGE;
 	}
 	
-	private boolean checkEverageMark(final Student student) {
+	private boolean checkAverageMark(final Student student) {
 		boolean result = false;
 		
 		if (student != null) {
 			final Integer averageMark = CALCULATOR.calculateAverageMark(student.getMarks());
 			
 			if (averageMark != null) {
-				result = averageMark < EVARAGE_MARK;
+				result = averageMark < AVERAGE_MARK;
 			}
 		}
 			
@@ -62,10 +62,10 @@ public class MilitaryCommissionerFilter extends EmployerFilter {
 		boolean result = false;
 		
 		if (student != null) {
-			final Integer phisiacalEducationMark = student.getMarks().get(Subject.PHYSICAL_EDUCATION);
+			final Integer physicalEducationMark = student.getMarks().get(Subject.PHYSICAL_EDUCATION);
 			
-			if (phisiacalEducationMark != null) {
-				result = checkFifthYearStudentAge(student.getAge()) && checkPhisicalEducationMark(phisiacalEducationMark);
+			if (physicalEducationMark != null) {
+				result = checkFifthYearStudentAge(student.getAge()) && checkPhysicalEducationMark(physicalEducationMark);
 			}
 		}
 		
@@ -76,8 +76,8 @@ public class MilitaryCommissionerFilter extends EmployerFilter {
 		return studentsAge >= FIFTH_COURSE_STUDENT_MIN_AGE && studentsAge <= FIFTH_COURSE_STUDENT_MAX_AGE;
 	}
 	
-	private boolean checkPhisicalEducationMark(final int mark) {
-		return mark >= APPROPRIATE_PHISICAL_EDUCATION_MARK;
+	private boolean checkPhysicalEducationMark(final int mark) {
+		return mark >= APPROPRIATE_PHYSICAL_EDUCATION_MARK;
 	}
 	
 }

@@ -11,7 +11,7 @@ public class CompanyDirectorFilter extends EmployerFilter {
 	private static final int MIN_AGE = 22;
 	private static final int MIN_COURSE = 3;
 	private static final int MAX_COURSE = 4;
-	private static final double AVERAGE_SCIENSE_MARK = 7.5;
+	private static final double AVERAGE_SCIENCES_MARK = 7.5;
 
 	private static final String CAPTION = "A director of engineering company took following students:";
 	
@@ -23,7 +23,7 @@ public class CompanyDirectorFilter extends EmployerFilter {
 		return checkHighestScore(student) 
 				|| checkStudentsAge(student.getAge()) 
 				&& checkStudentsCourse(student.getCourse())
-				&& checkStudentsAverageSciensesMark(student);
+				&& checkStudentsAverageSciencesMark(student);
 	}
 
 	@Override
@@ -39,7 +39,7 @@ public class CompanyDirectorFilter extends EmployerFilter {
 			final Integer philosophyMark = student.getMarks().get(Subject.PHILOSOPHY);
 			
 			if (mathMark != null && philosophyMark != null) {
-				result = mathMark == philosophyMark && mathMark == HIGHEST_MARK;
+				result = mathMark.equals(philosophyMark) && mathMark == HIGHEST_MARK;
 			}
 		}
 		
@@ -54,14 +54,14 @@ public class CompanyDirectorFilter extends EmployerFilter {
 		return studentsCourse >= MIN_COURSE && studentsCourse <= MAX_COURSE;
 	}
 	
-	private boolean checkStudentsAverageSciensesMark(final Student student) {
+	private boolean checkStudentsAverageSciencesMark(final Student student) {
 		boolean result = false;
 		
 		if (student != null) {
-			final Double averageSciensesMark = CALCULATOR.calculateAverageSciensesMark(student.getMarks());
+			final Double averageSciencesMark = CALCULATOR.calculateAverageSciencesMark(student.getMarks());
 			
-			if (averageSciensesMark != null) {
-				result = averageSciensesMark >= AVERAGE_SCIENSE_MARK;
+			if (averageSciencesMark != null) {
+				result = averageSciencesMark >= AVERAGE_SCIENCES_MARK;
 			}
 		}
 		

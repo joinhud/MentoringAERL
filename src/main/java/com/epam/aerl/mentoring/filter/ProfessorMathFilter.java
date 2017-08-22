@@ -11,7 +11,7 @@ public class ProfessorMathFilter extends EmployerFilter {
 	private static final int MATH_MARK = 8;
 	private static final int INAPPROPRIATE_COURSE = 5;
 	
-	private static final String CAPTION = "A proffessor of Math took following students:";
+	private static final String CAPTION = "A professor of Math took following students:";
 	
 	private static final Printer PRINTER = new Printer();
 	

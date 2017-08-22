@@ -14,13 +14,15 @@ import com.epam.aerl.mentoring.exception.BusinessLogicException;
 import com.epam.aerl.mentoring.exception.StudentsGeneratorException;
 import com.epam.aerl.mentoring.type.ErrorMessage;
 import com.epam.aerl.mentoring.type.Subject;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class StudentsGenerator {
 	private static final String STUDENTS_NUM_ERR_MSG = "The number of students is negative.";
 	private static final String PROPERTY_FILE_ERR_MSG = "Can not read properties from file.";
 	
-	private static final String MIN_COURCE = "student.min.course";
-	private static final String MAX_COURCE = "student.max.course";
+	private static final String MIN_COURSE = "student.min.course";
+	private static final String MAX_COURSE = "student.max.course";
 	private static final String FIRST_COURSE_MIN_AGE = "student.min.age.first.course";
 	private static final String FIRST_COURSE_MAX_AGE = "student.max.age.first.course";
 	private static final String SECOND_COURSE_MIN_AGE = "student.min.age.second.course";
@@ -43,6 +45,7 @@ public class StudentsGenerator {
 	private static final Properties PROPERTIES = new Properties();
 	
 	private static final Random RANDOM = new Random();
+	private static final Logger LOG = LogManager.getLogger();
 	
 	public List<Student> generateStudents(final int studentsNumber) throws StudentsGeneratorException {
 		if (studentsNumber < 0) {
@@ -62,6 +65,7 @@ public class StudentsGenerator {
 		try {
 			PROPERTIES.load(new FileInputStream("src/main/resources/students.properties"));
 		} catch (IOException e) {
+		    LOG.fatal(e);
 			throw new BusinessLogicException(ErrorMessage.PROPERTIES_FILE_ERROR.getCode(), PROPERTY_FILE_ERR_MSG, e);
 		}
 	}
@@ -90,8 +94,8 @@ public class StudentsGenerator {
 	
 
 	private int generateCourse() {
-		final int minCourse = Integer.valueOf(PROPERTIES.getProperty(MIN_COURCE));
-		final int maxCourse = Integer.valueOf(PROPERTIES.getProperty(MAX_COURCE));
+		final int minCourse = Integer.valueOf(PROPERTIES.getProperty(MIN_COURSE));
+		final int maxCourse = Integer.valueOf(PROPERTIES.getProperty(MAX_COURSE));
 		
 		return randomIntRange(minCourse, maxCourse);
 	}

@@ -6,7 +6,7 @@ import org.apache.commons.collections4.MapUtils;
 import java.util.Map;
 
 public class StudentMarksCalculator {
-	public Double calculateAverageSciensesMark(final Map<Subject, Integer> marks) {
+	public Double calculateAverageSciencesMark(final Map<Subject, Integer> marks) {
 		Double result = null;
 
 		if (MapUtils.isNotEmpty(marks)) {
@@ -19,7 +19,7 @@ public class StudentMarksCalculator {
 				
 				if (subject == null || mark == null) {
 					return result;
-				} else if (subject.isScienses()) {
+				} else if (subject.isSciences()) {
 					subjectCount++;
 					marksSum += mark;
 				}

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="debug">
+    <Properties>
+        <Property name="filepath">  logs</Property>
+        <Property name="pattern">%d{yyy-MM-dd HH:mm:ss} [%t] %-5level %logger{36}: %msg%n</Property>
+    </Properties>
+
+    <Appenders>
+        <RollingFile name="File" fileName="${filepath}/app.log"
+                      filePattern="${filepath}/%d{yyyy-MM-dd}-app.log"
+                      append="true" >
+            <PatternLayout pattern="${pattern}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+            <DefaultRolloverStrategy max="5"/>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Root level="all">
+            <AppenderRef ref="File"/>
+        </Root>
+    </Loggers>
+</Configuration>

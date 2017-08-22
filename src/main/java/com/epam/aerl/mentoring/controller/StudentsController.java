@@ -11,6 +11,8 @@ import com.epam.aerl.mentoring.type.ErrorMessage;
 import com.epam.aerl.mentoring.util.EmployersGenerator;
 import com.epam.aerl.mentoring.util.Printer;
 import com.epam.aerl.mentoring.util.StudentsGenerator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class StudentsController {
 	private static final int STUDENTS_COUNT = 50;
@@ -20,6 +22,7 @@ public class StudentsController {
 	
 	private static final StudentsService SERVICE = new StudentsService();
 	private static final Printer PRINTER = new Printer();
+	private static final Logger LOG = LogManager.getLogger();
 	
 	public void takeStudents() {
 		STUDENTS_GENERATOR.init();
@@ -30,8 +33,10 @@ public class StudentsController {
 			
 			SERVICE.takeStudentsFromUniversity(employers, students);
 		} catch (ServiceException e) {
+		    LOG.error(e);
 			PRINTER.printErrorMessage(ErrorMessage.getByCode(e.getCode()));
 		} catch (StudentsGeneratorException e) {
+		    LOG.error(e);
 			PRINTER.printErrorMessage(ErrorMessage.getByCode(e.getCode()));
 		}
 	}
