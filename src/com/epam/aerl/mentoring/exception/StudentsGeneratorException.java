@@ -1,14 +1,22 @@
 package com.epam.aerl.mentoring.exception;
 
 public class StudentsGeneratorException extends Exception {
-
+	
+	private String code;
+	
 	public StudentsGeneratorException() {
 		super();
+	}
+	
+	public StudentsGeneratorException(String code, String msg) {
+		super(msg);
+		this.code = code;
 	}
 
 	public StudentsGeneratorException(String arg0) {
 		super(arg0);
 	}
+	
 
 	public StudentsGeneratorException(Throwable arg0) {
 		super(arg0);
@@ -22,4 +30,7 @@ public class StudentsGeneratorException extends Exception {
 		super(arg0, arg1, arg2, arg3);
 	}
 
+	public String getCode() {
+		return code;
+	}
 }
