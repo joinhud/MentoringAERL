@@ -1,6 +1,8 @@
 package com.epam.aerl.mentoring.exception;
 
 public class ServiceException extends Exception {
+	private static final long serialVersionUID = 90457033106651484L;
+	
 	private String code;
 	
 	public ServiceException() {
@@ -23,8 +25,8 @@ public class ServiceException extends Exception {
 		super(arg0);
 	}
 
-	public ServiceException(String code, String arg0, Throwable arg1) {
-		super(arg0, arg1);
+	public ServiceException(String code, String arg0) {
+		super(arg0);
 		this.code = code;
 	}
 

@@ -13,25 +13,37 @@ public class ProfessorMathFilter extends EmployerFilter {
 	
 	private static final String CAPTION = "A proffessor of Math took following students:";
 	
+	private static final Printer PRINTER = new Printer();
+	
 	@Override
-	public boolean checkCriteria(Student student) {
-		return checkAge(student.getAge()) && checkMark(student.getMarks().get(Subject.MATH)) && checkCourse(student.getCourse());
+	public boolean checkCriteria(final Student student) {
+		boolean result = false;
+		
+		if (student != null) {
+			final Integer mathMark = student.getMarks().get(Subject.MATH);
+			
+			if (mathMark != null) {
+				result = checkAge(student.getAge()) && checkMark(mathMark) && checkCourse(student.getCourse());
+			}
+		}
+		
+		return result;
 	}
 
 	@Override
 	public void printEmployerCaption() {
-		Printer.printCaption(CAPTION);
+		PRINTER.printCaption(CAPTION);
 	}
 
-	private boolean checkAge(int studentsAge) {
+	private boolean checkAge(final int studentsAge) {
 		return studentsAge >= MIN_STUDENT_AGE && studentsAge <= MAX_STUDENT_AGE;
 	}
 	
-	private boolean checkMark(int studentsMark) {
+	private boolean checkMark(final int studentsMark) {
 		return studentsMark >= MATH_MARK;
 	}
 	
-	private boolean checkCourse(int course) {
+	private boolean checkCourse(final int course) {
 		return course < INAPPROPRIATE_COURSE;
 	}
 

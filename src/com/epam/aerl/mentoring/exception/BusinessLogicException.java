@@ -1,6 +1,8 @@
 package com.epam.aerl.mentoring.exception;
 
 public class BusinessLogicException extends RuntimeException {
+	private static final long serialVersionUID = 1714328157307165909L;
+	
 	private String code;
 	
 	public BusinessLogicException() {

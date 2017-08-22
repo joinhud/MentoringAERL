@@ -5,34 +5,45 @@ import java.util.Map;
 import com.epam.aerl.mentoring.type.Subject;
 
 public class StudentMarksCalculator {
-	public double calculateAverageSciensesMark(Map<Subject, Integer> marks) {
-		double result = -1;
+	public Double calculateAverageSciensesMark(final Map<Subject, Integer> marks) {
+		Double result = null;
 		
 		if (marks != null && !marks.isEmpty()) {
 			int subjectCount = 0;
 			int marksSum = 0;
 			
 			for(Map.Entry<Subject, Integer> entry : marks.entrySet()) {
-				if (entry.getKey().isScienses()) {
+				final Subject subject = entry.getKey();
+				final Integer mark = entry.getValue();
+				
+				if (subject == null || mark == null) {
+					return result;
+				} else if (subject.isScienses()) {
 					subjectCount++;
-					marksSum += entry.getValue();
+					marksSum += mark;
 				}
 			}
 			
-			result = marksSum / subjectCount;
+			result = (double) (marksSum / subjectCount);
 		}
 		
 		return result;
 	}
 	
-	public int calculateAvarageMark(Map<Subject, Integer> marks) {
-		int result = -1;
+	public Integer calculateAvarageMark(final Map<Subject, Integer> marks) {
+		Integer result = null;
 		
 		if (marks != null && !marks.isEmpty()) {
 			int marksSum = 0;
 			
 			for(Map.Entry<Subject, Integer> entry : marks.entrySet()) {
-				marksSum += entry.getValue();
+				final Integer mark = entry.getValue();
+				
+				if (mark != null) {
+					marksSum += entry.getValue();
+				} else {
+					return result;
+				}
 			}
 			
 			result = marksSum / marks.size();

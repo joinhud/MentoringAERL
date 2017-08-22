@@ -5,15 +5,15 @@ import com.epam.aerl.mentoring.type.ErrorMessage;
 
 public class Printer {
 
-	public static void printStudentData(Student student) {
+	public void printStudentData(final Student student) {
 		System.out.println(student);
 	}
 	
-	public static void printCaption(String caption) {
+	public void printCaption(final String caption) {
 		System.out.println(caption);
 	}
 	
-	public static void printErrorMessage(ErrorMessage message) {
+	public void printErrorMessage(final ErrorMessage message) {
 		System.out.println(message.getMessage());
 	}
 }

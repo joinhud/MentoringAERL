@@ -1,6 +1,7 @@
 package com.epam.aerl.mentoring.exception;
 
 public class StudentsGeneratorException extends Exception {
+	private static final long serialVersionUID = -682552349364762268L;
 	
 	private String code;
 	

@@ -15,8 +15,11 @@ public class CompanyDirectorFilter extends EmployerFilter {
 
 	private static final String CAPTION = "A director of engineering company took following students:";
 	
+	private static final Printer PRINTER = new Printer();
+	private static final StudentMarksCalculator CALCULATOR = new StudentMarksCalculator();
+	
 	@Override
-	public boolean checkCriteria(Student student) {
+	public boolean checkCriteria(final Student student) {
 		return checkHighestScore(student) 
 				|| checkStudentsAge(student.getAge()) 
 				&& checkStudentsCourse(student.getCourse())
@@ -25,36 +28,41 @@ public class CompanyDirectorFilter extends EmployerFilter {
 
 	@Override
 	public void printEmployerCaption() {
-		Printer.printCaption(CAPTION);	
+		PRINTER.printCaption(CAPTION);	
 	}
 
-	private boolean checkHighestScore(Student student) {
+	private boolean checkHighestScore(final Student student) {
 		boolean result = false;
 		
 		if (student != null) {
-			int mathMark = student.getMarks().get(Subject.MATH);
-			int philosophyMark = student.getMarks().get(Subject.PHILOSOPHY);
+			final Integer mathMark = student.getMarks().get(Subject.MATH);
+			final Integer philosophyMark = student.getMarks().get(Subject.PHILOSOPHY);
 			
-			result = mathMark == philosophyMark && mathMark == HIGHEST_MARK;
+			if (mathMark != null && philosophyMark != null) {
+				result = mathMark == philosophyMark && mathMark == HIGHEST_MARK;
+			}
 		}
 		
 		return result;
 	}
 	
-	private boolean checkStudentsAge(int studentsAge) {
+	private boolean checkStudentsAge(final int studentsAge) {
 		return studentsAge >= MIN_AGE;
 	}
 	
-	private boolean checkStudentsCourse(int studentsCourse) {
+	private boolean checkStudentsCourse(final int studentsCourse) {
 		return studentsCourse >= MIN_COURSE && studentsCourse <= MAX_COURSE;
 	}
 	
-	private boolean checkStudentsAverageSciensesMark(Student student) {
+	private boolean checkStudentsAverageSciensesMark(final Student student) {
 		boolean result = false;
 		
 		if (student != null) {
-			StudentMarksCalculator calculator = new StudentMarksCalculator();
-			result = calculator.calculateAverageSciensesMark(student.getMarks()) >= AVERAGE_SCIENSE_MARK;
+			final Double averageSciensesMark = CALCULATOR.calculateAverageSciensesMark(student.getMarks());
+			
+			if (averageSciensesMark != null) {
+				result = averageSciensesMark >= AVERAGE_SCIENSE_MARK;
+			}
 		}
 		
 		return result;

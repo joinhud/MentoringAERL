@@ -16,18 +16,21 @@ public class MilitaryCommissionerFilter extends EmployerFilter {
 	private static final int APPROPRIATE_PHISICAL_EDUCATION_MARK = 9;
 	
 	private static final String CAPTION = "A military Commissioner took following students:";
-
+	
+	private static final Printer PRINTER = new Printer();
+	private static final StudentMarksCalculator CALCULATOR = new StudentMarksCalculator();
+	
 	@Override
-	public boolean checkCriteria(Student student) {
+	public boolean checkCriteria(final Student student) {
 		return checkFirstYearStudent(student) || checkFifthYearStudent(student);
 	}
 
 	@Override
 	public void printEmployerCaption() {
-		Printer.printCaption(CAPTION);
+		PRINTER.printCaption(CAPTION);
 	}
 
-	private boolean checkFirstYearStudent(Student student) {
+	private boolean checkFirstYearStudent(final Student student) {
 		boolean result = false;
 		
 		if (student != null) {
@@ -37,31 +40,43 @@ public class MilitaryCommissionerFilter extends EmployerFilter {
 		return result;
 	}
 	
-	private boolean checkFirstYearStudentAge(int studentsAge) {
+	private boolean checkFirstYearStudentAge(final int studentsAge) {
 		return studentsAge >= FIRST_COURSE_STUDENT_MIN_AGE && studentsAge <= FIRST_COURSE_STUDENT_MAX_AGE;
 	}
 	
-	private boolean checkEverageMark(Student student) {
-		StudentMarksCalculator calculator = new StudentMarksCalculator();
-			
-		return calculator.calculateAvarageMark(student.getMarks()) < EVARAGE_MARK;
-	}
-
-	private boolean checkFifthYearStudent(Student student) {
+	private boolean checkEverageMark(final Student student) {
 		boolean result = false;
 		
 		if (student != null) {
-			result = checkFifthYearStudentAge(student.getAge()) && checkPhisicalEducationMark(student.getMarks().get(Subject.PHYSICAL_EDUCATION));
+			final Integer averageMark = CALCULATOR.calculateAvarageMark(student.getMarks());
+			
+			if (averageMark != null) {
+				result = averageMark < EVARAGE_MARK;
+			}
+		}
+			
+		return result;
+	}
+
+	private boolean checkFifthYearStudent(final Student student) {
+		boolean result = false;
+		
+		if (student != null) {
+			final Integer phisiacalEducationMark = student.getMarks().get(Subject.PHYSICAL_EDUCATION);
+			
+			if (phisiacalEducationMark != null) {
+				result = checkFifthYearStudentAge(student.getAge()) && checkPhisicalEducationMark(phisiacalEducationMark);
+			}
 		}
 		
 		return result;
 	}
 	
-	private boolean checkFifthYearStudentAge(int studentsAge) {
+	private boolean checkFifthYearStudentAge(final int studentsAge) {
 		return studentsAge >= FIFTH_COURSE_STUDENT_MIN_AGE && studentsAge <= FIFTH_COURSE_STUDENT_MAX_AGE;
 	}
 	
-	private boolean checkPhisicalEducationMark(int mark) {
+	private boolean checkPhisicalEducationMark(final int mark) {
 		return mark >= APPROPRIATE_PHISICAL_EDUCATION_MARK;
 	}
 	

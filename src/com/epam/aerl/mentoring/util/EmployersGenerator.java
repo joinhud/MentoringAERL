@@ -10,7 +10,7 @@ import com.epam.aerl.mentoring.filter.ProfessorMathFilter;
 
 public class EmployersGenerator {
 	public List<EmployerFilter> generate() {
-		List<EmployerFilter> employers = new ArrayList<>();
+		final List<EmployerFilter> employers = new ArrayList<>();
 		
 		employers.add(new ProfessorMathFilter());
 		employers.add(new MilitaryCommissionerFilter());

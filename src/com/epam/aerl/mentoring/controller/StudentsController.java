@@ -15,21 +15,24 @@ import com.epam.aerl.mentoring.util.StudentsGenerator;
 public class StudentsController {
 	private static final int STUDENTS_COUNT = 50;
 	
-	private EmployersGenerator employersGenerator = new EmployersGenerator();
-	private StudentsGenerator studentsGenerator = new StudentsGenerator();
+	private static final EmployersGenerator EMPLOYERS_GENERATOR = new EmployersGenerator();
+	private static final StudentsGenerator STUDENTS_GENERATOR = new StudentsGenerator();
 	
-	private StudentsService service = new StudentsService();
+	private static final StudentsService SERVICE = new StudentsService();
+	private static final Printer PRINTER = new Printer();
 	
 	public void takeStudents() {
+		STUDENTS_GENERATOR.init();
+		
 		try {
-			List<EmployerFilter> employers = employersGenerator.generate();
-			List<Student> students = studentsGenerator.generateStudents(STUDENTS_COUNT);
+			List<EmployerFilter> employers = EMPLOYERS_GENERATOR.generate();
+			List<Student> students = STUDENTS_GENERATOR.generateStudents(STUDENTS_COUNT);
 			
-			service.takeStudentsFromUniversity(employers, students);
+			SERVICE.takeStudentsFromUniversity(employers, students);
 		} catch (ServiceException e) {
-			Printer.printErrorMessage(ErrorMessage.getByCode(e.getCode()));
+			PRINTER.printErrorMessage(ErrorMessage.getByCode(e.getCode()));
 		} catch (StudentsGeneratorException e) {
-			Printer.printErrorMessage(ErrorMessage.getByCode(e.getCode()));
+			PRINTER.printErrorMessage(ErrorMessage.getByCode(e.getCode()));
 		}
 	}
 	

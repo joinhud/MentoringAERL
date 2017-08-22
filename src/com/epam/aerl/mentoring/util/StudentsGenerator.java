@@ -1,7 +1,6 @@
 package com.epam.aerl.mentoring.util;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,20 +42,14 @@ public class StudentsGenerator {
 	
 	private static final Properties PROPERTIES = new Properties();
 	
-	public StudentsGenerator() {
-		try {
-			init();
-		} catch (IOException e) {
-			throw new BusinessLogicException(ErrorMessage.PROPERTIES_FILE_ERROR.getCode(), PROPERTY_FILE_ERR_MSG, e);
-		}
-	}
+	private static final Random RANDOM = new Random();
 	
-	public List<Student> generateStudents(int studentsNumber) throws StudentsGeneratorException {
+	public List<Student> generateStudents(final int studentsNumber) throws StudentsGeneratorException {
 		if (studentsNumber < 0) {
 			throw new StudentsGeneratorException(ErrorMessage.STUDENTS_NUMBER_ERROR.getCode(), STUDENTS_NUM_ERR_MSG);
 		}
 		
-		List<Student> students = new ArrayList<>();
+		final List<Student> students = new ArrayList<>();
 		
 		for(int i = 0; i < studentsNumber; i++) {
 			students.add(generateStudent());
@@ -65,24 +58,26 @@ public class StudentsGenerator {
 		return students;
 	}
 	
-	private void init() throws FileNotFoundException, IOException {
-		PROPERTIES.load(new FileInputStream("resources/students.properties"));
+	public void init() throws BusinessLogicException {
+		try {
+			PROPERTIES.load(new FileInputStream("resources/students.properties"));
+		} catch (IOException e) {
+			throw new BusinessLogicException(ErrorMessage.PROPERTIES_FILE_ERROR.getCode(), PROPERTY_FILE_ERR_MSG, e);
+		}
 	}
 	
-	private int randomIntRange(int min, int max) {
-		Random random = new Random();
-		
-		return random.nextInt((max - min) + 1) + min;
+	private int randomIntRange(final int min,final int max) {		
+		return RANDOM.nextInt((max - min) + 1) + min;
 	}
 	
 	private Student generateStudent() {
 		Student student = null;
 		
-		int course = generateCourse();
-		int age = generateStudentAge(course);
+		final int course = generateCourse();
+		final int age = generateStudentAge(course);
 		
 		if (age > 0) {			
-			Map<Subject, Integer> marks = new HashMap<>();
+			final Map<Subject, Integer> marks = new HashMap<>();
 			marks.put(Subject.MATH, generateMark());
 			marks.put(Subject.PHILOSOPHY, generateMark());
 			marks.put(Subject.PHYSICAL_EDUCATION, generateMark());
@@ -95,13 +90,13 @@ public class StudentsGenerator {
 	
 
 	private int generateCourse() {
-		int minCourse = Integer.valueOf(PROPERTIES.getProperty(MIN_COURCE));
-		int maxCourse = Integer.valueOf(PROPERTIES.getProperty(MAX_COURCE));
+		final int minCourse = Integer.valueOf(PROPERTIES.getProperty(MIN_COURCE));
+		final int maxCourse = Integer.valueOf(PROPERTIES.getProperty(MAX_COURCE));
 		
 		return randomIntRange(minCourse, maxCourse);
 	}
 	
-	private int generateStudentAge(int course) {
+	private int generateStudentAge(final int course) {
 		int age;
 		int minAge;
 		int maxAge;
@@ -143,8 +138,8 @@ public class StudentsGenerator {
 	}
 	
 	private int generateMark() {
-		int minMark = Integer.valueOf(PROPERTIES.getProperty(MIN_MARK));
-		int maxMark = Integer.valueOf(PROPERTIES.getProperty(MAX_MARK));
+		final int minMark = Integer.valueOf(PROPERTIES.getProperty(MIN_MARK));
+		final int maxMark = Integer.valueOf(PROPERTIES.getProperty(MAX_MARK));
 		
 		return randomIntRange(minMark, maxMark);
 	}
