@@ -1,8 +1,11 @@
 package com.epam.aerl.mentoring.filter;
 
 import com.epam.aerl.mentoring.entity.Student;
-import com.epam.aerl.mentoring.type.Subject;
 import com.epam.aerl.mentoring.util.Printer;
+import com.epam.aerl.mentoring.util.rules.AppropriateStudentsMathMarkRule;
+import com.epam.aerl.mentoring.util.rules.EmployerFilterRule;
+import com.epam.aerl.mentoring.util.rules.InappropriateStudentsCourseRule;
+import com.epam.aerl.mentoring.util.rules.StudentsAgeRangeRule;
 
 public class ProfessorMathFilter extends EmployerFilter {
 
@@ -20,11 +23,14 @@ public class ProfessorMathFilter extends EmployerFilter {
 		boolean result = false;
 		
 		if (student != null) {
-			final Integer mathMark = student.getMarks().get(Subject.MATH);
-			
-			if (mathMark != null) {
-				result = checkAge(student.getAge()) && checkMark(mathMark) && checkCourse(student.getCourse());
-			}
+			final EmployerFilterRule checkAge = new StudentsAgeRangeRule(MIN_STUDENT_AGE, MAX_STUDENT_AGE);
+			final EmployerFilterRule checkMark = new AppropriateStudentsMathMarkRule(MATH_MARK);
+			final EmployerFilterRule checkCourse = new InappropriateStudentsCourseRule(INAPPROPRIATE_COURSE);
+
+			result = checkAge
+                    .and(checkMark)
+                    .and(checkCourse)
+                    .isSatisfiedBy(student);
 		}
 		
 		return result;
@@ -34,17 +40,4 @@ public class ProfessorMathFilter extends EmployerFilter {
 	public void printEmployerCaption() {
 		printer.printCaption(CAPTION);
 	}
-
-	private boolean checkAge(final int studentsAge) {
-		return studentsAge >= MIN_STUDENT_AGE && studentsAge <= MAX_STUDENT_AGE;
-	}
-	
-	private boolean checkMark(final int studentsMark) {
-		return studentsMark >= MATH_MARK;
-	}
-	
-	private boolean checkCourse(final int course) {
-		return course < INAPPROPRIATE_COURSE;
-	}
-
 }
