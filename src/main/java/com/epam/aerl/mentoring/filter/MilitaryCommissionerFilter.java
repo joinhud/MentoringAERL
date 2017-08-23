@@ -15,10 +15,10 @@ public class MilitaryCommissionerFilter extends EmployerFilter {
 	private static final int FIFTH_COURSE_STUDENT_MAX_AGE = 24;
 	private static final int APPROPRIATE_PHYSICAL_EDUCATION_MARK = 9;
 	
-	private static final String CAPTION = "A military Commissioner took following students:";
+	private static final String CAPTION = "Employer a military Commissioner took:";
 	
-	private static final Printer PRINTER = new Printer();
-	private static final StudentMarksCalculator CALCULATOR = new StudentMarksCalculator();
+	private Printer printer = new Printer();
+	private StudentMarksCalculator calculator = new StudentMarksCalculator();
 	
 	@Override
 	public boolean checkCriteria(final Student student) {
@@ -27,7 +27,7 @@ public class MilitaryCommissionerFilter extends EmployerFilter {
 
 	@Override
 	public void printEmployerCaption() {
-		PRINTER.printCaption(CAPTION);
+		printer.printCaption(CAPTION);
 	}
 
 	private boolean checkFirstYearStudent(final Student student) {
@@ -48,7 +48,7 @@ public class MilitaryCommissionerFilter extends EmployerFilter {
 		boolean result = false;
 		
 		if (student != null) {
-			final Integer averageMark = CALCULATOR.calculateAverageMark(student.getMarks());
+			final Integer averageMark = calculator.calculateAverageMark(student.getMarks());
 			
 			if (averageMark != null) {
 				result = averageMark < AVERAGE_MARK;

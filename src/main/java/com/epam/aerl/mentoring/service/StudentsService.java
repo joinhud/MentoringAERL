@@ -12,14 +12,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class StudentsService {
-	private static final String CAPTION = "Students which will remain:";
+	private static final String CAPTION = "Remaining students:";
 	private static final String REMAIN_LOG_MESSAGE = "Employers took students, remaining {}.";
-
 	private static final String EMPTY_STUDENTS_ERR_MSG = "List of students is empty or null.";
-	
-	private static final Printer PRINTER = new Printer();
-    private static final Logger LOG = LogManager.getLogger();
-	
+	private static final Logger LOG =  LogManager.getLogger(StudentsService.class);
+
+	private Printer printer = new Printer();
+
 	public void takeStudentsFromUniversity(final List<EmployerFilter> employers, final List<Student> students) throws ServiceException {
 		if (CollectionUtils.isNotEmpty(students)) {
 			for(EmployerFilter employer : employers) {
@@ -33,13 +32,15 @@ public class StudentsService {
 	}
 	
 	private void printRemainStudents(final List<Student> students) {
-		PRINTER.printCaption(CAPTION);
+		printer.printCaption(CAPTION);
 		LOG.debug(REMAIN_LOG_MESSAGE, students.size());
 		
 		for(Student student : students) {
-			PRINTER.printStudentData(student);
+			printer.printStudentData(student);
 			LOG.debug(student);
 		}
+
+		printer.printEnder();
 	}
 	
 }

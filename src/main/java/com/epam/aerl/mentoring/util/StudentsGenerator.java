@@ -43,33 +43,32 @@ public class StudentsGenerator {
 	private static final int FIFTH_COURSE = 5;
 	
 	private static final Properties PROPERTIES = new Properties();
-	
 	private static final Random RANDOM = new Random();
-	private static final Logger LOG = LogManager.getLogger();
-	
-	public List<Student> generateStudents(final int studentsNumber) throws StudentsGeneratorException {
-		if (studentsNumber < 0) {
-			throw new StudentsGeneratorException(ErrorMessage.STUDENTS_NUMBER_ERROR.getCode(), STUDENTS_NUM_ERR_MSG);
-		}
-		
-		final List<Student> students = new ArrayList<>();
-		
-		for(int i = 0; i < studentsNumber; i++) {
-			students.add(generateStudent());
-		}
-		
-		return students;
-	}
-	
+	private static final Logger LOG = LogManager.getLogger(StudentsGenerator.class);
+
 	public void init() throws BusinessLogicException {
 		try {
 			PROPERTIES.load(new FileInputStream("src/main/resources/students.properties"));
 		} catch (IOException e) {
-		    LOG.fatal(e);
+			LOG.error(e);
 			throw new BusinessLogicException(ErrorMessage.PROPERTIES_FILE_ERROR.getCode(), PROPERTY_FILE_ERR_MSG, e);
 		}
 	}
-	
+
+	public List<Student> generateStudents(final int studentsNumber) throws StudentsGeneratorException {
+		if (studentsNumber < 0) {
+			throw new StudentsGeneratorException(ErrorMessage.STUDENTS_NUMBER_ERROR.getCode(), STUDENTS_NUM_ERR_MSG);
+		}
+
+		final List<Student> students = new ArrayList<>();
+
+		for(int i = 0; i < studentsNumber; i++) {
+			students.add(generateStudent());
+		}
+
+		return students;
+	}
+
 	private int randomIntRange(final int min,final int max) {		
 		return RANDOM.nextInt((max - min) + 1) + min;
 	}

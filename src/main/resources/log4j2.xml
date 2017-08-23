@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="debug">
     <Properties>
-        <Property name="filepath">  logs</Property>
+        <Property name="filepath">logs</Property>
+        <Property name="errorFilePath">errors</Property>
         <Property name="pattern">%d{yyy-MM-dd HH:mm:ss} [%t] %-5level %logger{36}: %msg%n</Property>
     </Properties>
 
@@ -12,13 +13,23 @@
             <PatternLayout pattern="${pattern}"/>
             <Policies>
                 <TimeBasedTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="5 KB"/>
             </Policies>
-            <DefaultRolloverStrategy max="5"/>
+        </RollingFile>
+        <RollingFile name="ErrorFile" fileName="${errorFilePath}/error.log"
+                     filePattern="${errorFilePath}/%d{yyyy-MM-dd}-%i-app.log"
+                     append="true">
+            <PatternLayout pattern="${pattern}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="523 KB"/>
+            </Policies>
         </RollingFile>
     </Appenders>
     <Loggers>
         <Root level="all">
-            <AppenderRef ref="File"/>
+            <AppenderRef ref="File" level="debug"/>
+            <AppenderRef ref="ErrorFile" level="error"/>
         </Root>
     </Loggers>
 </Configuration>

@@ -11,9 +11,9 @@ public class ProfessorMathFilter extends EmployerFilter {
 	private static final int MATH_MARK = 8;
 	private static final int INAPPROPRIATE_COURSE = 5;
 	
-	private static final String CAPTION = "A professor of Math took following students:";
+	private static final String CAPTION = "Employer Professor of Math took:";
 	
-	private static final Printer PRINTER = new Printer();
+	private Printer printer = new Printer();
 	
 	@Override
 	public boolean checkCriteria(final Student student) {
@@ -32,7 +32,7 @@ public class ProfessorMathFilter extends EmployerFilter {
 
 	@Override
 	public void printEmployerCaption() {
-		PRINTER.printCaption(CAPTION);
+		printer.printCaption(CAPTION);
 	}
 
 	private boolean checkAge(final int studentsAge) {

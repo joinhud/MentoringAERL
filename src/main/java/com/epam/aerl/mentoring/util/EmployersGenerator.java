@@ -1,20 +1,22 @@
 package com.epam.aerl.mentoring.util;
 
+import com.epam.aerl.mentoring.factory.EmployerFilterFactory;
+import com.epam.aerl.mentoring.filter.EmployerFilter;
+import com.epam.aerl.mentoring.type.EmployerType;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import com.epam.aerl.mentoring.filter.CompanyDirectorFilter;
-import com.epam.aerl.mentoring.filter.EmployerFilter;
-import com.epam.aerl.mentoring.filter.MilitaryCommissionerFilter;
-import com.epam.aerl.mentoring.filter.ProfessorMathFilter;
+import java.util.Set;
 
 public class EmployersGenerator {
-	public List<EmployerFilter> generate() {
+    private EmployerFilterFactory factory = new EmployerFilterFactory();
+
+	public List<EmployerFilter> generate(final Set<EmployerType> types) {
 		final List<EmployerFilter> employers = new ArrayList<>();
 		
-		employers.add(new ProfessorMathFilter());
-		employers.add(new MilitaryCommissionerFilter());
-		employers.add(new CompanyDirectorFilter());
+		for (EmployerType type : types) {
+			employers.add(factory.getEmployerFilter(type));
+		}
 		
 		return employers;
 	}

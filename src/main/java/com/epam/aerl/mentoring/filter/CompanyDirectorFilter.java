@@ -13,10 +13,10 @@ public class CompanyDirectorFilter extends EmployerFilter {
 	private static final int MAX_COURSE = 4;
 	private static final double AVERAGE_SCIENCES_MARK = 7.5;
 
-	private static final String CAPTION = "A director of engineering company took following students:";
+	private static final String CAPTION = "Employer a director of engineering company took:";
 	
-	private static final Printer PRINTER = new Printer();
-	private static final StudentMarksCalculator CALCULATOR = new StudentMarksCalculator();
+	private Printer printer = new Printer();
+	private StudentMarksCalculator calculator = new StudentMarksCalculator();
 	
 	@Override
 	public boolean checkCriteria(final Student student) {
@@ -28,7 +28,7 @@ public class CompanyDirectorFilter extends EmployerFilter {
 
 	@Override
 	public void printEmployerCaption() {
-		PRINTER.printCaption(CAPTION);	
+		printer.printCaption(CAPTION);
 	}
 
 	private boolean checkHighestScore(final Student student) {
@@ -58,7 +58,7 @@ public class CompanyDirectorFilter extends EmployerFilter {
 		boolean result = false;
 		
 		if (student != null) {
-			final Double averageSciencesMark = CALCULATOR.calculateAverageSciencesMark(student.getMarks());
+			final Double averageSciencesMark = calculator.calculateAverageSciencesMark(student.getMarks());
 			
 			if (averageSciencesMark != null) {
 				result = averageSciencesMark >= AVERAGE_SCIENCES_MARK;

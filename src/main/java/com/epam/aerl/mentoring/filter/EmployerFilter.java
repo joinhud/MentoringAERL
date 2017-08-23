@@ -13,9 +13,10 @@ public abstract class EmployerFilter {
     private static final String START_FILTER_LOG_MSG = "Starting filtering students...";
     private static final String TOOK_LOG_MSG = "Took {} students.";
 
-	private static final Printer PRINTER = new Printer();
 	private final Logger log = LogManager.getLogger(this.getClass());
-	
+
+	private Printer printer = new Printer();
+
 	public void takeAway(final List<Student> students) {
 		if (CollectionUtils.isNotEmpty(students)) {
             log.debug(START_FILTER_LOG_MSG);
@@ -29,7 +30,7 @@ public abstract class EmployerFilter {
 				Student student = iterator.next();
 				
 				if (checkCriteria(student)) {
-					PRINTER.printStudentData(student);
+					printer.printStudentData(student);
 					iterator.remove();
 				}
 				
