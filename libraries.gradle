@@ -1,0 +1,4 @@
+ext {
+    log4j = 'org.apache.logging.log4j:log4j-core:2.8.2'
+    apacheCollections = 'org.apache.commons:commons-collections4:4.1'
+}
