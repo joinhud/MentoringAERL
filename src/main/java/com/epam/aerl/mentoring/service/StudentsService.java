@@ -40,7 +40,7 @@ public class StudentsService {
 			LOG.debug(student);
 		}
 
-		printer.printEnder();
+		printer.printEnding();
 	}
 	
 }

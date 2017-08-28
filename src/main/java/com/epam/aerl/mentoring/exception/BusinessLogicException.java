@@ -13,7 +13,12 @@ public class BusinessLogicException extends RuntimeException {
 		super(arg0);
 	}
 
-	public BusinessLogicException(Throwable arg0) {
+    public BusinessLogicException(String message, String code) {
+        super(message);
+        this.code = code;
+    }
+
+    public BusinessLogicException(Throwable arg0) {
 		super(arg0);
 	}
 

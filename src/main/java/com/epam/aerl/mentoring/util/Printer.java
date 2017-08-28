@@ -13,7 +13,7 @@ import java.io.PrintWriter;
 public class Printer {
     private static final String FILE_NAME = "output.txt";
     private static final String OUTPUT_FILE_ERR_MSG = "Cannot get access to the output file.";
-    private static final String ENDER = "#######################################################################";
+    private static final String ENDING = "#######################################################################";
     private static final Logger LOG = LogManager.getLogger(Printer.class);
 
     public void printStudentData(final Student student) {
@@ -24,12 +24,12 @@ public class Printer {
         writeToFile(caption);
 	}
 
-	public void printEnder() {
-        writeToFile(ENDER);
+	public void printEnding() {
+        writeToFile(ENDING);
     }
 	
-	public void printErrorMessage(final ErrorMessage message) {
-        writeToFile(message.toString());
+	public void printErrorMessage(final ErrorMessage errorMessage) {
+        writeToFile(errorMessage.getMessage());
 	}
 
 	private void writeToFile(final String data) {

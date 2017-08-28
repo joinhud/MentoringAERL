@@ -3,7 +3,6 @@ package com.epam.aerl.mentoring.util;
 import com.epam.aerl.mentoring.entity.Student;
 import com.epam.aerl.mentoring.entity.StudentClassCriteria;
 import com.epam.aerl.mentoring.entity.StudentMarkCriteria;
-import com.epam.aerl.mentoring.type.StudentClass;
 import com.epam.aerl.mentoring.type.Subject;
 
 import java.util.ArrayList;
@@ -15,14 +14,14 @@ public class CriteriaStudentsGenerator {
     private StudentParametersGenerator generator = new StudentParametersGenerator();
     private StudentClassCriteriaHolder holder = StudentClassCriteriaHolder.getInstance();
 
-    public List<Student> generateStudents(final Map<StudentClass, Integer> criteria) {
+    public List<Student> generateStudents(final Map<String, Integer> criteria) {
 
         List<Student> students = null;
 
         if (criteria != null) {
             students = new ArrayList<>();
 
-            for (Map.Entry<StudentClass, Integer> parameter : criteria.entrySet()) {
+            for (Map.Entry<String, Integer> parameter : criteria.entrySet()) {
                 for (int i = 0; i < parameter.getValue(); i++) {
                     Student student = generate(holder.receiveStudentClassCriteria().get(parameter.getKey()));
                     students.add(student);

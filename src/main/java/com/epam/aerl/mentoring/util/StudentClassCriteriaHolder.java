@@ -1,7 +1,6 @@
 package com.epam.aerl.mentoring.util;
 
 import com.epam.aerl.mentoring.entity.*;
-import com.epam.aerl.mentoring.type.StudentClass;
 import com.epam.aerl.mentoring.type.Subject;
 
 import java.util.HashMap;
@@ -9,9 +8,19 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class StudentClassCriteriaHolder {
+    private static final String M_CLASS = "M";
+    private static final String Y_CLASS = "Y";
+    private static final String P_CLASS = "P";
+    private static final String L_CLASS = "L";
+    private static final String B_CLASS = "B";
+    private static final String O_CLASS = "O";
+    private static final String N_CLASS = "N";
+    private static final String I_CLASS = "I";
+    private static final String RAND_CLASS = "rand";
+
     private static volatile StudentClassCriteriaHolder instance;
 
-    private Map<StudentClass, StudentClassCriteria> classCriteria;
+    private Map<String, StudentClassCriteria> classCriteria;
 
     private StudentClassCriteriaHolder() {
     }
@@ -29,76 +38,163 @@ public class StudentClassCriteriaHolder {
         return localInstance;
     }
 
-    public Map<StudentClass, StudentClassCriteria> receiveStudentClassCriteria() {
+    public Map<String, StudentClassCriteria> receiveStudentClassCriteria() {
         if (classCriteria == null) {
             classCriteria = new HashMap<>();
 
-            StudentClassCriteria mClassCriteria = new StudentClassCriteria();
-            Map<Subject, StudentMarkCriteria> mClassMarksCriteria = new LinkedHashMap<>();
-            mClassMarksCriteria.put(Subject.MATH, new StudentMarkCriteria(9, 10));
-            StudentMarksWrapper mClassMarksWrapper = new StudentMarksWrapper();
-            mClassMarksWrapper.setMarksCriteria(mClassMarksCriteria);
-            mClassCriteria.setStudentMarksWrapperCriteria(mClassMarksWrapper);
-            classCriteria.put(StudentClass.M, mClassCriteria);
+            Map<Subject, StudentMarkCriteria> classMarksCriteria = new LinkedHashMap<>();
+            classMarksCriteria.put(Subject.MATH,
+                    new StudentMarkCriteria
+                            .StudentMarkCriteriaBuilder(9, 10)
+                            .createMarkCriteria()
+            );
 
-            StudentClassCriteria yClassCriteria = new StudentClassCriteria();
-            yClassCriteria.setAgeCriteria(new StudentAgeCriteria(18, 20));
-            yClassCriteria.setCourseCriteria(new StudentCourseCriteria(1, 4));
-            classCriteria.put(StudentClass.Y, yClassCriteria);
+            classCriteria.put(M_CLASS, new StudentClassCriteria
+                    .StudentClassCriteriaBuilder()
+                    .studentMarksWrapperCriteria(
+                            new StudentMarksWrapper
+                                    .StudentMarksWrapperBuilder()
+                                    .marksCriteria(classMarksCriteria)
+                                    .createMarksWrapper()
+                    ).createClassCriteria()
+            );
 
-            StudentClassCriteria pClassCriteria = new StudentClassCriteria();
-            Map<Subject, StudentMarkCriteria> pClassMarksCriteria = new LinkedHashMap<>();
-            pClassMarksCriteria.put(Subject.MATH, new StudentMarkCriteria(10, 10));
-            pClassMarksCriteria.put(Subject.PHILOSOPHY, new StudentMarkCriteria(10, 10));
-            StudentMarksWrapper pClassMarksWrapper = new StudentMarksWrapper();
-            pClassMarksWrapper.setMarksCriteria(pClassMarksCriteria);
-            pClassCriteria.setStudentMarksWrapperCriteria(pClassMarksWrapper);
-            pClassCriteria.setAgeCriteria(new StudentAgeCriteria(22, 24));
-            pClassCriteria.setCourseCriteria(new StudentCourseCriteria(3, 5));
-            classCriteria.put(StudentClass.P, pClassCriteria);
+            classCriteria.put(Y_CLASS, new StudentClassCriteria
+                    .StudentClassCriteriaBuilder()
+                    .ageCriteria(
+                            new StudentAgeCriteria
+                                    .StudentAgeCriteriaBuilder(18, 20)
+                                    .createAgeCriteria()
+                    ).courseCriteria(
+                            new StudentCourseCriteria
+                                    .StudentCourseCriteriaBuilder(1, 4)
+                                    .createCourseCriteria()
+                    ).createClassCriteria()
+            );
 
-            StudentClassCriteria lClassCriteria = new StudentClassCriteria();
-            Map<StudentMarksWrapper.GroupOperation, StudentMarkCriteria> lClassGroupOpCriteria = new HashMap<>();
-            lClassGroupOpCriteria.put(StudentMarksWrapper.GroupOperation.AVERAGE, new StudentMarkCriteria(0, 6.4));
-            StudentMarksWrapper lClassMarksWrapper = new StudentMarksWrapper();
-            lClassMarksWrapper.setGroupOperationsCriteria(lClassGroupOpCriteria);
-            lClassCriteria.setStudentMarksWrapperCriteria(lClassMarksWrapper);
-            lClassCriteria.setCourseCriteria(new StudentCourseCriteria(3, 5));
-            classCriteria.put(StudentClass.L, lClassCriteria);
+            classMarksCriteria = new LinkedHashMap<>();
+            classMarksCriteria.put(Subject.MATH, new StudentMarkCriteria
+                    .StudentMarkCriteriaBuilder(10, 10).createMarkCriteria()
+            );
+            classMarksCriteria.put(Subject.PHILOSOPHY, new StudentMarkCriteria
+                    .StudentMarkCriteriaBuilder(10, 10).createMarkCriteria()
+            );
 
-            StudentClassCriteria bClassCriteria = new StudentClassCriteria();
-            Map<Subject, StudentMarkCriteria> bClassMarksCriteria = new LinkedHashMap<>();
-            bClassMarksCriteria.put(Subject.PHYSICAL_EDUCATION, new StudentMarkCriteria(9, 10));
-            StudentMarksWrapper bClassMarksWrapper = new StudentMarksWrapper();
-            bClassMarksWrapper.setMarksCriteria(bClassMarksCriteria);
-            bClassCriteria.setStudentMarksWrapperCriteria(bClassMarksWrapper);
-            bClassCriteria.setAgeCriteria(new StudentAgeCriteria(22, 24));
-            bClassCriteria.setCourseCriteria(new StudentCourseCriteria(3, 5));
-            classCriteria.put(StudentClass.B, bClassCriteria);
+            classCriteria.put(P_CLASS, new StudentClassCriteria
+                    .StudentClassCriteriaBuilder()
+                    .studentMarksWrapperCriteria(
+                            new StudentMarksWrapper
+                                    .StudentMarksWrapperBuilder()
+                                    .marksCriteria(classMarksCriteria)
+                                    .createMarksWrapper()
+                    ).ageCriteria(
+                            new StudentAgeCriteria
+                                    .StudentAgeCriteriaBuilder(22, 24)
+                                    .createAgeCriteria()
+                    ).courseCriteria(
+                            new StudentCourseCriteria
+                                    .StudentCourseCriteriaBuilder(3, 5)
+                                    .createCourseCriteria()
+                    ).createClassCriteria()
+            );
 
-            StudentClassCriteria oClassCriteria = new StudentClassCriteria();
-            oClassCriteria.setAgeCriteria(new StudentAgeCriteria(18, 18));
-            oClassCriteria.setCourseCriteria(new StudentCourseCriteria(1, 1));
-            classCriteria.put(StudentClass.O, oClassCriteria);
+            Map<StudentMarksWrapper.GroupOperation, StudentMarkCriteria> classGroupOpCriteria = new HashMap<>();
+            classGroupOpCriteria.put(StudentMarksWrapper.GroupOperation.AVERAGE, new StudentMarkCriteria
+                    .StudentMarkCriteriaBuilder(0, 6.4)
+                    .createMarkCriteria()
+            );
 
-            StudentClassCriteria nClassCriteria = new StudentClassCriteria();
-            Map<StudentMarksWrapper.GroupOperation, StudentMarkCriteria> nClassGroupOpCriteria = new HashMap<>();
-            nClassGroupOpCriteria.put(StudentMarksWrapper.GroupOperation.AVERAGE, new StudentMarkCriteria(7.5, 8.5));
-            StudentMarksWrapper nClassMarksWrapper = new StudentMarksWrapper();
-            nClassMarksWrapper.setGroupOperationsCriteria(nClassGroupOpCriteria);
-            nClassCriteria.setStudentMarksWrapperCriteria(nClassMarksWrapper);
-            nClassCriteria.setAgeCriteria(new StudentAgeCriteria(22, 23));
-            nClassCriteria.setCourseCriteria(new StudentCourseCriteria(3, 5));
-            classCriteria.put(StudentClass.N, nClassCriteria);
+            classCriteria.put(L_CLASS, new StudentClassCriteria
+                    .StudentClassCriteriaBuilder()
+                    .studentMarksWrapperCriteria(
+                            new StudentMarksWrapper
+                                    .StudentMarksWrapperBuilder()
+                                    .groupOperationsCriteria(classGroupOpCriteria)
+                                    .createMarksWrapper()
+                    ).courseCriteria(
+                            new StudentCourseCriteria
+                                    .StudentCourseCriteriaBuilder(3, 5)
+                                    .createCourseCriteria()
+                    ).createClassCriteria()
+            );
 
-            StudentClassCriteria iClassCriteria = new StudentClassCriteria();
-            Map<Subject, StudentMarkCriteria> iClassMarksCriteria = new LinkedHashMap<>();
-            iClassMarksCriteria.put(Subject.PHYSICAL_EDUCATION, new StudentMarkCriteria(0, 6));
-            StudentMarksWrapper iClassMarksWrapper = new StudentMarksWrapper();
-            iClassMarksWrapper.setMarksCriteria(iClassMarksCriteria);
-            iClassCriteria.setStudentMarksWrapperCriteria(iClassMarksWrapper);
-            iClassCriteria.setCourseCriteria(new StudentCourseCriteria(1, 1));
-            classCriteria.put(StudentClass.I, iClassCriteria);
+            classMarksCriteria = new LinkedHashMap<>();
+            classMarksCriteria.put(Subject.PHYSICAL_EDUCATION, new StudentMarkCriteria
+                    .StudentMarkCriteriaBuilder(9, 10).createMarkCriteria()
+            );
+
+            classCriteria.put(B_CLASS, new StudentClassCriteria
+                    .StudentClassCriteriaBuilder()
+                    .studentMarksWrapperCriteria(
+                            new StudentMarksWrapper
+                                    .StudentMarksWrapperBuilder()
+                                    .marksCriteria(classMarksCriteria)
+                                    .createMarksWrapper()
+                    ).ageCriteria(
+                            new StudentAgeCriteria
+                                    .StudentAgeCriteriaBuilder(22, 24)
+                                    .createAgeCriteria()
+                    ).courseCriteria(
+                            new StudentCourseCriteria
+                                    .StudentCourseCriteriaBuilder(3, 5)
+                                    .createCourseCriteria()
+                    ).createClassCriteria()
+            );
+
+            classCriteria.put(O_CLASS, new StudentClassCriteria
+                    .StudentClassCriteriaBuilder()
+                    .ageCriteria(
+                            new StudentAgeCriteria
+                                    .StudentAgeCriteriaBuilder(18, 18)
+                                    .createAgeCriteria()
+                    ).courseCriteria(
+                            new StudentCourseCriteria
+                                    .StudentCourseCriteriaBuilder(1, 1)
+                                    .createCourseCriteria()
+                    ).createClassCriteria()
+            );
+
+            classGroupOpCriteria = new HashMap<>();
+            classGroupOpCriteria.put(StudentMarksWrapper.GroupOperation.AVERAGE, new StudentMarkCriteria
+                    .StudentMarkCriteriaBuilder(7.5, 8.5).createMarkCriteria()
+            );
+
+            classCriteria.put(N_CLASS, new StudentClassCriteria
+                    .StudentClassCriteriaBuilder()
+                    .studentMarksWrapperCriteria(
+                            new StudentMarksWrapper.StudentMarksWrapperBuilder()
+                                    .groupOperationsCriteria(classGroupOpCriteria)
+                                    .createMarksWrapper()
+                    ).ageCriteria(
+                            new StudentAgeCriteria
+                                    .StudentAgeCriteriaBuilder(22, 23)
+                                    .createAgeCriteria()
+                    ).courseCriteria(
+                            new StudentCourseCriteria
+                                    .StudentCourseCriteriaBuilder(3, 5)
+                                    .createCourseCriteria()
+                    ).createClassCriteria()
+            );
+
+            classMarksCriteria = new HashMap<>();
+            classMarksCriteria.put(Subject.PHYSICAL_EDUCATION, new StudentMarkCriteria
+                    .StudentMarkCriteriaBuilder(0, 6).createMarkCriteria()
+            );
+
+            classCriteria.put(I_CLASS, new StudentClassCriteria
+                    .StudentClassCriteriaBuilder()
+                    .studentMarksWrapperCriteria(
+                            new StudentMarksWrapper
+                                    .StudentMarksWrapperBuilder()
+                                    .marksCriteria(classMarksCriteria)
+                                    .createMarksWrapper()
+                    ).createClassCriteria()
+            );
+
+            classCriteria.put(RAND_CLASS, new StudentClassCriteria
+                    .StudentClassCriteriaBuilder()
+                    .createClassCriteria()
+            );
         }
 
         return classCriteria;

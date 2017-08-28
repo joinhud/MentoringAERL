@@ -18,9 +18,9 @@ public enum ErrorMessage {
 	public static ErrorMessage getByCode(String code) {
 		ErrorMessage result = null;
 		
-		for(ErrorMessage message : values()) {
-			if (code.equals(message.code)) {
-				result = null;
+		for(ErrorMessage errorMessage : values()) {
+			if (code.equals(errorMessage.code)) {
+				result = errorMessage;
 			}
 		}
 		
