@@ -1,21 +1,23 @@
 package com.epam.aerl.mentoring.util;
 
-import com.epam.aerl.mentoring.entity.*;
+import com.epam.aerl.mentoring.entity.StudentClassCriteria;
+import com.epam.aerl.mentoring.entity.StudentMarksWrapper;
+import com.epam.aerl.mentoring.entity.StudentRangeCriteria;
 import com.epam.aerl.mentoring.exception.NotCombinedParameterException;
 import com.epam.aerl.mentoring.exception.StudentClassCriteriaException;
 import com.epam.aerl.mentoring.type.ErrorMessage;
-import com.epam.aerl.mentoring.type.Subject;
+import com.epam.aerl.mentoring.type.GenerationClass;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CriteriaAnalyser {
-    private static final String S_CLASS = "S";
-    private static final String RAND_CLASS = "rand";
     private static final int MIN_INDEX = 0;
     private static final int MAX_INDEX = 1;
     private static final String NOT_COMBINED_PARAMETER_ERR_MSG = "Parameters cannot be combined.";
@@ -28,7 +30,7 @@ public class CriteriaAnalyser {
         Map<String, Integer> result = null;
 
         if (criteria != null) {
-            result = new LinkedHashMap<>();
+            result = new HashMap<>();
 
             final Pattern pattern = Pattern.compile(VALUE_REGEX + CLASS_REGEX);
             final Matcher matcher = pattern.matcher(criteria);
@@ -56,6 +58,7 @@ public class CriteriaAnalyser {
                 addRandClassCriteria(result);
             } else {
                 Map<String, Integer> combined = combinedPossibleCriteria(parsedCriteria);
+
                 if (validateCriteriaValues(combined)) {
                     result = combined;
                     addRandClassCriteria(result);
@@ -69,11 +72,11 @@ public class CriteriaAnalyser {
     }
 
     private boolean validateCriteriaValues(final Map<String, Integer> criteria) {
-        final int totalCount = criteria.get(S_CLASS);
+        final int totalCount = criteria.get(GenerationClass.S.toString());
         int sumCriteria = 0;
 
-        for (Map.Entry<String, Integer> criteriaElement : criteria.entrySet()) {
-            if (!criteriaElement.getKey().equals(S_CLASS)) {
+        for (Entry<String, Integer> criteriaElement : criteria.entrySet()) {
+            if (!criteriaElement.getKey().equals(GenerationClass.S.toString())) {
                 sumCriteria += criteriaElement.getValue();
             }
         }
@@ -82,31 +85,31 @@ public class CriteriaAnalyser {
     }
 
     private void addRandClassCriteria(final Map<String, Integer> criteria) {
-        final int totalCount = criteria.get(S_CLASS);
+        final int totalCount = criteria.get(GenerationClass.S.toString());
         int sumCriteria = 0;
 
-        for (Map.Entry<String, Integer> criteriaElement : criteria.entrySet()) {
-            if (!criteriaElement.getKey().equals(S_CLASS)) {
+        for (Entry<String, Integer> criteriaElement : criteria.entrySet()) {
+            if (!criteriaElement.getKey().equals(GenerationClass.S.toString())) {
                 sumCriteria += criteriaElement.getValue();
             }
         }
 
-        criteria.put(RAND_CLASS, totalCount - sumCriteria);
+        criteria.put(GenerationClass.RAND.toString().toLowerCase(), totalCount - sumCriteria);
     }
 
     private Map<String, Integer> combinedPossibleCriteria(final Map<String, Integer> criteria) {
-        Map<String, StudentClassCriteria> studentClassCriteria = StudentClassCriteriaHolder.getInstance().receiveStudentClassCriteria();
-        Map<String, Integer> result = new LinkedHashMap<>(criteria);
+        StudentClassCriteriaHolder holder = StudentClassCriteriaHolder.getInstance();
+        Map<String, Integer> result = new HashMap<>(criteria);
 
-        for (Map.Entry<String, Integer> criteriaElement : criteria.entrySet()) {
-            if (!criteriaElement.getKey().equals(S_CLASS)) {
-                Map.Entry<String, Integer> appropriate = null;
+        for (Entry<String, Integer> criteriaElement : criteria.entrySet()) {
+            if (!criteriaElement.getKey().equals(GenerationClass.S.toString())) {
+                Entry<String, Integer> appropriate = null;
                 StudentClassCriteria combinedClassCriteria = null;
 
-                for (Map.Entry<String, Integer> resultElement : result.entrySet()) {
-                    if(!S_CLASS.equals(resultElement.getKey()) && !resultElement.getKey().contains(criteriaElement.getKey())) {
-                        StudentClassCriteria first = studentClassCriteria.get(criteriaElement.getKey());
-                        StudentClassCriteria second = studentClassCriteria.get(resultElement.getKey());
+                for (Entry<String, Integer> resultElement : result.entrySet()) {
+                    if(!GenerationClass.S.toString().equals(resultElement.getKey()) && !resultElement.getKey().contains(criteriaElement.getKey())) {
+                        StudentClassCriteria first = holder.getCriteriaByGenerationClass(criteriaElement.getKey());
+                        StudentClassCriteria second = holder.getCriteriaByGenerationClass(resultElement.getKey());
 
                         try {
                             combinedClassCriteria = combineStudentClassesCriteria(first, second);
@@ -124,7 +127,7 @@ public class CriteriaAnalyser {
 
                     if (oldValue != null && combinedClassCriteria != null) {
                         String combinedClassCriteriaName = criteriaElement.getKey() + appropriate.getKey();
-                        studentClassCriteria.put(combinedClassCriteriaName, combinedClassCriteria);
+                        holder.putCombinedStudentClassCriteria(combinedClassCriteriaName, combinedClassCriteria);
 
                         if (oldValue - appropriate.getValue() == 0) {
                             result.remove(criteriaElement.getKey());
@@ -149,42 +152,12 @@ public class CriteriaAnalyser {
 
     private StudentClassCriteria combineStudentClassesCriteria(final StudentClassCriteria first, final StudentClassCriteria second)
             throws NotCombinedParameterException {
-        StudentClassCriteria result = new StudentClassCriteria
-                .StudentClassCriteriaBuilder()
-                .ageCriteria(combineAges(first.getAgeCriteria(), second.getAgeCriteria()))
-                .courseCriteria(combineCourses(first.getCourseCriteria(), second.getCourseCriteria()))
+        StudentClassCriteria result = StudentClassCriteria.newBuilder()
+                .ageCriteria(combineRangeCriteria(first.getAgeCriteria(), second.getAgeCriteria()))
+                .courseCriteria(combineRangeCriteria(first.getCourseCriteria(), second.getCourseCriteria()))
                 .studentMarksWrapperCriteria(
                         combineMarksWrappers(first.getStudentMarksWrapperCriteria(), second.getStudentMarksWrapperCriteria())
-                ).createClassCriteria();
-
-        return result;
-    }
-
-    private StudentAgeCriteria combineAges(final StudentAgeCriteria first, final StudentAgeCriteria second)
-            throws NotCombinedParameterException {
-        StudentAgeCriteria result = null;
-
-        if (first != null || second != null) {
-            if (first == null) {
-                result = second;
-            } else if (second == null) {
-                result = first;
-            } else {
-                double[] combinedAges = combineRanges(
-                        first.getMinAge(),
-                        first.getMaxAge(),
-                        second.getMinAge(),
-                        second.getMaxAge());
-
-                if (combinedAges != null) {
-                    result = new StudentAgeCriteria
-                            .StudentAgeCriteriaBuilder((int)combinedAges[MIN_INDEX], (int)combinedAges[MAX_INDEX])
-                            .createAgeCriteria();
-                } else {
-                    throw new NotCombinedParameterException(NOT_COMBINED_PARAMETER_ERR_MSG);
-                }
-            }
-        }
+                ).build();
 
         return result;
     }
@@ -198,28 +171,38 @@ public class CriteriaAnalyser {
             } else if (second == null) {
                 result = first;
             } else {
-                result = new StudentMarksWrapper
-                        .StudentMarksWrapperBuilder()
-                        .marksCriteria(combineMarksCriteria(first.getMarksCriteria(), second.getMarksCriteria()))
-                        .groupOperationsCriteria(combineGroupOperations(first.getGroupOperationsCriteria(), second.getGroupOperationsCriteria()))
-                        .createMarksWrapper();
+                result = StudentMarksWrapper
+                        .newBuilder()
+                        .marksCriteria(
+                                combineMapsCriteria(
+                                        first.getMarksCriteria(),
+                                        second.getMarksCriteria()
+                                )
+                        ).groupOperationsCriteria(
+                                combineMapsCriteria(
+                                        first.getGroupOperationsCriteria(),
+                                        second.getGroupOperationsCriteria()
+                                )
+                        )
+                        .build();
             }
         }
 
         return result;
     }
 
-    private Map<Subject, StudentMarkCriteria> combineMarksCriteria(final Map<Subject, StudentMarkCriteria> first, final Map<Subject, StudentMarkCriteria> second)
-            throws NotCombinedParameterException {
-        Map<Subject, StudentMarkCriteria> result = null;
+    private <T> Map<T, StudentRangeCriteria> combineMapsCriteria(
+            final Map<T, StudentRangeCriteria> first,
+            final Map<T, StudentRangeCriteria> second) throws NotCombinedParameterException {
+        Map<T, StudentRangeCriteria> result = null;
 
-        if (first != null || second != null) {
-            if (first == null) {
+        if (MapUtils.isNotEmpty(first) || MapUtils.isNotEmpty(second)) {
+            if (MapUtils.isEmpty(first)) {
                 result = second;
-            } else if (second == null) {
+            } else if (MapUtils.isEmpty(second)) {
                 result = first;
             } else {
-                Map<Subject, StudentMarkCriteria> search;
+                Map<T, StudentRangeCriteria> search = null;
 
                 if (first.size() <= second.size()) {
                     result = second;
@@ -229,12 +212,12 @@ public class CriteriaAnalyser {
                     search = second;
                 }
 
-                for (Map.Entry<Subject, StudentMarkCriteria> markCriteria : search.entrySet()) {
-                    if (result.containsKey(markCriteria.getKey())) {
-                        Subject subject = markCriteria.getKey();
-                        result.put(subject, combineMarks(result.get(subject), markCriteria.getValue()));
+                for (Entry<T, StudentRangeCriteria> criteria : search.entrySet()) {
+                    if (result.containsKey(criteria.getKey())) {
+                        T key = criteria.getKey();
+                        result.put(key, combineRangeCriteria(result.get(key), criteria.getValue()));
                     } else {
-                        result.put(markCriteria.getKey(), markCriteria.getValue());
+                        result.put(criteria.getKey(), criteria.getValue());
                     }
                 }
             }
@@ -243,44 +226,9 @@ public class CriteriaAnalyser {
         return result;
     }
 
-    private Map<StudentMarksWrapper.GroupOperation, StudentMarkCriteria> combineGroupOperations(
-            final Map<StudentMarksWrapper.GroupOperation, StudentMarkCriteria> first,
-            final Map<StudentMarksWrapper.GroupOperation, StudentMarkCriteria> second) throws NotCombinedParameterException {
-        Map<StudentMarksWrapper.GroupOperation, StudentMarkCriteria> result = null;
-
-        if (first != null || second != null) {
-            if (first == null) {
-                result = second;
-            } else if (second == null) {
-                result = first;
-            } else {
-                Map<StudentMarksWrapper.GroupOperation, StudentMarkCriteria> search;
-
-                if (first.size() <= second.size()) {
-                    result = second;
-                    search = first;
-                } else {
-                    result = first;
-                    search = second;
-                }
-
-                for (Map.Entry<StudentMarksWrapper.GroupOperation, StudentMarkCriteria> markCriteria : search.entrySet()) {
-                    if (result.containsKey(markCriteria.getKey())) {
-                        StudentMarksWrapper.GroupOperation groupOperation = markCriteria.getKey();
-                        result.put(groupOperation, combineMarks(result.get(groupOperation), markCriteria.getValue()));
-                    } else {
-                        result.put(markCriteria.getKey(), markCriteria.getValue());
-                    }
-                }
-            }
-        }
-
-        return result;
-    }
-
-    private StudentCourseCriteria combineCourses(final StudentCourseCriteria first, final StudentCourseCriteria second)
+    private StudentRangeCriteria combineRangeCriteria(final StudentRangeCriteria first, final StudentRangeCriteria second)
             throws NotCombinedParameterException {
-        StudentCourseCriteria result = null;
+        StudentRangeCriteria result = null;
 
         if (first != null || second != null) {
             if (first == null) {
@@ -288,45 +236,18 @@ public class CriteriaAnalyser {
             } else if (second == null) {
                 result = first;
             } else {
-                double[] combinedAges = combineRanges(
-                        first.getMinCourse(),
-                        first.getMaxCourse(),
-                        second.getMinCourse(),
-                        second.getMaxCourse());
+                double[] combined = combineRanges(
+                        first.getMin(),
+                        first.getMax(),
+                        second.getMin(),
+                        second.getMax());
 
-                if (combinedAges != null) {
-                    result = new StudentCourseCriteria
-                            .StudentCourseCriteriaBuilder((int)combinedAges[MIN_INDEX], (int)combinedAges[MAX_INDEX])
-                            .createCourseCriteria();
-                } else {
-                    throw new NotCombinedParameterException(NOT_COMBINED_PARAMETER_ERR_MSG);
-                }
-            }
-        }
-
-        return result;
-    }
-
-    private StudentMarkCriteria combineMarks(final StudentMarkCriteria first, final StudentMarkCriteria second)
-            throws NotCombinedParameterException {
-        StudentMarkCriteria result = null;
-
-        if (first != null || second != null) {
-            if (first == null) {
-                result = second;
-            } else if (second == null) {
-                result = first;
-            } else {
-                double[] combinedAges = combineRanges(
-                        first.getMinMark(),
-                        first.getMaxMark(),
-                        second.getMinMark(),
-                        second.getMaxMark());
-
-                if (combinedAges != null) {
-                    result = new StudentMarkCriteria
-                            .StudentMarkCriteriaBuilder(combinedAges[MIN_INDEX], combinedAges[MAX_INDEX])
-                            .createMarkCriteria();
+                if (combined != null) {
+                    result = StudentRangeCriteria
+                            .newBuilder()
+                            .min(combined[MIN_INDEX])
+                            .max(combined[MAX_INDEX])
+                            .build();
                 } else {
                     throw new NotCombinedParameterException(NOT_COMBINED_PARAMETER_ERR_MSG);
                 }
@@ -343,8 +264,8 @@ public class CriteriaAnalyser {
         Double max = null;
 
         if (firstMin <= secondMax && firstMax >= secondMin) {
-            min = firstMin > secondMin ? firstMin : secondMin;
-            max = firstMax < secondMax ? firstMax : secondMax;
+            min = Math.max(firstMin, secondMin);
+            max = Math.min(firstMax, secondMax);
         }
 
         if (min != null) {

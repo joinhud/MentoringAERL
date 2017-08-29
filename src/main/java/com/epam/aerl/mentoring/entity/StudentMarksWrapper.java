@@ -5,50 +5,45 @@ import com.epam.aerl.mentoring.type.Subject;
 import java.util.Map;
 
 public class StudentMarksWrapper {
-    private final Map<Subject, StudentMarkCriteria> marksCriteria;
-    private final Map<GroupOperation, StudentMarkCriteria> groupOperationsCriteria;
+    private Map<Subject, StudentRangeCriteria> marksCriteria;
+    private Map<GroupOperation, StudentRangeCriteria> groupOperationsCriteria;
 
     private StudentMarksWrapper() {
-        this.marksCriteria = null;
-        this.groupOperationsCriteria = null;
     }
 
-    private StudentMarksWrapper(final Map<Subject, StudentMarkCriteria> newMarksCriteria,
-                               final Map<GroupOperation, StudentMarkCriteria> newGroupOperationsCriteria) {
-        this.marksCriteria = newMarksCriteria;
-        this.groupOperationsCriteria = newGroupOperationsCriteria;
-    }
-
-    public Map<Subject, StudentMarkCriteria> getMarksCriteria() {
+    public Map<Subject, StudentRangeCriteria> getMarksCriteria() {
         return marksCriteria;
     }
 
-    public Map<GroupOperation, StudentMarkCriteria> getGroupOperationsCriteria() {
+    public Map<GroupOperation, StudentRangeCriteria> getGroupOperationsCriteria() {
         return groupOperationsCriteria;
     }
 
-    public static class StudentMarksWrapperBuilder {
-        private Map<Subject, StudentMarkCriteria> builderMarksCriteria;
-        private Map<GroupOperation, StudentMarkCriteria> builderGroupOperationsCriteria;
+    public static StudentMarksWrapperBuilder newBuilder() {
+        return new StudentMarksWrapper().new StudentMarksWrapperBuilder();
+    }
 
-        public StudentMarksWrapperBuilder() {
-            this.builderMarksCriteria = null;
-            this.builderGroupOperationsCriteria = null;
+    public class StudentMarksWrapperBuilder {
+        private StudentMarksWrapperBuilder() {
         }
 
-        public StudentMarksWrapperBuilder marksCriteria(final Map<Subject, StudentMarkCriteria> newMarksCriteria) {
-            this.builderMarksCriteria = newMarksCriteria;
+        public StudentMarksWrapperBuilder marksCriteria(final Map<Subject, StudentRangeCriteria> newMarksCriteria) {
+            StudentMarksWrapper.this.marksCriteria = newMarksCriteria;
             return this;
         }
 
         public StudentMarksWrapperBuilder groupOperationsCriteria(
-                final Map<GroupOperation, StudentMarkCriteria> newGroupOperationsCriteria) {
-            this.builderGroupOperationsCriteria = newGroupOperationsCriteria;
+                final Map<GroupOperation, StudentRangeCriteria> newGroupOperationsCriteria) {
+            StudentMarksWrapper.this.groupOperationsCriteria = newGroupOperationsCriteria;
             return this;
         }
 
-        public StudentMarksWrapper createMarksWrapper() {
-            return new StudentMarksWrapper(builderMarksCriteria, builderGroupOperationsCriteria);
+        public StudentMarksWrapper build() {
+            StudentMarksWrapper wrapper = new StudentMarksWrapper();
+            wrapper.marksCriteria = StudentMarksWrapper.this.marksCriteria;
+            wrapper.groupOperationsCriteria = StudentMarksWrapper.this.groupOperationsCriteria;
+
+            return wrapper;
         }
     }
 

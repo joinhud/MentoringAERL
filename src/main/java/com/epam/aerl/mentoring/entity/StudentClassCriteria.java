@@ -1,29 +1,18 @@
 package com.epam.aerl.mentoring.entity;
 
 public class StudentClassCriteria {
-    private final StudentAgeCriteria ageCriteria;
-    private final StudentCourseCriteria courseCriteria;
-    private final StudentMarksWrapper studentMarksWrapperCriteria;
+    private StudentRangeCriteria ageCriteria;
+    private StudentRangeCriteria courseCriteria;
+    private StudentMarksWrapper studentMarksWrapperCriteria;
 
     private StudentClassCriteria() {
-        this.ageCriteria = null;
-        this.courseCriteria = null;
-        this.studentMarksWrapperCriteria = null;
     }
 
-    private StudentClassCriteria(final StudentAgeCriteria newAgeCriteria,
-                                 final StudentCourseCriteria newCourseCriteria,
-                                 final StudentMarksWrapper newStudentMarksWrapperCriteria) {
-        this.ageCriteria = newAgeCriteria;
-        this.courseCriteria = newCourseCriteria;
-        this.studentMarksWrapperCriteria = newStudentMarksWrapperCriteria;
-    }
-
-    public StudentAgeCriteria getAgeCriteria() {
+    public StudentRangeCriteria getAgeCriteria() {
         return ageCriteria;
     }
 
-    public StudentCourseCriteria getCourseCriteria() {
+    public StudentRangeCriteria getCourseCriteria() {
         return courseCriteria;
     }
 
@@ -31,36 +20,38 @@ public class StudentClassCriteria {
         return studentMarksWrapperCriteria;
     }
 
-    public static class StudentClassCriteriaBuilder {
-        private StudentAgeCriteria builderAgeCriteria;
-        private StudentCourseCriteria builderCourseCriteria;
-        private StudentMarksWrapper builderStudentMarksWrapperCriteria;
+    public static StudentClassCriteriaBuilder newBuilder() {
+        return new StudentClassCriteria().new StudentClassCriteriaBuilder();
+    }
 
-        public StudentClassCriteriaBuilder() {
-            this.builderAgeCriteria = null;
-            this.builderCourseCriteria = null;
-            this.builderStudentMarksWrapperCriteria = null;
+    public class StudentClassCriteriaBuilder {
+
+        private StudentClassCriteriaBuilder() {
         }
 
-        public StudentClassCriteriaBuilder ageCriteria(final StudentAgeCriteria newAgeCriteria) {
-            this.builderAgeCriteria = newAgeCriteria;
+        public StudentClassCriteriaBuilder ageCriteria(final StudentRangeCriteria newAgeCriteria) {
+            StudentClassCriteria.this.ageCriteria = newAgeCriteria;
             return this;
         }
 
-        public StudentClassCriteriaBuilder courseCriteria(final StudentCourseCriteria newCourseCriteria) {
-            this.builderCourseCriteria = newCourseCriteria;
+        public StudentClassCriteriaBuilder courseCriteria(final StudentRangeCriteria newCourseCriteria) {
+            StudentClassCriteria.this.courseCriteria = newCourseCriteria;
             return this;
         }
 
         public StudentClassCriteriaBuilder studentMarksWrapperCriteria(
                 final StudentMarksWrapper newStudentMarksWrapperCriteria) {
-            this.builderStudentMarksWrapperCriteria = newStudentMarksWrapperCriteria;
+            StudentClassCriteria.this.studentMarksWrapperCriteria = newStudentMarksWrapperCriteria;
             return this;
         }
 
-        public StudentClassCriteria createClassCriteria() {
-            return new StudentClassCriteria(builderAgeCriteria,
-                    builderCourseCriteria, builderStudentMarksWrapperCriteria);
+        public StudentClassCriteria build() {
+            StudentClassCriteria criteria = new StudentClassCriteria();
+            criteria.ageCriteria = StudentClassCriteria.this.ageCriteria;
+            criteria.courseCriteria = StudentClassCriteria.this.courseCriteria;
+            criteria.studentMarksWrapperCriteria = StudentClassCriteria.this.studentMarksWrapperCriteria;
+
+            return criteria;
         }
     }
 }
