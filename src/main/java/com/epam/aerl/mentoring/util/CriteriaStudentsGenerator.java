@@ -10,6 +10,7 @@ import java.util.*;
 
 public class CriteriaStudentsGenerator {
     private static final int MAX_MARK = 10;
+    private static final int MIN_MARK = 0;
 
     private StudentParametersGenerator generator = new StudentParametersGenerator();
     private StudentClassCriteriaHolder holder = StudentClassCriteriaHolder.getInstance();
@@ -78,7 +79,7 @@ public class CriteriaStudentsGenerator {
     private int[] generateMarksFromAverageAlgorithm(double min, double max, final int count) {
         int[] result = null;
 
-        if (min <= count * MAX_MARK && max >= 0 && count > 0) {
+        if (min <= count * MAX_MARK && max >= MIN_MARK && count > 0) {
             result = new int[count];
 
             for (int i = 0; i < count; i++) {
@@ -88,7 +89,7 @@ public class CriteriaStudentsGenerator {
                     if (max > MAX_MARK) {
                         max -= MAX_MARK;
                     }
-                    result[i] = 0;
+                    result[i] = MAX_MARK;
                 } else {
                     result[i] = MAX_MARK;
                     min -= MAX_MARK;

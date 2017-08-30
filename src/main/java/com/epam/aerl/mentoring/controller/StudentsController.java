@@ -20,6 +20,8 @@ import java.util.Map;
 import java.util.Set;
 
 public class StudentsController {
+    private static final String INPUT_CRITERIA_STRING = "The input criteria line: ";
+
 	private static final Logger LOG = LogManager.getLogger(StudentsController.class);
 
 	private EmployersGenerator employersGenerator = new EmployersGenerator();
@@ -33,6 +35,8 @@ public class StudentsController {
 		
 		try {
             if (parsedCriteria != null) {
+            	LOG.debug(INPUT_CRITERIA_STRING + analyser.sortCriteria(parsedCriteria));
+
                 parsedCriteria = analyser.validate(parsedCriteria);
 
                 List<EmployerFilter> employers = employersGenerator.generate(generateRequirements());

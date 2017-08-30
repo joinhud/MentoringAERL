@@ -10,7 +10,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static com.epam.aerl.mentoring.entity.StudentRangeCriteria.newBuilder;
+import static com.epam.aerl.mentoring.entity.StudentClassCriteria.createClassCriteriaBuilder;
+import static com.epam.aerl.mentoring.entity.StudentMarksWrapper.createMarksWrapperBuilder;
+import static com.epam.aerl.mentoring.entity.StudentRangeCriteria.createRangeCriteriaBuilder;
 
 public class StudentClassCriteriaHolder {
     private static volatile StudentClassCriteriaHolder instance;
@@ -40,30 +42,27 @@ public class StudentClassCriteriaHolder {
 
             Map<Subject, StudentRangeCriteria> classMarksCriteria = new LinkedHashMap<>();
             classMarksCriteria.put(Subject.MATH,
-                    newBuilder().min(9).max(10).build()
+                    createRangeCriteriaBuilder().min(9).max(10).build()
             );
 
             classCriteria.put(GenerationClass.M.toString(),
-                    StudentClassCriteria
-                            .newBuilder()
+                    createClassCriteriaBuilder()
                             .studentMarksWrapperCriteria(
-                                    StudentMarksWrapper
-                                            .newBuilder()
+                                    createMarksWrapperBuilder()
                                             .marksCriteria(classMarksCriteria)
                                             .build()
                             ).build()
             );
 
             classCriteria.put(GenerationClass.Y.toString(),
-                    StudentClassCriteria
-                            .newBuilder()
+                    createClassCriteriaBuilder()
                             .ageCriteria(
-                                    newBuilder()
+                                    createRangeCriteriaBuilder()
                                             .min(18)
                                             .max(20)
                                             .build()
                             ).courseCriteria(
-                                    newBuilder()
+                                    createRangeCriteriaBuilder()
                                             .min(1)
                                             .max(4)
                                             .build()
@@ -72,33 +71,31 @@ public class StudentClassCriteriaHolder {
 
             classMarksCriteria = new LinkedHashMap<>();
             classMarksCriteria.put(Subject.MATH,
-                    newBuilder()
+                    createRangeCriteriaBuilder()
                             .min(10)
                             .max(10)
                             .build()
             );
             classMarksCriteria.put(Subject.PHILOSOPHY,
-                    newBuilder()
+                    createRangeCriteriaBuilder()
                             .min(10)
                             .max(10)
                             .build()
             );
 
             classCriteria.put(GenerationClass.P.toString(),
-                    StudentClassCriteria
-                            .newBuilder()
+                    createClassCriteriaBuilder()
                             .studentMarksWrapperCriteria(
-                                    StudentMarksWrapper
-                                            .newBuilder()
+                                    createMarksWrapperBuilder()
                                             .marksCriteria(classMarksCriteria)
                                             .build()
                             ).ageCriteria(
-                                    newBuilder()
+                                    createRangeCriteriaBuilder()
                                             .min(22)
                                             .max(24)
                                             .build()
                             ).courseCriteria(
-                                    newBuilder()
+                                    createRangeCriteriaBuilder()
                                             .min(3)
                                             .max(5)
                                             .build()
@@ -107,22 +104,20 @@ public class StudentClassCriteriaHolder {
 
             Map<StudentMarksWrapper.GroupOperation, StudentRangeCriteria> classGroupOpCriteria = new HashMap<>();
             classGroupOpCriteria.put(StudentMarksWrapper.GroupOperation.AVERAGE,
-                    newBuilder()
+                    createRangeCriteriaBuilder()
                             .min(1)
                             .max(6.4)
                             .build()
             );
 
             classCriteria.put(GenerationClass.L.toString(),
-                    StudentClassCriteria
-                            .newBuilder()
+                    createClassCriteriaBuilder()
                             .studentMarksWrapperCriteria(
-                                    StudentMarksWrapper
-                                            .newBuilder()
+                                    createMarksWrapperBuilder()
                                             .groupOperationsCriteria(classGroupOpCriteria)
                                             .build()
                             ).courseCriteria(
-                                    newBuilder()
+                                    createRangeCriteriaBuilder()
                                             .min(3)
                                             .max(5)
                                             .build()
@@ -131,41 +126,40 @@ public class StudentClassCriteriaHolder {
 
             classMarksCriteria = new LinkedHashMap<>();
             classMarksCriteria.put(Subject.PHYSICAL_EDUCATION,
-                    newBuilder()
+                    createRangeCriteriaBuilder()
                             .min(9)
                             .max(10)
                             .build()
             );
 
-            classCriteria.put(GenerationClass.B.toString(), StudentClassCriteria
-                    .newBuilder()
+            classCriteria.put(GenerationClass.B.toString(),
+                    createClassCriteriaBuilder()
                     .studentMarksWrapperCriteria(
-                            StudentMarksWrapper
-                                    .newBuilder()
+                            createMarksWrapperBuilder()
                                     .marksCriteria(classMarksCriteria)
                                     .build()
                     ).ageCriteria(
-                            newBuilder()
+                            createRangeCriteriaBuilder()
                                     .min(22)
                                     .max(24)
                                     .build()
                     ).courseCriteria(
-                            newBuilder()
+                            createRangeCriteriaBuilder()
                                     .min(3)
                                     .max(5)
                                     .build()
                     ).build()
             );
 
-            classCriteria.put(GenerationClass.O.toString(), StudentClassCriteria
-                    .newBuilder()
+            classCriteria.put(GenerationClass.O.toString(),
+                    createClassCriteriaBuilder()
                     .ageCriteria(
-                            newBuilder()
+                            createRangeCriteriaBuilder()
                                     .min(18)
                                     .max(18)
                                     .build()
                     ).courseCriteria(
-                            newBuilder()
+                            createRangeCriteriaBuilder()
                                     .min(1)
                                     .max(1)
                                     .build()
@@ -174,23 +168,22 @@ public class StudentClassCriteriaHolder {
 
             classGroupOpCriteria = new HashMap<>();
             classGroupOpCriteria.put(StudentMarksWrapper.GroupOperation.AVERAGE,
-                    newBuilder().min(7.5).max(8.5).build()
+                    createRangeCriteriaBuilder().min(7.5).max(8.5).build()
             );
 
-            classCriteria.put(GenerationClass.N.toString(), StudentClassCriteria
-                    .newBuilder()
+            classCriteria.put(GenerationClass.N.toString(),
+                    createClassCriteriaBuilder()
                     .studentMarksWrapperCriteria(
-                            StudentMarksWrapper
-                                    .newBuilder()
+                            createMarksWrapperBuilder()
                                     .groupOperationsCriteria(classGroupOpCriteria)
                                     .build()
                     ).ageCriteria(
-                            newBuilder()
+                            createRangeCriteriaBuilder()
                                     .min(22)
                                     .max(23)
                                     .build()
                     ).courseCriteria(
-                            newBuilder()
+                            createRangeCriteriaBuilder()
                                     .min(3)
                                     .max(5)
                                     .build()
@@ -199,21 +192,20 @@ public class StudentClassCriteriaHolder {
 
             classMarksCriteria = new HashMap<>();
             classMarksCriteria.put(Subject.PHYSICAL_EDUCATION,
-                    newBuilder().min(0).max(6).build()
+                    createRangeCriteriaBuilder().min(0).max(6).build()
             );
 
-            classCriteria.put(GenerationClass.I.toString(), StudentClassCriteria
-                    .newBuilder()
+            classCriteria.put(GenerationClass.I.toString(),
+                    createClassCriteriaBuilder()
                     .studentMarksWrapperCriteria(
-                            StudentMarksWrapper
-                                    .newBuilder()
+                            createMarksWrapperBuilder()
                                     .marksCriteria(classMarksCriteria)
                                     .build()
                     ).build()
             );
 
-            classCriteria.put(GenerationClass.RAND.toString().toLowerCase(), StudentClassCriteria
-                    .newBuilder()
+            classCriteria.put(GenerationClass.RAND.toString().toLowerCase(),
+                    createClassCriteriaBuilder()
                     .build()
             );
         }

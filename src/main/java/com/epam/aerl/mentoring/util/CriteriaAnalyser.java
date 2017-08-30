@@ -11,19 +11,27 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.epam.aerl.mentoring.entity.StudentClassCriteria.createClassCriteriaBuilder;
+import static com.epam.aerl.mentoring.entity.StudentMarksWrapper.createMarksWrapperBuilder;
+import static com.epam.aerl.mentoring.entity.StudentRangeCriteria.createRangeCriteriaBuilder;
 
 public class CriteriaAnalyser {
     private static final int MIN_INDEX = 0;
     private static final int MAX_INDEX = 1;
     private static final String NOT_COMBINED_PARAMETER_ERR_MSG = "Parameters cannot be combined.";
     private static final String NOT_COMBINED_HAS_CONFLICT_ERR_MSG = "Combined criteria has conflicts.";
+    private static final String NOT_NEED_TO_BE_COMBINED = "The entered criteria do not need to be combined.";
+    private static final String ATTEMPT_TO_COMBINE = "Attempt to combine the entered criteria.";
+    private static final String COMBINED_CRITERIA = "Combined criteria: ";
+    private static final String SPLITTER = " - ";
+    private static final String RESULT_CRITERIA_STRING = "Result criteria line: ";
     private static final String VALUE_REGEX = "\\d+";
-    private static final String CLASS_REGEX = "[SMYPLBONI]";
+    private static final String CLASS_REGEX = "[a-zA-Z]";
     private static final Logger LOG = LogManager.getLogger(CriteriaAnalyser.class);
 
     public Map<String, Integer> parse(final String criteria) {
@@ -49,6 +57,38 @@ public class CriteriaAnalyser {
         return result;
     }
 
+    public String sortCriteria(final Map<String, Integer> criteria) {
+        String resultString = null;
+
+        if (criteria != null) {
+            Map<String, Integer> modifiedMap = new HashMap<>(criteria);
+            modifiedMap.remove(GenerationClass.S.toString());
+
+            List<Entry<String, Integer>> list = new LinkedList<>(modifiedMap.entrySet());
+
+            Collections.sort(list, (o1, o2) -> {
+                int result = (o2.getValue()).compareTo(o1.getValue());
+
+                if (result == 0) {
+                    result = (o1.getKey()).compareTo(o2.getKey());
+                }
+
+                return result;
+            });
+
+            StringBuilder builder = new StringBuilder();
+            builder.append(criteria.get(GenerationClass.S.toString())).append(GenerationClass.S.toString());
+
+            for (Entry<String, Integer> item : list) {
+                builder.append(item.getValue()).append(item.getKey());
+            }
+
+            resultString = builder.toString();
+        }
+
+        return resultString;
+    }
+
     public Map<String, Integer> validate(final Map<String, Integer> parsedCriteria) throws StudentClassCriteriaException {
         Map<String, Integer> result = null;
 
@@ -56,11 +96,14 @@ public class CriteriaAnalyser {
             if (validateCriteriaValues(parsedCriteria)) {
                 result = parsedCriteria;
                 addRandClassCriteria(result);
+                LOG.debug(NOT_NEED_TO_BE_COMBINED);
             } else {
-                Map<String, Integer> combined = combinedPossibleCriteria(parsedCriteria);
+                LOG.debug(ATTEMPT_TO_COMBINE);
+                Map<String, Integer> combined = combinePossibleCriteria(parsedCriteria);
 
                 if (validateCriteriaValues(combined)) {
                     result = combined;
+                    LOG.debug(RESULT_CRITERIA_STRING + sortCriteria(result));
                     addRandClassCriteria(result);
                 } else {
                     throw new StudentClassCriteriaException(NOT_COMBINED_HAS_CONFLICT_ERR_MSG, ErrorMessage.CONFLICTS_INPUT_CRITERIA.getCode());
@@ -97,7 +140,7 @@ public class CriteriaAnalyser {
         criteria.put(GenerationClass.RAND.toString().toLowerCase(), totalCount - sumCriteria);
     }
 
-    private Map<String, Integer> combinedPossibleCriteria(final Map<String, Integer> criteria) {
+    private Map<String, Integer> combinePossibleCriteria(final Map<String, Integer> criteria) {
         StudentClassCriteriaHolder holder = StudentClassCriteriaHolder.getInstance();
         Map<String, Integer> result = new HashMap<>(criteria);
 
@@ -142,6 +185,8 @@ public class CriteriaAnalyser {
                             result.remove(criteriaElement.getKey());
                             result.put(combinedClassCriteriaName, oldValue);
                         }
+
+                        LOG.debug(COMBINED_CRITERIA + combinedClassCriteriaName + SPLITTER + combinedClassCriteria.toString());
                     }
                 }
             }
@@ -152,7 +197,7 @@ public class CriteriaAnalyser {
 
     private StudentClassCriteria combineStudentClassesCriteria(final StudentClassCriteria first, final StudentClassCriteria second)
             throws NotCombinedParameterException {
-        StudentClassCriteria result = StudentClassCriteria.newBuilder()
+        StudentClassCriteria result = createClassCriteriaBuilder()
                 .ageCriteria(combineRangeCriteria(first.getAgeCriteria(), second.getAgeCriteria()))
                 .courseCriteria(combineRangeCriteria(first.getCourseCriteria(), second.getCourseCriteria()))
                 .studentMarksWrapperCriteria(
@@ -171,8 +216,7 @@ public class CriteriaAnalyser {
             } else if (second == null) {
                 result = first;
             } else {
-                result = StudentMarksWrapper
-                        .newBuilder()
+                result = createMarksWrapperBuilder()
                         .marksCriteria(
                                 combineMapsCriteria(
                                         first.getMarksCriteria(),
@@ -243,8 +287,7 @@ public class CriteriaAnalyser {
                         second.getMax());
 
                 if (combined != null) {
-                    result = StudentRangeCriteria
-                            .newBuilder()
+                    result = createRangeCriteriaBuilder()
                             .min(combined[MIN_INDEX])
                             .max(combined[MAX_INDEX])
                             .build();

@@ -15,8 +15,16 @@ public class StudentRangeCriteria {
         return max;
     }
 
-    public static StudentRangeCriteriaBuilder newBuilder() {
+    public static StudentRangeCriteriaBuilder createRangeCriteriaBuilder() {
         return new StudentRangeCriteria().new StudentRangeCriteriaBuilder();
+    }
+
+    @Override
+    public String toString() {
+        return "StudentRangeCriteria{" +
+                "min=" + min +
+                ", max=" + max +
+                '}';
     }
 
     public class StudentRangeCriteriaBuilder {

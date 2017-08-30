@@ -20,8 +20,17 @@ public class StudentClassCriteria {
         return studentMarksWrapperCriteria;
     }
 
-    public static StudentClassCriteriaBuilder newBuilder() {
+    public static StudentClassCriteriaBuilder createClassCriteriaBuilder() {
         return new StudentClassCriteria().new StudentClassCriteriaBuilder();
+    }
+
+    @Override
+    public String toString() {
+        return "StudentClassCriteria{" +
+                "ageCriteria=" + ageCriteria +
+                ", courseCriteria=" + courseCriteria +
+                ", studentMarksWrapperCriteria=" + studentMarksWrapperCriteria +
+                '}';
     }
 
     public class StudentClassCriteriaBuilder {

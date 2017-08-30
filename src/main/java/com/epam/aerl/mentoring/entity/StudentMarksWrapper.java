@@ -19,8 +19,16 @@ public class StudentMarksWrapper {
         return groupOperationsCriteria;
     }
 
-    public static StudentMarksWrapperBuilder newBuilder() {
+    public static StudentMarksWrapperBuilder createMarksWrapperBuilder() {
         return new StudentMarksWrapper().new StudentMarksWrapperBuilder();
+    }
+
+    @Override
+    public String toString() {
+        return "StudentMarksWrapper{" +
+                "marksCriteria=" + marksCriteria +
+                ", groupOperationsCriteria=" + groupOperationsCriteria +
+                '}';
     }
 
     public class StudentMarksWrapperBuilder {
