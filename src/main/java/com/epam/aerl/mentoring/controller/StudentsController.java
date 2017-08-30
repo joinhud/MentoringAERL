@@ -4,6 +4,7 @@ import com.epam.aerl.mentoring.entity.Student;
 import com.epam.aerl.mentoring.exception.ServiceException;
 import com.epam.aerl.mentoring.exception.StudentClassCriteriaException;
 import com.epam.aerl.mentoring.filter.EmployerFilter;
+import com.epam.aerl.mentoring.service.SerializableStudentsService;
 import com.epam.aerl.mentoring.service.StudentsService;
 import com.epam.aerl.mentoring.type.EmployerType;
 import com.epam.aerl.mentoring.type.ErrorMessage;
@@ -29,18 +30,24 @@ public class StudentsController {
 	private StudentsService service = new StudentsService();
 	private Printer printer = new Printer();
 	private CriteriaAnalyser analyser = new CriteriaAnalyser();
+	private SerializableStudentsService serializableService = new SerializableStudentsService();
 
 	public void takeStudents(String criteriaString) {
         Map<String, Integer> parsedCriteria = analyser.parse(criteriaString);
 		
 		try {
             if (parsedCriteria != null) {
-            	LOG.debug(INPUT_CRITERIA_STRING + analyser.sortCriteria(parsedCriteria));
-
-                parsedCriteria = analyser.validate(parsedCriteria);
+                criteriaString = analyser.sortCriteria(parsedCriteria);
+            	LOG.debug(INPUT_CRITERIA_STRING + criteriaString);
 
                 List<EmployerFilter> employers = employersGenerator.generate(generateRequirements());
-                List<Student> students = criteriaStudentsGenerator.generateStudents(parsedCriteria);
+                List<Student> students = serializableService.getStudentsList(criteriaString);
+
+                if (students == null) {
+                    parsedCriteria = analyser.validate(parsedCriteria);
+                    students = criteriaStudentsGenerator.generateStudents(parsedCriteria);
+                    serializableService.writeStudentsList(students, criteriaString);
+                }
 
                 service.takeStudentsFromUniversity(employers, students);
             }
