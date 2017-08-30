@@ -20,10 +20,16 @@ public class CompanyDirectorFilter extends EmployerFilter {
 	
 	@Override
 	public boolean checkCriteria(final Student student) {
-		return checkHighestScore(student) 
-				|| checkStudentsAge(student.getAge()) 
-				&& checkStudentsCourse(student.getCourse())
-				&& checkStudentsAverageSciencesMark(student);
+	    boolean result = false;
+
+	    if (student != null) {
+	        result = checkHighestScore(student)
+                    || checkStudentsAge(student.getAge())
+                    && checkStudentsCourse(student.getCourse())
+                    && checkStudentsAverageSciencesMark(student);
+        }
+
+		return result;
 	}
 
 	@Override

@@ -1,7 +1,5 @@
 package com.epam.aerl.mentoring.service;
 
-import java.util.List;
-
 import com.epam.aerl.mentoring.entity.Student;
 import com.epam.aerl.mentoring.exception.ServiceException;
 import com.epam.aerl.mentoring.filter.EmployerFilter;
@@ -10,6 +8,10 @@ import com.epam.aerl.mentoring.util.Printer;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.List;
+
+import static java.util.Collections.singleton;
 
 public class StudentsService {
 	private static final String CAPTION = "Remaining students:";
@@ -34,13 +36,14 @@ public class StudentsService {
 	private void printRemainStudents(final List<Student> students) {
 		printer.printCaption(CAPTION);
 		LOG.debug(REMAIN_LOG_MESSAGE, students.size());
-		
+		students.removeAll(singleton(null));
+
 		for(Student student : students) {
 			printer.printStudentData(student);
 			LOG.debug(student);
 		}
 
-		printer.printEnder();
+		printer.printEnding();
 	}
 	
 }

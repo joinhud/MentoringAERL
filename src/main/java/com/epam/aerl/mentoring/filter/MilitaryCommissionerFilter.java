@@ -22,7 +22,13 @@ public class MilitaryCommissionerFilter extends EmployerFilter {
 	
 	@Override
 	public boolean checkCriteria(final Student student) {
-		return checkFirstYearStudent(student) || checkFifthYearStudent(student);
+		boolean result = false;
+
+		if (student != null) {
+		    result = checkFirstYearStudent(student) || checkFifthYearStudent(student);
+        }
+
+		return result;
 	}
 
 	@Override
