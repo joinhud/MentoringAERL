@@ -55,7 +55,7 @@ public class StudentsController {
 		    LOG.error(e);
 			printer.printErrorMessage(ErrorMessage.getByCode(e.getCode()));
 		} catch (StudentClassCriteriaException e) {
-		    LOG.error(e);
+		    LOG.info(e);
 		    printer.printErrorMessage(ErrorMessage.getByCode(e.getCode()));
         }
 	}

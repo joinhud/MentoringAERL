@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Random;
 
 import com.epam.aerl.mentoring.entity.Student;
 import com.epam.aerl.mentoring.exception.BusinessLogicException;
@@ -37,7 +36,7 @@ public class RandomStudentsGenerator {
 			PROPERTIES.load(new FileInputStream("src/main/resources/students.properties"));
 		} catch (IOException e) {
 			LOG.error(e);
-			throw new BusinessLogicException(ErrorMessage.PROPERTIES_FILE_ERROR.getCode(), PROPERTY_FILE_ERR_MSG, e);
+			throw new BusinessLogicException(ErrorMessage.FILE_ERROR.getCode(), PROPERTY_FILE_ERR_MSG, e);
 		}
 	}
 

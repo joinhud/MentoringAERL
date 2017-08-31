@@ -2,6 +2,8 @@ package com.epam.aerl.mentoring.service;
 
 import com.epam.aerl.mentoring.entity.Student;
 import com.epam.aerl.mentoring.entity.StudentsWrapper;
+import com.epam.aerl.mentoring.exception.ServiceException;
+import com.epam.aerl.mentoring.type.ErrorMessage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,11 +17,12 @@ import static com.epam.aerl.mentoring.entity.StudentsWrapper.createStudentsWrapp
 public class SerializableStudentsService {
     private static final String PATH = "data/";
     private static final String EXT = ".stu";
-    private static final int MAX_ALIVE = 2;
+    private static final String STORING_FILE_ERROR_MSG = "Can not get access to file for storing wrapper data";
+    private static final int MAX_ALIVE_DAYS = 2;
 
     private static final Logger LOG = LogManager.getLogger(SerializableStudentsService.class);
 
-    public List<Student> getStudentsList(final String criteriaLine) {
+    public List<Student> getStudentsList(final String criteriaLine) throws ServiceException {
         List<Student> result = null;
 
         if (criteriaLine != null) {
@@ -29,41 +32,60 @@ public class SerializableStudentsService {
                 StudentsWrapper wrapper = (StudentsWrapper) in.readObject();
 
                 Calendar diff = Calendar.getInstance();
-                diff.setTimeInMillis(new Date().getTime() - wrapper.getDate().getTime());
-                int days = diff.get(Calendar.DAY_OF_YEAR);
+                Calendar old = Calendar.getInstance();
+                diff.setTime(new Date());
+                old.setTime(wrapper.getDate());
+                diff.setTimeInMillis(diff.getTimeInMillis() - old.getTimeInMillis());
 
-                if (days < MAX_ALIVE) {
+                if (diff.get(Calendar.DAY_OF_YEAR) < MAX_ALIVE_DAYS) {
                     result = wrapper.getStudents();
                 }
             } catch (IOException | ClassNotFoundException e) {
-                LOG.error(e);
+                LOG.info(e);
+                throw new ServiceException(ErrorMessage.FILE_ERROR.getCode(), STORING_FILE_ERROR_MSG, e);
             }
         }
 
         return result;
     }
 
-    public void writeStudentsList(final List<Student> students, final String criteriaLine) {
-        if (students != null) {
+    public void writeStudentsList(final List<Student> students, final String criteriaLine) throws ServiceException {
+        if (students != null && criteriaLine != null) {
+            FileOutputStream fileOutputStream = null;
+            ObjectOutputStream out = null;
+
             try {
                 final File dir = new File(PATH);
                 dir.mkdir();
                 final File file = new File(PATH + criteriaLine + EXT);
                 file.createNewFile();
-                final FileOutputStream fileOutputStream = new FileOutputStream(file, false);
-                final ObjectOutputStream out = new ObjectOutputStream(fileOutputStream);
+
+                fileOutputStream = new FileOutputStream(file, false);
+                out = new ObjectOutputStream(fileOutputStream);
 
                 StudentsWrapper wrapper = createStudentsWrapper()
                         .name(criteriaLine)
                         .date(new Date())
                         .students(students)
                         .build();
-                
+
                 out.writeObject(wrapper);
-                fileOutputStream.close();
-                out.close();
             } catch (IOException e) {
-                LOG.error(e);
+                LOG.info(e);
+                throw new ServiceException(ErrorMessage.FILE_ERROR.getCode(), STORING_FILE_ERROR_MSG, e);
+            } finally {
+                try {
+                    if (fileOutputStream != null) {
+                        fileOutputStream.close();
+                    }
+
+                    if (out != null) {
+                        out.close();
+                    }
+                } catch (IOException e) {
+                    LOG.info(e);
+                    throw new ServiceException(ErrorMessage.FILE_ERROR.getCode(), STORING_FILE_ERROR_MSG, e);
+                }
             }
         }
     }
