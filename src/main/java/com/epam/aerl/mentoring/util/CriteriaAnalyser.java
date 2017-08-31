@@ -115,29 +115,38 @@ public class CriteriaAnalyser {
     }
 
     private boolean validateCriteriaValues(final Map<String, Integer> criteria) {
-        final int totalCount = criteria.get(GenerationClass.S.toString());
-        int sumCriteria = 0;
+        boolean result = false;
+        final Integer totalCount = criteria.get(GenerationClass.S.toString());
 
-        for (Entry<String, Integer> criteriaElement : criteria.entrySet()) {
-            if (!criteriaElement.getKey().equals(GenerationClass.S.toString())) {
-                sumCriteria += criteriaElement.getValue();
+        if (totalCount != null) {
+            int sumCriteria = 0;
+
+            for (Entry<String, Integer> criteriaElement : criteria.entrySet()) {
+                if (!criteriaElement.getKey().equals(GenerationClass.S.toString())) {
+                    sumCriteria += criteriaElement.getValue();
+                }
             }
+
+            result = totalCount - sumCriteria >= 0;
         }
 
-        return totalCount - sumCriteria >= 0;
+        return result;
     }
 
     private void addRandClassCriteria(final Map<String, Integer> criteria) {
-        final int totalCount = criteria.get(GenerationClass.S.toString());
-        int sumCriteria = 0;
+        final Integer totalCount = criteria.get(GenerationClass.S.toString());
 
-        for (Entry<String, Integer> criteriaElement : criteria.entrySet()) {
-            if (!criteriaElement.getKey().equals(GenerationClass.S.toString())) {
-                sumCriteria += criteriaElement.getValue();
+        if (totalCount != null) {
+            int sumCriteria = 0;
+
+            for (Entry<String, Integer> criteriaElement : criteria.entrySet()) {
+                if (!criteriaElement.getKey().equals(GenerationClass.S.toString())) {
+                    sumCriteria += criteriaElement.getValue();
+                }
             }
-        }
 
-        criteria.put(GenerationClass.RAND.toString().toLowerCase(), totalCount - sumCriteria);
+            criteria.put(GenerationClass.RAND.toString().toLowerCase(), totalCount - sumCriteria);
+        }
     }
 
     private Map<String, Integer> combinePossibleCriteria(final Map<String, Integer> criteria) {
@@ -197,12 +206,16 @@ public class CriteriaAnalyser {
 
     private StudentClassCriteria combineStudentClassesCriteria(final StudentClassCriteria first, final StudentClassCriteria second)
             throws NotCombinedParameterException {
-        StudentClassCriteria result = createClassCriteriaBuilder()
-                .ageCriteria(combineRangeCriteria(first.getAgeCriteria(), second.getAgeCriteria()))
-                .courseCriteria(combineRangeCriteria(first.getCourseCriteria(), second.getCourseCriteria()))
-                .studentMarksWrapperCriteria(
-                        combineMarksWrappers(first.getStudentMarksWrapperCriteria(), second.getStudentMarksWrapperCriteria())
-                ).build();
+        StudentClassCriteria result = null;
+
+        if (first != null && second != null) {
+            result = createClassCriteriaBuilder()
+                    .ageCriteria(combineRangeCriteria(first.getAgeCriteria(), second.getAgeCriteria()))
+                    .courseCriteria(combineRangeCriteria(first.getCourseCriteria(), second.getCourseCriteria()))
+                    .studentMarksWrapperCriteria(
+                            combineMarksWrappers(first.getStudentMarksWrapperCriteria(), second.getStudentMarksWrapperCriteria())
+                    ).build();
+        }
 
         return result;
     }

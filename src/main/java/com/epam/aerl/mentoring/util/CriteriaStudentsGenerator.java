@@ -24,10 +24,14 @@ public class CriteriaStudentsGenerator {
             students = new ArrayList<>();
 
             for (Map.Entry<String, Integer> parameter : criteria.entrySet()) {
-                if (!parameter.getKey().equals(GenerationClass.S.toString())) {
-                    for (int i = 0; i < parameter.getValue(); i++) {
-                        Student student = generate(holder.getStudentClassCriteria().get(parameter.getKey()));
-                        students.add(student);
+                if (parameter.getKey() != null && !parameter.getKey().equals(GenerationClass.S.toString())) {
+                    Integer count = parameter.getValue();
+
+                    if (count != null) {
+                        for (int i = 0; i < count; i++) {
+                            Student student = generate(holder.getStudentClassCriteria().get(parameter.getKey()));
+                            students.add(student);
+                        }
                     }
                 }
             }

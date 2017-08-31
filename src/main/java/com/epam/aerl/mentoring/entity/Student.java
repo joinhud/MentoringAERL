@@ -45,7 +45,27 @@ public class Student implements Serializable {
 		this.marks = marks;
 	}
 
-	@Override
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Student student = (Student) o;
+
+        if (age != student.age) return false;
+        if (course != student.course) return false;
+        return marks != null ? marks.equals(student.marks) : student.marks == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = age;
+        result = 31 * result + course;
+        result = 31 * result + (marks != null ? marks.hashCode() : 0);
+        return result;
+    }
+
+    @Override
 	public String toString() {
 		return "Student [age=" + age + ", course=" + course + ", marks=" + marks + "]";
 	}

@@ -20,4 +20,6 @@ jar {
 dependencies {
     compile log4j
     compile apacheCollections
+    testCompile jUnit
+    testCompile mockito
 }
