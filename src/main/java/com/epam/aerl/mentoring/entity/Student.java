@@ -1,10 +1,11 @@
 package com.epam.aerl.mentoring.entity;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import com.epam.aerl.mentoring.type.Subject;
 
-public class Student {
+public class Student implements Serializable {
 	private int age;
 	private int course;
 	private Map<Subject, Integer> marks;

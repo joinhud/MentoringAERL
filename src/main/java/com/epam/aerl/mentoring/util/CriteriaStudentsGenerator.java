@@ -4,6 +4,7 @@ import com.epam.aerl.mentoring.entity.Student;
 import com.epam.aerl.mentoring.entity.StudentClassCriteria;
 import com.epam.aerl.mentoring.entity.StudentMarksWrapper.GroupOperation;
 import com.epam.aerl.mentoring.entity.StudentRangeCriteria;
+import com.epam.aerl.mentoring.type.GenerationClass;
 import com.epam.aerl.mentoring.type.Subject;
 
 import java.util.*;
@@ -23,9 +24,11 @@ public class CriteriaStudentsGenerator {
             students = new ArrayList<>();
 
             for (Map.Entry<String, Integer> parameter : criteria.entrySet()) {
-                for (int i = 0; i < parameter.getValue(); i++) {
-                    Student student = generate(holder.getStudentClassCriteria().get(parameter.getKey()));
-                    students.add(student);
+                if (!parameter.getKey().equals(GenerationClass.S.toString())) {
+                    for (int i = 0; i < parameter.getValue(); i++) {
+                        Student student = generate(holder.getStudentClassCriteria().get(parameter.getKey()));
+                        students.add(student);
+                    }
                 }
             }
         }

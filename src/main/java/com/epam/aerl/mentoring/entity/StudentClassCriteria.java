@@ -26,11 +26,26 @@ public class StudentClassCriteria {
 
     @Override
     public String toString() {
-        return "StudentClassCriteria{" +
-                "ageCriteria=" + ageCriteria +
-                ", courseCriteria=" + courseCriteria +
-                ", studentMarksWrapperCriteria=" + studentMarksWrapperCriteria +
-                '}';
+        String result = "StudentClassCriteria{";
+        StringBuilder builder = new StringBuilder(result);
+
+        if (ageCriteria != null) {
+            builder.append("ageCriteria=").append(ageCriteria);
+        }
+
+        if (courseCriteria != null) {
+            builder.append(", courseCriteria=").append(courseCriteria);
+        }
+
+        if (studentMarksWrapperCriteria != null) {
+            builder.append(", studentMarksWrapperCriteria=").append(studentMarksWrapperCriteria);
+        }
+
+        builder.append('}');
+
+        result = builder.toString();
+
+        return result;
     }
 
     public class StudentClassCriteriaBuilder {

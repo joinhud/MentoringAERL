@@ -25,10 +25,22 @@ public class StudentMarksWrapper {
 
     @Override
     public String toString() {
-        return "StudentMarksWrapper{" +
-                "marksCriteria=" + marksCriteria +
-                ", groupOperationsCriteria=" + groupOperationsCriteria +
-                '}';
+        String result = "StudentMarksWrapper{";
+        StringBuilder builder = new StringBuilder(result);
+
+        if (marksCriteria != null) {
+            builder.append("marksCriteria=").append(marksCriteria);
+        }
+
+        if (groupOperationsCriteria != null) {
+            builder.append(", groupOperationsCriteria=").append(groupOperationsCriteria);
+        }
+
+        builder.append('}');
+
+        result = builder.toString();
+
+        return result;
     }
 
     public class StudentMarksWrapperBuilder {
