@@ -32,24 +32,33 @@ public class CriteriaAnalyser {
     private static final String RESULT_CRITERIA_STRING = "Result criteria line: ";
     private static final String VALUE_REGEX = "\\d+";
     private static final String CLASS_REGEX = "[a-zA-Z]";
+    private static final String WHITESPACE = "\\h*";
+    private static final String OPEN_GROUP = "(";
+    private static final String CLOSE_GROUP = ")+";
     private static final Logger LOG = LogManager.getLogger(CriteriaAnalyser.class);
 
-    public Map<String, Integer> parse(final String criteria) {
+    public Map<String, Integer> parse(final String input) {
         Map<String, Integer> result = null;
 
-        if (criteria != null) {
+        if (input != null) {
             result = new HashMap<>();
 
-            final Pattern pattern = Pattern.compile(VALUE_REGEX + CLASS_REGEX);
-            final Matcher matcher = pattern.matcher(criteria);
+            Pattern pattern = Pattern.compile(WHITESPACE + OPEN_GROUP + VALUE_REGEX + CLASS_REGEX + CLOSE_GROUP + WHITESPACE);
+            Matcher matcher = pattern.matcher(input);
 
-            while (matcher.find()) {
-                final String classCriteria = matcher.group();
-                final String studentClass = parseStudentClass(classCriteria);
-                final Integer studentClassValue = parseStudentClassValue(classCriteria);
+            if (matcher.find()) {
+                final String criteria = matcher.group();
+                pattern = Pattern.compile(VALUE_REGEX + CLASS_REGEX);
+                matcher = pattern.matcher(criteria);
 
-                if (studentClass != null && studentClassValue != null) {
-                    result.put(studentClass, studentClassValue);
+                while (matcher.find()) {
+                    final String classCriteria = matcher.group();
+                    final String studentClass = parseStudentClass(classCriteria);
+                    final Integer studentClassValue = parseStudentClassValue(classCriteria);
+
+                    if (studentClass != null && studentClassValue != null) {
+                        result.put(studentClass, studentClassValue);
+                    }
                 }
             }
         }
@@ -60,7 +69,7 @@ public class CriteriaAnalyser {
     public String sortCriteria(final Map<String, Integer> criteria) {
         String resultString = null;
 
-        if (criteria != null) {
+        if (MapUtils.isNotEmpty(criteria)) {
             Map<String, Integer> modifiedMap = new HashMap<>(criteria);
             modifiedMap.remove(GenerationClass.S.toString());
 

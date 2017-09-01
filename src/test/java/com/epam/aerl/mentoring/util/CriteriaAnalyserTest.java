@@ -1,15 +1,22 @@
 package com.epam.aerl.mentoring.util;
 
 import com.epam.aerl.mentoring.exception.StudentClassCriteriaException;
-import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.*;
+
 public class CriteriaAnalyserTest {
-    private CriteriaAnalyser analyser;
+    private CriteriaAnalyser analyser = null;
+
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
 
     @Before
     public void setUp() {
@@ -17,137 +24,213 @@ public class CriteriaAnalyserTest {
     }
 
     @Test
-    public void parseNullParameterTest() {
-        String param = null;
-        Map<String, Integer> actual = analyser.parse(param);
+    public void testParse_NullCriteria() {
+        // Given
+        final Map<String, Integer> expectedResult = null;
+        final String nullInputString = null;
 
-        Assert.assertNull(actual);
+        // When
+        final Map<String, Integer> actualResult = analyser.parse(nullInputString);
+
+        // Then
+        assertThat(actualResult, is(expectedResult));
     }
 
     @Test
-    public void parseNotNullParameterTest() {
-        String param = new String();
-        Map<String, Integer> actual = analyser.parse(param);
+    public void testParse_EmptyCriteria() {
+        // Given
+        final Map<String, Integer> expectedResult = new HashMap<>();
 
-        Assert.assertNotNull(actual);
+        // When
+        final Map<String, Integer> actualResult = analyser.parse(inputString(new String()));
+
+        // Then
+        assertThat(actualResult, is(expectedResult));
     }
 
     @Test
-    public void parseInappropriateParameterTest() {
-        String param = "-123-=12=32~12!212!NM2^@3#3$4%5^6&7*8(09-+_//8{[f]}f:f;f\'A2\\E2";
-        Map<String, Integer> result = analyser.parse(param);
-        int actual = result.size();
-        int expected = 0;
+    public void testParse_InappropriateCriteria() {
+        // Given
+        final String inappropriateInputString = "-123-=12=32~12!212!NM2^@3#3$4%5^6&7*8(09-+_//8{[f]}f:f;f\'A2\\E2";
+        final Map<String, Integer> expectedResult = new HashMap<>();
 
-        Assert.assertEquals(expected, actual);
+        // When
+        final Map<String, Integer> actualResult = analyser.parse(inappropriateInputString);
+
+        // Then
+        assertThat(actualResult, is(expectedResult));
     }
 
     @Test
-    public void parsePartiallyAppropriateParameterTest() {
-        String param = "asjdbaskdjbasd---++213217|||45S,,sa;2C";
-        Map<String, Integer> result = analyser.parse(param);
-        int actual = result.size();
-        int expected = 2;
+    public void testParse_PartiallyAppropriateParameter() {
+        // Given
+        final String partiallyAppropriateInputString = "asjdba%%%skdjbasd---++213217||| 45S2c ,,sa;";
+        final Map<String, Integer> expectedResult = new HashMap<>();
+        expectedResult.put(criteriaName("S"), countOfGeneration(45));
+        expectedResult.put(criteriaName("c"), countOfGeneration(2));
 
-        Assert.assertEquals(expected, actual);
+        // When
+        final Map<String, Integer> actualResult = analyser.parse(partiallyAppropriateInputString);
+
+        // Then
+        assertThat(actualResult, is(expectedResult));
     }
 
     @Test
-    public void parseAppropriateParameterTest() {
-        String param = "78D90S67V9c45a77p";
-        Map<String, Integer> result = analyser.parse(param);
-        int actual = result.size();
-        int expected = 6;
+    public void testParse_AppropriateParameter() {
+        // Given
+        final String appropriateInputString = "78D90S67V9c45a77p";
+        final Map<String, Integer> expectedResult = new HashMap<>();
+        expectedResult.put(criteriaName("D"), countOfGeneration(78));
+        expectedResult.put(criteriaName("S"), countOfGeneration(90));
+        expectedResult.put(criteriaName("V"), countOfGeneration(67));
+        expectedResult.put(criteriaName("c"), countOfGeneration(9));
+        expectedResult.put(criteriaName("a"), countOfGeneration(45));
+        expectedResult.put(criteriaName("p"), countOfGeneration(77));
 
-        Assert.assertEquals(expected, actual);
+        // When
+        final Map<String, Integer> actualResult = analyser.parse(appropriateInputString);
+
+        // Then
+        assertThat(actualResult, is(expectedResult));
     }
 
     @Test
-    public void sortCriteriaNullParameterTest() {
-        Map<String, Integer> criteria = null;
-        String actual = analyser.sortCriteria(criteria);
+    public void testSort_NullCriteria() {
+        // Given
+        final Map<String, Integer> nullCriteria = null;
+        final String expectedResult = null;
 
-        Assert.assertNull(actual);
+        // When
+        final String actualResult = analyser.sortCriteria(nullCriteria);
+
+        // Then
+        assertThat(actualResult, is(expectedResult));
     }
 
     @Test
-    public void sortCriteriaNotNullParameterTest() {
-        Map<String, Integer> criteria = new HashMap<>();
-        String actual = analyser.sortCriteria(criteria);
+    public void testSort_EmptyCriteria() {
+        // Given
+        final String expectedResult = null;
 
-        Assert.assertNotNull(actual);
+        // When
+        final String actual = analyser.sortCriteria(criteria(new HashMap<>()));
+
+        // Then
+        assertThat(actual, is(expectedResult));
     }
 
     @Test
-    public void sortCriteriaCorrectTest() {
-        Map<String, Integer> criteria = new HashMap<>();
-        criteria.put("a", 34);
-        criteria.put("L", 55);
-        criteria.put("S", 23);
-        criteria.put("l", 34);
-        String expected = "23S55L34a34l";
-        String actual = analyser.sortCriteria(criteria);
+    public void testSort_CorrectCriteria() {
+        // Given
+        final String expectedResult = "23S55L34a34l";
+        final Map<String, Integer> correctCriteria = new HashMap<>();
+        correctCriteria.put(criteriaName("a"), countOfGeneration(34));
+        correctCriteria.put(criteriaName("L"), countOfGeneration(55));
+        correctCriteria.put(criteriaName("S"), countOfGeneration(23));
+        correctCriteria.put(criteriaName("l"), countOfGeneration(34));
 
-        Assert.assertEquals(expected, actual);
+        // When
+        final String actualResult = analyser.sortCriteria(correctCriteria);
+
+        // Then
+        assertThat(actualResult, is(expectedResult));
     }
 
     @Test
-    public void validateNullParameterTest() throws Exception {
-        Map<String, Integer> criteria = null;
-        Map<String, Integer> actual = analyser.validate(criteria);
+    public void testValidate_NullParameter() throws Exception {
+        // Given
+        final Map<String, Integer> nullCriteria = null;
+        final Map<String, Integer> expectedResult = null;
 
-        Assert.assertNull(actual);
-    }
+        // When
+        final Map<String, Integer> actualResult = analyser.validate(nullCriteria);
 
-    @Test(expected = StudentClassCriteriaException.class)
-    public void validateInappropriateParameterTest() throws Exception {
-        Map<String, Integer> criteria = new HashMap<>();
-        criteria.put("123", 123);
-        criteria.put("tt", 555);
-        criteria.put("--", null);
-        Map<String, Integer> actual = analyser.validate(criteria);
-
-        Assert.assertNull(actual);
+        // Then
+        assertThat(actualResult, is(expectedResult));
     }
 
     @Test
-    public void validateCombinedCriteriaTest() throws Exception {
-        Map<String, Integer> criteria = new HashMap<>();
-        criteria.put("S", 10);
-        criteria.put("M", 10);
-        criteria.put("P", 5);
-        Map<String, Integer> expected = new HashMap<>();
-        expected.put("rand", 0);
-        expected.put("S", 10);
-        expected.put("PM", 5);
-        expected.put("M", 5);
+    public void testValidate_InappropriateParameter() throws Exception {
+        // Given
+        final Map<String, Integer> inappropriateCriteria = new HashMap<>();
+        inappropriateCriteria.put(criteriaName("123"), countOfGeneration(123));
+        inappropriateCriteria.put(criteriaName("tt"), countOfGeneration(555));
+        inappropriateCriteria.put(criteriaName("--"), countOfGeneration(null));
 
-        Map<String, Integer> actual = analyser.validate(criteria);
+        // Expect
+        exception.expect(StudentClassCriteriaException.class);
 
-        Assert.assertEquals(expected, actual);
-    }
-
-    @Test(expected = StudentClassCriteriaException.class)
-    public void validateNotCombinedCriteriaTest() throws Exception {
-        Map<String, Integer> criteria = new HashMap<>();
-        criteria.put("S", 10);
-        criteria.put("B", 6);
-        criteria.put("Y", 6);
-        Map<String, Integer> actual = analyser.validate(criteria);
-
-        Assert.assertNull(actual);
+        // When
+        analyser.validate(inappropriateCriteria);
     }
 
     @Test
-    public void validateNotRequiringCombinationTest() throws Exception {
-        Map<String, Integer> criteria = new HashMap<>();
-        criteria.put("S", 10);
-        criteria.put("B", 2);
-        criteria.put("Y", 2);
-        Map<String, Integer> expected = new HashMap<>(criteria);
-        expected.put("rand", 6);
-        Map<String, Integer> actual = analyser.validate(criteria);
+    public void testValidate_CombinedCriteria() throws Exception {
+        // Given
+        final Map<String, Integer> combinedCriteria = new HashMap<>();
+        combinedCriteria.put(criteriaName("S"), countOfGeneration(10));
+        combinedCriteria.put(criteriaName("M"), countOfGeneration(10));
+        combinedCriteria.put(criteriaName("P"), countOfGeneration(5));
+        final Map<String, Integer> expectedResult = new HashMap<>();
+        expectedResult.put(criteriaName("rand"), countOfGeneration(0));
+        expectedResult.put(criteriaName("S"), countOfGeneration(10));
+        expectedResult.put(criteriaName("PM"), countOfGeneration(5));
+        expectedResult.put(criteriaName("M"), countOfGeneration(5));
 
-        Assert.assertEquals(expected, actual);
+        // When
+        final Map<String, Integer> actualResult = analyser.validate(combinedCriteria);
+
+        // Then
+        assertThat(actualResult, is(expectedResult));
+    }
+
+    @Test
+    public void testValidate_NotCombinedCriteria() throws Exception {
+        // Given
+        final Map<String, Integer> notCombinedCriteria = new HashMap<>();
+        notCombinedCriteria.put("S", 10);
+        notCombinedCriteria.put("B", 6);
+        notCombinedCriteria.put("Y", 6);
+
+        // Expect
+        exception.expect(StudentClassCriteriaException.class);
+
+        // When
+        analyser.validate(notCombinedCriteria);
+    }
+
+    @Test
+    public void testValidate_NotRequiringCombination() throws Exception {
+        // Given
+        final Map<String, Integer> notRequiringCombinationCriteria = new HashMap<>();
+        notRequiringCombinationCriteria.put("S", 10);
+        notRequiringCombinationCriteria.put("B", 2);
+        notRequiringCombinationCriteria.put("Y", 2);
+
+        final Map<String, Integer> expectedResult = new HashMap<>(notRequiringCombinationCriteria);
+        expectedResult.put("rand", 6);
+
+        // When
+        final Map<String, Integer> actualResult = analyser.validate(notRequiringCombinationCriteria);
+
+        // Then
+        assertThat(actualResult, is(expectedResult));
+    }
+
+    private String inputString(final String input) {
+        return input;
+    }
+
+    private String criteriaName(final String criteriaName) {
+        return criteriaName;
+    }
+
+    private Integer countOfGeneration(final Integer count) {
+        return count;
+    }
+
+    private Map<String, Integer> criteria(final Map<String, Integer> criteria) {
+        return criteria;
     }
 }

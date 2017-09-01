@@ -22,4 +22,5 @@ dependencies {
     compile apacheCollections
     testCompile jUnit
     testCompile mockito
+    testCompile hamcrest
 }
