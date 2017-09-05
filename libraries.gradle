@@ -4,5 +4,8 @@ ext {
     jUnit = 'junit:junit:4.12'
     mockito = 'org.mockito:mockito-core:2.8.47'
     hamcrest = 'org.hamcrest:hamcrest-all:1.3'
+    springContext = 'org.springframework:spring-context:4.3.10.RELEASE'
+    springContextSuppot = 'org.springframework:spring-context-support:4.3.10.RELEASE'
+    springEl = 'org.springframework:spring-expression:4.3.10.RELEASE'
 
 }

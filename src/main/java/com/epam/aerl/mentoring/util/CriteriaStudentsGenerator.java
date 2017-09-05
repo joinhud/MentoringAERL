@@ -6,22 +6,32 @@ import com.epam.aerl.mentoring.entity.StudentMarksWrapper.GroupOperation;
 import com.epam.aerl.mentoring.entity.StudentRangeCriteria;
 import com.epam.aerl.mentoring.type.GenerationClass;
 import com.epam.aerl.mentoring.type.Subject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+@Component("criteriaStudentsGenerator")
 public class CriteriaStudentsGenerator {
-    private static final int MAX_MARK = 10;
-    private static final int MIN_MARK = 0;
-
+    @Autowired
+    @Qualifier("studentParametersGenerator")
     private StudentParametersGenerator generator;
-    private StudentClassCriteriaHolder holder;
+
+    @Autowired
+    @Qualifier("studentClassCriteriaHolder")
+    private StudentClassCriteriaHolder studentClassCriteriaHolder;
+
+    @Autowired
+    @Qualifier("studentPropertiesHolder")
+    private StudentPropertiesHolder studentPropertiesHolder;
 
     public void setGenerator(StudentParametersGenerator generator) {
         this.generator = generator;
     }
 
-    public void setHolder(StudentClassCriteriaHolder holder) {
-        this.holder = holder;
+    public void setStudentClassCriteriaHolder(StudentClassCriteriaHolder studentClassCriteriaHolder) {
+        this.studentClassCriteriaHolder = studentClassCriteriaHolder;
     }
 
     public List<Student> generateStudents(final Map<String, Integer> criteria) {
@@ -37,7 +47,7 @@ public class CriteriaStudentsGenerator {
 
                     if (count != null) {
                         for (int i = 0; i < count; i++) {
-                            Student student = generate(holder.getStudentClassCriteria().get(parameter.getKey()));
+                            Student student = generate(this.studentClassCriteriaHolder.getStudentClassCriteria().get(parameter.getKey()));
                             students.add(student);
                         }
                     }
@@ -93,22 +103,24 @@ public class CriteriaStudentsGenerator {
 
     private int[] generateMarksFromAverageAlgorithm(double min, double max, final int count) {
         int[] result = null;
+        int minMark = (int) studentPropertiesHolder.getStudentMarkRange().getMin();
+        int maxMark = (int) studentPropertiesHolder.getStudentMarkRange().getMax();
 
-        if (min <= count * MAX_MARK && max >= MIN_MARK && count > 0) {
+        if (min <= count * maxMark && max >= minMark && count > 0) {
             result = new int[count];
 
             for (int i = 0; i < count; i++) {
                 if (i == count - 1) {
                     result[i] = generator.generateStudentMark((int) min, (int) max);
-                } else if (min < MAX_MARK) {
-                    if (max > MAX_MARK) {
-                        max -= MAX_MARK;
+                } else if (min < maxMark) {
+                    if (max > maxMark) {
+                        max -= maxMark;
                     }
-                    result[i] = MIN_MARK;
+                    result[i] = minMark;
                 } else {
-                    result[i] = MAX_MARK;
-                    min -= MAX_MARK;
-                    max -= MAX_MARK;
+                    result[i] = maxMark;
+                    min -= maxMark;
+                    max -= maxMark;
                 }
             }
         }

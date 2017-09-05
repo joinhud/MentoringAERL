@@ -14,22 +14,43 @@ import com.epam.aerl.mentoring.util.EmployersGenerator;
 import com.epam.aerl.mentoring.util.Printer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
 
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+@Controller("studentsController")
 public class StudentsController {
     private static final String INPUT_CRITERIA_STRING = "The input criteria line: ";
 
 	private static final Logger LOG = LogManager.getLogger(StudentsController.class);
 
+	@Autowired
+    @Qualifier("employersGenerator")
 	private EmployersGenerator employersGenerator;
+
+	@Autowired
+    @Qualifier("criteriaStudentsGenerator")
 	private CriteriaStudentsGenerator criteriaStudentsGenerator;
+
+	@Autowired
+    @Qualifier("studentsService")
 	private StudentsService service;
+
+	@Autowired
+    @Qualifier("printer")
 	private Printer printer;
+
+	@Autowired
+    @Qualifier("criteriaAnalyser")
 	private CriteriaAnalyser analyser;
+
+	@Autowired
+    @Qualifier("serializableStudentsService")
 	private SerializableStudentsService serializableService;
 
     public void setEmployersGenerator(EmployersGenerator employersGenerator) {
