@@ -13,8 +13,16 @@ public class CriteriaStudentsGenerator {
     private static final int MAX_MARK = 10;
     private static final int MIN_MARK = 0;
 
-    private StudentParametersGenerator generator = new StudentParametersGenerator();
-    private StudentClassCriteriaHolder holder = StudentClassCriteriaHolder.getInstance();
+    private StudentParametersGenerator generator;
+    private StudentClassCriteriaHolder holder;
+
+    public void setGenerator(StudentParametersGenerator generator) {
+        this.generator = generator;
+    }
+
+    public void setHolder(StudentClassCriteriaHolder holder) {
+        this.holder = holder;
+    }
 
     public List<Student> generateStudents(final Map<String, Integer> criteria) {
 
@@ -24,10 +32,14 @@ public class CriteriaStudentsGenerator {
             students = new ArrayList<>();
 
             for (Map.Entry<String, Integer> parameter : criteria.entrySet()) {
-                if (!parameter.getKey().equals(GenerationClass.S.toString())) {
-                    for (int i = 0; i < parameter.getValue(); i++) {
-                        Student student = generate(holder.getStudentClassCriteria().get(parameter.getKey()));
-                        students.add(student);
+                if (parameter.getKey() != null && !parameter.getKey().equals(GenerationClass.S.toString())) {
+                    Integer count = parameter.getValue();
+
+                    if (count != null) {
+                        for (int i = 0; i < count; i++) {
+                            Student student = generate(holder.getStudentClassCriteria().get(parameter.getKey()));
+                            students.add(student);
+                        }
                     }
                 }
             }
@@ -92,7 +104,7 @@ public class CriteriaStudentsGenerator {
                     if (max > MAX_MARK) {
                         max -= MAX_MARK;
                     }
-                    result[i] = MAX_MARK;
+                    result[i] = MIN_MARK;
                 } else {
                     result[i] = MAX_MARK;
                     min -= MAX_MARK;

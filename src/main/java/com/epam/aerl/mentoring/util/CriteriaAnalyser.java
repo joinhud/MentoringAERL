@@ -32,24 +32,33 @@ public class CriteriaAnalyser {
     private static final String RESULT_CRITERIA_STRING = "Result criteria line: ";
     private static final String VALUE_REGEX = "\\d+";
     private static final String CLASS_REGEX = "[a-zA-Z]";
+    private static final String WHITESPACE = "\\h*";
+    private static final String OPEN_GROUP = "(";
+    private static final String CLOSE_GROUP = ")+";
     private static final Logger LOG = LogManager.getLogger(CriteriaAnalyser.class);
 
-    public Map<String, Integer> parse(final String criteria) {
+    public Map<String, Integer> parse(final String input) {
         Map<String, Integer> result = null;
 
-        if (criteria != null) {
+        if (input != null) {
             result = new HashMap<>();
 
-            final Pattern pattern = Pattern.compile(VALUE_REGEX + CLASS_REGEX);
-            final Matcher matcher = pattern.matcher(criteria);
+            Pattern pattern = Pattern.compile(WHITESPACE + OPEN_GROUP + VALUE_REGEX + CLASS_REGEX + CLOSE_GROUP + WHITESPACE);
+            Matcher matcher = pattern.matcher(input);
 
-            while (matcher.find()) {
-                final String classCriteria = matcher.group();
-                final String studentClass = parseStudentClass(classCriteria);
-                final Integer studentClassValue = parseStudentClassValue(classCriteria);
+            if (matcher.find()) {
+                final String criteria = matcher.group();
+                pattern = Pattern.compile(VALUE_REGEX + CLASS_REGEX);
+                matcher = pattern.matcher(criteria);
 
-                if (studentClass != null && studentClassValue != null) {
-                    result.put(studentClass, studentClassValue);
+                while (matcher.find()) {
+                    final String classCriteria = matcher.group();
+                    final String studentClass = parseStudentClass(classCriteria);
+                    final Integer studentClassValue = parseStudentClassValue(classCriteria);
+
+                    if (studentClass != null && studentClassValue != null) {
+                        result.put(studentClass, studentClassValue);
+                    }
                 }
             }
         }
@@ -60,7 +69,7 @@ public class CriteriaAnalyser {
     public String sortCriteria(final Map<String, Integer> criteria) {
         String resultString = null;
 
-        if (criteria != null) {
+        if (MapUtils.isNotEmpty(criteria)) {
             Map<String, Integer> modifiedMap = new HashMap<>(criteria);
             modifiedMap.remove(GenerationClass.S.toString());
 
@@ -115,29 +124,38 @@ public class CriteriaAnalyser {
     }
 
     private boolean validateCriteriaValues(final Map<String, Integer> criteria) {
-        final int totalCount = criteria.get(GenerationClass.S.toString());
-        int sumCriteria = 0;
+        boolean result = false;
+        final Integer totalCount = criteria.get(GenerationClass.S.toString());
 
-        for (Entry<String, Integer> criteriaElement : criteria.entrySet()) {
-            if (!criteriaElement.getKey().equals(GenerationClass.S.toString())) {
-                sumCriteria += criteriaElement.getValue();
+        if (totalCount != null) {
+            int sumCriteria = 0;
+
+            for (Entry<String, Integer> criteriaElement : criteria.entrySet()) {
+                if (!criteriaElement.getKey().equals(GenerationClass.S.toString())) {
+                    sumCriteria += criteriaElement.getValue();
+                }
             }
+
+            result = totalCount - sumCriteria >= 0;
         }
 
-        return totalCount - sumCriteria >= 0;
+        return result;
     }
 
     private void addRandClassCriteria(final Map<String, Integer> criteria) {
-        final int totalCount = criteria.get(GenerationClass.S.toString());
-        int sumCriteria = 0;
+        final Integer totalCount = criteria.get(GenerationClass.S.toString());
 
-        for (Entry<String, Integer> criteriaElement : criteria.entrySet()) {
-            if (!criteriaElement.getKey().equals(GenerationClass.S.toString())) {
-                sumCriteria += criteriaElement.getValue();
+        if (totalCount != null) {
+            int sumCriteria = 0;
+
+            for (Entry<String, Integer> criteriaElement : criteria.entrySet()) {
+                if (!criteriaElement.getKey().equals(GenerationClass.S.toString())) {
+                    sumCriteria += criteriaElement.getValue();
+                }
             }
-        }
 
-        criteria.put(GenerationClass.RAND.toString().toLowerCase(), totalCount - sumCriteria);
+            criteria.put(GenerationClass.RAND.toString().toLowerCase(), totalCount - sumCriteria);
+        }
     }
 
     private Map<String, Integer> combinePossibleCriteria(final Map<String, Integer> criteria) {
@@ -197,12 +215,16 @@ public class CriteriaAnalyser {
 
     private StudentClassCriteria combineStudentClassesCriteria(final StudentClassCriteria first, final StudentClassCriteria second)
             throws NotCombinedParameterException {
-        StudentClassCriteria result = createClassCriteriaBuilder()
-                .ageCriteria(combineRangeCriteria(first.getAgeCriteria(), second.getAgeCriteria()))
-                .courseCriteria(combineRangeCriteria(first.getCourseCriteria(), second.getCourseCriteria()))
-                .studentMarksWrapperCriteria(
-                        combineMarksWrappers(first.getStudentMarksWrapperCriteria(), second.getStudentMarksWrapperCriteria())
-                ).build();
+        StudentClassCriteria result = null;
+
+        if (first != null && second != null) {
+            result = createClassCriteriaBuilder()
+                    .ageCriteria(combineRangeCriteria(first.getAgeCriteria(), second.getAgeCriteria()))
+                    .courseCriteria(combineRangeCriteria(first.getCourseCriteria(), second.getCourseCriteria()))
+                    .studentMarksWrapperCriteria(
+                            combineMarksWrappers(first.getStudentMarksWrapperCriteria(), second.getStudentMarksWrapperCriteria())
+                    ).build();
+        }
 
         return result;
     }

@@ -25,14 +25,38 @@ public class StudentsController {
 
 	private static final Logger LOG = LogManager.getLogger(StudentsController.class);
 
-	private EmployersGenerator employersGenerator = new EmployersGenerator();
-	private CriteriaStudentsGenerator criteriaStudentsGenerator = new CriteriaStudentsGenerator();
-	private StudentsService service = new StudentsService();
-	private Printer printer = new Printer();
-	private CriteriaAnalyser analyser = new CriteriaAnalyser();
-	private SerializableStudentsService serializableService = new SerializableStudentsService();
+	private EmployersGenerator employersGenerator;
+	private CriteriaStudentsGenerator criteriaStudentsGenerator;
+	private StudentsService service;
+	private Printer printer;
+	private CriteriaAnalyser analyser;
+	private SerializableStudentsService serializableService;
 
-	public void takeStudents(String criteriaString) {
+    public void setEmployersGenerator(EmployersGenerator employersGenerator) {
+        this.employersGenerator = employersGenerator;
+    }
+
+    public void setCriteriaStudentsGenerator(CriteriaStudentsGenerator criteriaStudentsGenerator) {
+        this.criteriaStudentsGenerator = criteriaStudentsGenerator;
+    }
+
+    public void setService(StudentsService service) {
+        this.service = service;
+    }
+
+    public void setPrinter(Printer printer) {
+        this.printer = printer;
+    }
+
+    public void setAnalyser(CriteriaAnalyser analyser) {
+        this.analyser = analyser;
+    }
+
+    public void setSerializableService(SerializableStudentsService serializableService) {
+        this.serializableService = serializableService;
+    }
+
+    public void takeStudents(String criteriaString) {
         Map<String, Integer> parsedCriteria = analyser.parse(criteriaString);
 		
 		try {
