@@ -5,7 +5,7 @@ import com.epam.aerl.mentoring.entity.StudentMarksWrapper;
 import com.epam.aerl.mentoring.entity.StudentRangeCriteria;
 import com.epam.aerl.mentoring.type.GenerationClass;
 import com.epam.aerl.mentoring.type.Subject;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -15,7 +15,7 @@ import static com.epam.aerl.mentoring.entity.StudentClassCriteria.createClassCri
 import static com.epam.aerl.mentoring.entity.StudentMarksWrapper.createMarksWrapperBuilder;
 import static com.epam.aerl.mentoring.entity.StudentRangeCriteria.createRangeCriteriaBuilder;
 
-@Component("studentClassCriteriaHolder")
+@Service("studentClassCriteriaHolder")
 public class StudentClassCriteriaHolder {
     private static volatile StudentClassCriteriaHolder instance;
 

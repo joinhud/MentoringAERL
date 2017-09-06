@@ -4,10 +4,18 @@ import java.io.Serializable;
 import java.util.Map;
 
 import com.epam.aerl.mentoring.type.Subject;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+@Component("student")
+@Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class Student implements Serializable {
+	@RandomInt(min = 18, max = 24)
 	private int age;
+    @RandomInt(min = 1, max = 5)
 	private int course;
+	@RandomMarks(minMark = 0, maxMark = 10)
 	private Map<Subject, Integer> marks;
 
 	public Student() {

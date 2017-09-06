@@ -2,11 +2,11 @@ package com.epam.aerl.mentoring.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.Random;
 
-@Component("studentParametersGenerator")
+@Service("studentParametersGenerator")
 public class StudentParametersGenerator {
     private static final int FIRST_COURSE = 1;
     private static final int SECOND_COURSE = 2;

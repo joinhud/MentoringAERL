@@ -3,36 +3,42 @@ package com.epam.aerl.mentoring.util;
 import com.epam.aerl.mentoring.entity.Student;
 import com.epam.aerl.mentoring.exception.StudentsGeneratorException;
 import com.epam.aerl.mentoring.type.ErrorMessage;
-import com.epam.aerl.mentoring.type.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Component("randomStudentsGenerator")
-public class RandomStudentsGenerator {
+import static com.epam.aerl.mentoring.type.GenerationClass.S;
+
+@Service("randomStudentsGenerator")
+public class RandomStudentsGenerator implements StudentsGenerator {
 	private static final String STUDENTS_NUM_ERR_MSG = "The number of students is negative.";
 
 	@Autowired
     @Qualifier("studentParametersGenerator")
-	private StudentParametersGenerator generator;
+	private StudentParametersGenerator studentParametersGenerator;
 
 	@Autowired
     @Qualifier("studentPropertiesHolder")
-	private StudentPropertiesHolder holder;
+	private StudentPropertiesHolder studentPropertiesHolder;
 
-	public List<Student> generateStudents(final int studentsNumber) throws StudentsGeneratorException {
-		if (studentsNumber < 0) {
+	@Autowired
+	private ApplicationContext applicationContext;
+
+    @Override
+	public List<Student> generateStudents(final Map<String, Integer> criteria) throws StudentsGeneratorException {
+		if (criteria.get(S.toString()) == null && criteria.get(S.toString()) < 0) {
 			throw new StudentsGeneratorException(ErrorMessage.STUDENTS_NUMBER_ERROR.getCode(), STUDENTS_NUM_ERR_MSG);
 		}
 
 		final List<Student> students = new ArrayList<>();
+		final int studentsCount = criteria.get(S.toString());
 
-		for(int i = 0; i < studentsNumber; i++) {
+		for(int i = 0; i < studentsCount; i++) {
 			students.add(generateStudent());
 		}
 
@@ -40,30 +46,7 @@ public class RandomStudentsGenerator {
 	}
 
 	private Student generateStudent() {
-		Student student = null;
-
-		final int firstCourse = (int) holder.getStudentCourseRange().getMin();
-		final int secondCourse = (int) holder.getStudentCourseRange().getMax();
-
-		final Integer course = generator.generateStudentCourse(firstCourse, secondCourse);
-		Integer age = null;
-        final Map<Subject, Integer> marks = new HashMap<>();
-
-		if (course != null) {
-            age = generator.generateStudentAgeByCourse(course);
-
-            int minMark = (int) holder.getStudentMarkRange().getMin();
-            int maxMark = (int) holder.getStudentMarkRange().getMax();
-
-            marks.put(Subject.MATH, generator.generateStudentMark(minMark, maxMark));
-            marks.put(Subject.PHILOSOPHY, generator.generateStudentMark(minMark, maxMark));
-            marks.put(Subject.PHYSICAL_EDUCATION, generator.generateStudentMark(minMark, maxMark));
-        }
-
-        if (age != null) {
-            student = new Student(age, course, marks);
-        }
-
-		return student;
+        Student student = (Student) applicationContext.getBean("student");
+        return student;
 	}
 }

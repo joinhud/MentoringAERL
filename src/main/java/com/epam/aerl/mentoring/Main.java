@@ -13,7 +13,13 @@ public class Main {
 		AbstractApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
 
         StudentsController controller = (StudentsController) context.getBean(CONTROLLER_BEAN_NAME);
-        controller.takeStudents(args[FIRST_ARG]);
+        String arg = null;
+
+        if (args.length != 0) {
+            arg = args[FIRST_ARG];
+        }
+
+        controller.takeStudents(arg);
 	}
 
 }

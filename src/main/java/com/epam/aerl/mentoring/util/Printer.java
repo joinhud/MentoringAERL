@@ -5,13 +5,13 @@ import com.epam.aerl.mentoring.exception.BusinessLogicException;
 import com.epam.aerl.mentoring.type.ErrorMessage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-@Component("printer")
+@Service("printer")
 public class Printer {
     private static final String FILE_NAME = "output.txt";
     private static final String OUTPUT_FILE_ERR_MSG = "Cannot get access to the output file.";

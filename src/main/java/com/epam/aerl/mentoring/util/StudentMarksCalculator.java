@@ -2,11 +2,11 @@ package com.epam.aerl.mentoring.util;
 
 import com.epam.aerl.mentoring.type.Subject;
 import org.apache.commons.collections4.MapUtils;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
-@Component("studentMarksCalculator")
+@Service("studentMarksCalculator")
 public class StudentMarksCalculator {
 	public Double calculateAverageSciencesMark(final Map<Subject, Integer> marks) {
 		Double result = null;

@@ -7,5 +7,5 @@ ext {
     springContext = 'org.springframework:spring-context:4.3.10.RELEASE'
     springContextSuppot = 'org.springframework:spring-context-support:4.3.10.RELEASE'
     springEl = 'org.springframework:spring-expression:4.3.10.RELEASE'
-
+    apacheCommonsLang = 'org.apache.commons:commons-lang3:3.6'
 }
