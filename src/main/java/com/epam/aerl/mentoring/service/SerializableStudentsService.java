@@ -6,6 +6,7 @@ import com.epam.aerl.mentoring.exception.ServiceException;
 import com.epam.aerl.mentoring.type.ErrorMessage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.util.Calendar;
@@ -14,6 +15,7 @@ import java.util.List;
 
 import static com.epam.aerl.mentoring.entity.StudentsWrapper.createStudentsWrapper;
 
+@Service("serializableStudentsService")
 public class SerializableStudentsService {
     private static final String PATH = "data/";
     private static final String EXT = ".stu";
@@ -22,7 +24,7 @@ public class SerializableStudentsService {
 
     private static final Logger LOG = LogManager.getLogger(SerializableStudentsService.class);
 
-    public List<Student> getStudentsList(final String criteriaLine) throws ServiceException {
+    public List<Student> getStudentsList(final String criteriaLine) {
         List<Student> result = null;
 
         if (criteriaLine != null) {
@@ -42,7 +44,6 @@ public class SerializableStudentsService {
                 }
             } catch (IOException | ClassNotFoundException e) {
                 LOG.info(e);
-                throw new ServiceException(ErrorMessage.FILE_ERROR.getCode(), STORING_FILE_ERROR_MSG, e);
             }
         }
 

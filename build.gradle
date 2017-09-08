@@ -20,6 +20,10 @@ jar {
 dependencies {
     compile log4j
     compile apacheCollections
+    compile apacheCommonsLang
+    compile springContext
+    compile springContextSuppot
+    compile springEl
     testCompile jUnit
     testCompile mockito
     testCompile hamcrest

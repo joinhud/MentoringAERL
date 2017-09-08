@@ -6,24 +6,35 @@ import com.epam.aerl.mentoring.entity.StudentMarksWrapper.GroupOperation;
 import com.epam.aerl.mentoring.entity.StudentRangeCriteria;
 import com.epam.aerl.mentoring.type.GenerationClass;
 import com.epam.aerl.mentoring.type.Subject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-public class CriteriaStudentsGenerator {
-    private static final int MAX_MARK = 10;
-    private static final int MIN_MARK = 0;
+@Service("criteriaStudentsGenerator")
+public class CriteriaStudentsGenerator implements StudentsGenerator {
+    @Autowired
+    @Qualifier("studentParametersGenerator")
+    private StudentParametersGenerator studentParametersGenerator;
 
-    private StudentParametersGenerator generator;
-    private StudentClassCriteriaHolder holder;
+    @Autowired
+    @Qualifier("studentClassCriteriaHolder")
+    private StudentClassCriteriaHolder studentClassCriteriaHolder;
 
-    public void setGenerator(StudentParametersGenerator generator) {
-        this.generator = generator;
+    @Autowired
+    @Qualifier("studentPropertiesHolder")
+    private StudentPropertiesHolder studentPropertiesHolder;
+
+    public void setStudentParametersGenerator(StudentParametersGenerator studentParametersGenerator) {
+        this.studentParametersGenerator = studentParametersGenerator;
     }
 
-    public void setHolder(StudentClassCriteriaHolder holder) {
-        this.holder = holder;
+    public void setStudentClassCriteriaHolder(StudentClassCriteriaHolder studentClassCriteriaHolder) {
+        this.studentClassCriteriaHolder = studentClassCriteriaHolder;
     }
 
+    @Override
     public List<Student> generateStudents(final Map<String, Integer> criteria) {
 
         List<Student> students = null;
@@ -37,7 +48,7 @@ public class CriteriaStudentsGenerator {
 
                     if (count != null) {
                         for (int i = 0; i < count; i++) {
-                            Student student = generate(holder.getStudentClassCriteria().get(parameter.getKey()));
+                            Student student = generate(this.studentClassCriteriaHolder.getStudentClassCriteria().get(parameter.getKey()));
                             students.add(student);
                         }
                     }
@@ -71,9 +82,9 @@ public class CriteriaStudentsGenerator {
                 int minCourse = (int) criteria.getCourseCriteria().getMin();
                 int maxCourse = (int) criteria.getCourseCriteria().getMax();
 
-                student.setCourse(generator.generateStudentCourse(minCourse, maxCourse));
+                student.setCourse(studentParametersGenerator.generateStudentCourse(minCourse, maxCourse));
             } else {
-                student.setCourse(generator.generateRandomStudentCourse());
+                student.setCourse(studentParametersGenerator.generateRandomStudentCourse());
             }
         }
     }
@@ -84,31 +95,33 @@ public class CriteriaStudentsGenerator {
                 int minAge = (int) criteria.getAgeCriteria().getMin();
                 int maxAge = (int) criteria.getAgeCriteria().getMax();
 
-                student.setAge(generator.generateStudentAgeByCourseAndRange(student.getCourse(), minAge, maxAge));
+                student.setAge(studentParametersGenerator.generateStudentAgeByCourseAndRange(student.getCourse(), minAge, maxAge));
             } else {
-                student.setAge(generator.generateStudentAgeByCourse(student.getCourse()));
+                student.setAge(studentParametersGenerator.generateStudentAgeByCourse(student.getCourse()));
             }
         }
     }
 
     private int[] generateMarksFromAverageAlgorithm(double min, double max, final int count) {
         int[] result = null;
+        int minMark = (int) studentPropertiesHolder.getStudentMarkRange().getMin();
+        int maxMark = (int) studentPropertiesHolder.getStudentMarkRange().getMax();
 
-        if (min <= count * MAX_MARK && max >= MIN_MARK && count > 0) {
+        if (min <= count * maxMark && max >= minMark && count > 0) {
             result = new int[count];
 
             for (int i = 0; i < count; i++) {
                 if (i == count - 1) {
-                    result[i] = generator.generateStudentMark((int) min, (int) max);
-                } else if (min < MAX_MARK) {
-                    if (max > MAX_MARK) {
-                        max -= MAX_MARK;
+                    result[i] = studentParametersGenerator.generateStudentMark((int) min, (int) max);
+                } else if (min < maxMark) {
+                    if (max > maxMark) {
+                        max -= maxMark;
                     }
-                    result[i] = MIN_MARK;
+                    result[i] = minMark;
                 } else {
-                    result[i] = MAX_MARK;
-                    min -= MAX_MARK;
-                    max -= MAX_MARK;
+                    result[i] = maxMark;
+                    min -= maxMark;
+                    max -= maxMark;
                 }
             }
         }
@@ -168,9 +181,9 @@ public class CriteriaStudentsGenerator {
                         int minMark = (int) marksCriteria.get(subject).getMin();
                         int maxMark = (int) marksCriteria.get(subject).getMax();
 
-                        marks.put(subject, generator.generateStudentMark(minMark, maxMark));
+                        marks.put(subject, studentParametersGenerator.generateStudentMark(minMark, maxMark));
                     } else {
-                        marks.put(subject, generator.generateRandomStudentMark());
+                        marks.put(subject, studentParametersGenerator.generateRandomStudentMark());
                     }
                 }
             }
@@ -184,7 +197,7 @@ public class CriteriaStudentsGenerator {
                 generateByMarksCriteria(criteria, marks);
             } else {
                 for (Subject subject : Subject.values()) {
-                    marks.put(subject, generator.generateRandomStudentMark());
+                    marks.put(subject, studentParametersGenerator.generateRandomStudentMark());
                 }
             }
         }

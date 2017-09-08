@@ -2,10 +2,7 @@ package com.epam.aerl.mentoring.controller;
 
 import com.epam.aerl.mentoring.service.SerializableStudentsService;
 import com.epam.aerl.mentoring.service.StudentsService;
-import com.epam.aerl.mentoring.util.CriteriaAnalyser;
-import com.epam.aerl.mentoring.util.CriteriaStudentsGenerator;
-import com.epam.aerl.mentoring.util.EmployersGenerator;
-import com.epam.aerl.mentoring.util.Printer;
+import com.epam.aerl.mentoring.util.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -21,7 +18,7 @@ public class StudentsControllerTest {
     private EmployersGenerator employersGeneratorMock;
 
     @Mock
-    private CriteriaStudentsGenerator criteriaStudentsGeneratorMock;
+    private StudentsGenerator criteriaStudentsGeneratorMock;
 
     @Mock
     private StudentsService studentsServiceMock;

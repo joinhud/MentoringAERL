@@ -6,7 +6,11 @@ import com.epam.aerl.mentoring.util.rules.AppropriateStudentsMathMarkRule;
 import com.epam.aerl.mentoring.util.rules.EmployerFilterRule;
 import com.epam.aerl.mentoring.util.rules.InappropriateStudentsCourseRule;
 import com.epam.aerl.mentoring.util.rules.StudentsAgeRangeRule;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
+@Component("professorMathFilter")
 public class ProfessorMathFilter extends EmployerFilter {
 
 	private static final int MIN_STUDENT_AGE = 20;
@@ -15,10 +19,16 @@ public class ProfessorMathFilter extends EmployerFilter {
 	private static final int INAPPROPRIATE_COURSE = 5;
 	
 	private static final String CAPTION = "Employer Professor of Math took:";
-	
-	private Printer printer = new Printer();
-	
-	@Override
+
+	@Autowired
+	@Qualifier("printer")
+	private Printer printer;
+
+    public void setPrinter(Printer printer) {
+        this.printer = printer;
+    }
+
+    @Override
 	public boolean checkCriteria(final Student student) {
 		boolean result = false;
 		
@@ -38,6 +48,6 @@ public class ProfessorMathFilter extends EmployerFilter {
 
 	@Override
 	public void printEmployerCaption() {
-		printer.printCaption(CAPTION);
+        printer.printCaption(CAPTION);
 	}
 }

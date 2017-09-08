@@ -8,16 +8,26 @@ import com.epam.aerl.mentoring.util.Printer;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
+@Component
 public abstract class EmployerFilter {
     private static final String START_FILTER_LOG_MSG = "Starting filtering students...";
     private static final String TOOK_LOG_MSG = "Took {} students.";
 
 	private final Logger log = LogManager.getLogger(this.getClass());
 
-	private Printer printer = new Printer();
+    @Autowired
+    @Qualifier("printer")
+	private Printer printer;
 
-	public void takeAway(final List<Student> students) {
+    public void setPrinter(Printer printer) {
+        this.printer = printer;
+    }
+
+    public void takeAway(final List<Student> students) {
 		if (CollectionUtils.isNotEmpty(students)) {
             log.debug(START_FILTER_LOG_MSG);
 

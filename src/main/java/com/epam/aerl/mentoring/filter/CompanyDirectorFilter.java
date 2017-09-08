@@ -4,7 +4,11 @@ import com.epam.aerl.mentoring.entity.Student;
 import com.epam.aerl.mentoring.type.Subject;
 import com.epam.aerl.mentoring.util.Printer;
 import com.epam.aerl.mentoring.util.StudentMarksCalculator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
+@Component("companyDirectorFilter")
 public class CompanyDirectorFilter extends EmployerFilter {
 
 	private static final int HIGHEST_MARK = 10;
@@ -14,11 +18,24 @@ public class CompanyDirectorFilter extends EmployerFilter {
 	private static final double AVERAGE_SCIENCES_MARK = 7.5;
 
 	private static final String CAPTION = "Employer a director of engineering company took:";
-	
-	private Printer printer = new Printer();
-	private StudentMarksCalculator calculator = new StudentMarksCalculator();
-	
-	@Override
+
+	@Autowired
+    @Qualifier("printer")
+	private Printer printer;
+
+	@Autowired
+    @Qualifier("studentMarksCalculator")
+	private StudentMarksCalculator calculator;
+
+    public void setPrinter(Printer printer) {
+        this.printer = printer;
+    }
+
+    public void setCalculator(StudentMarksCalculator calculator) {
+        this.calculator = calculator;
+    }
+
+    @Override
 	public boolean checkCriteria(final Student student) {
 	    boolean result = false;
 

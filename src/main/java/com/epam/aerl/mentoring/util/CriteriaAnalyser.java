@@ -10,6 +10,7 @@ import com.epam.aerl.mentoring.type.GenerationClass;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -20,6 +21,7 @@ import static com.epam.aerl.mentoring.entity.StudentClassCriteria.createClassCri
 import static com.epam.aerl.mentoring.entity.StudentMarksWrapper.createMarksWrapperBuilder;
 import static com.epam.aerl.mentoring.entity.StudentRangeCriteria.createRangeCriteriaBuilder;
 
+@Service("criteriaAnalyser")
 public class CriteriaAnalyser {
     private static final int MIN_INDEX = 0;
     private static final int MAX_INDEX = 1;

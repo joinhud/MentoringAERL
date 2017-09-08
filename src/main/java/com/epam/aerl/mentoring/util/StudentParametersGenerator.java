@@ -1,32 +1,23 @@
 package com.epam.aerl.mentoring.util;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
 import java.util.Random;
 
+@Service("studentParametersGenerator")
 public class StudentParametersGenerator {
-    private static final int FIRST_COURSE_MIN_AGE = 18;
-    private static final int FIRST_COURSE_MAX_AGE = 20;
-    private static final int SECOND_COURSE_MIN_AGE = 18;
-    private static final int SECOND_COURSE_MAX_AGE = 21;
-    private static final int THIRD_COURSE_MIN_AGE = 19;
-    private static final int THIRD_COURSE_MAX_AGE = 22;
-    private static final int FOURTH_COURSE_MIN_AGE = 20;
-    private static final int FOURTH_COURSE_MAX_AGE = 24;
-    private static final int FIFTH_COURSE_MIN_AGE = 21;
-    private static final int FIFTH_COURSE_MAX_AGE = 24;
-
     private static final int FIRST_COURSE = 1;
     private static final int SECOND_COURSE = 2;
     private static final int THIRD_COURSE = 3;
     private static final int FOURTH_COURSE = 4;
     private static final int FIFTH_COURSE = 5;
-
-    private static final int MIN_STUDENT_AGE = 18;
-    private static final int MAX_STUDENT_AGE = 24;
-
-    private static final int MIN_STUDENT_MARK = 0;
-    private static final int MAX_STUDENT_MARK = 10;
-
     private static final Random RANDOM = new Random();
+
+    @Autowired
+    @Qualifier("studentPropertiesHolder")
+    private StudentPropertiesHolder holder;
 
     private int randomIntRange(final int min,final int max) {
         return RANDOM.nextInt((max - min) + 1) + min;
@@ -55,24 +46,24 @@ public class StudentParametersGenerator {
 
             switch (course) {
                 case FIRST_COURSE:
-                    generationMinAge = FIRST_COURSE_MIN_AGE;
-                    generationMaxAge = FIRST_COURSE_MAX_AGE;
+                    generationMinAge = (int) holder.getStudentCourseAgeRanges().get(FIRST_COURSE).getMin();
+                    generationMaxAge = (int) holder.getStudentCourseAgeRanges().get(FIRST_COURSE).getMax();
                     break;
                 case SECOND_COURSE:
-                    generationMinAge = SECOND_COURSE_MIN_AGE;
-                    generationMaxAge = SECOND_COURSE_MAX_AGE;
+                    generationMinAge = (int) holder.getStudentCourseAgeRanges().get(SECOND_COURSE).getMin();
+                    generationMaxAge = (int) holder.getStudentCourseAgeRanges().get(SECOND_COURSE).getMax();
                     break;
                 case THIRD_COURSE:
-                    generationMinAge = THIRD_COURSE_MIN_AGE;
-                    generationMaxAge = THIRD_COURSE_MAX_AGE;
+                    generationMinAge = (int) holder.getStudentCourseAgeRanges().get(THIRD_COURSE).getMin();
+                    generationMaxAge = (int) holder.getStudentCourseAgeRanges().get(THIRD_COURSE).getMax();
                     break;
                 case FOURTH_COURSE:
-                    generationMinAge = FOURTH_COURSE_MIN_AGE;
-                    generationMaxAge = FOURTH_COURSE_MAX_AGE;
+                    generationMinAge = (int) holder.getStudentCourseAgeRanges().get(FOURTH_COURSE).getMin();
+                    generationMaxAge = (int) holder.getStudentCourseAgeRanges().get(FOURTH_COURSE).getMax();
                     break;
                 case FIFTH_COURSE:
-                    generationMinAge = FIFTH_COURSE_MIN_AGE;
-                    generationMaxAge = FIFTH_COURSE_MAX_AGE;
+                    generationMinAge = (int) holder.getStudentCourseAgeRanges().get(FIFTH_COURSE).getMin();
+                    generationMaxAge = (int) holder.getStudentCourseAgeRanges().get(FIFTH_COURSE).getMax();
                     break;
                 default:
                     generationMinAge = 0;
@@ -102,24 +93,24 @@ public class StudentParametersGenerator {
 
         switch (course) {
             case FIRST_COURSE:
-                minAge = FIRST_COURSE_MIN_AGE;
-                maxAge = FIRST_COURSE_MAX_AGE;
+                minAge = (int) holder.getStudentCourseAgeRanges().get(FIRST_COURSE).getMin();
+                maxAge = (int) holder.getStudentCourseAgeRanges().get(FIRST_COURSE).getMax();
                 break;
             case SECOND_COURSE:
-                minAge = SECOND_COURSE_MIN_AGE;
-                maxAge = SECOND_COURSE_MAX_AGE;
+                minAge = (int) holder.getStudentCourseAgeRanges().get(SECOND_COURSE).getMin();
+                maxAge = (int) holder.getStudentCourseAgeRanges().get(SECOND_COURSE).getMax();
                 break;
             case THIRD_COURSE:
-                minAge = THIRD_COURSE_MIN_AGE;
-                maxAge = THIRD_COURSE_MAX_AGE;
+                minAge = (int) holder.getStudentCourseAgeRanges().get(THIRD_COURSE).getMin();
+                maxAge = (int) holder.getStudentCourseAgeRanges().get(THIRD_COURSE).getMax();
                 break;
             case FOURTH_COURSE:
-                minAge = FOURTH_COURSE_MIN_AGE;
-                maxAge = FOURTH_COURSE_MAX_AGE;
+                minAge = (int) holder.getStudentCourseAgeRanges().get(FOURTH_COURSE).getMin();
+                maxAge = (int) holder.getStudentCourseAgeRanges().get(FOURTH_COURSE).getMax();
                 break;
             case FIFTH_COURSE:
-                minAge = FIFTH_COURSE_MIN_AGE;
-                maxAge = FIFTH_COURSE_MAX_AGE;
+                minAge = (int) holder.getStudentCourseAgeRanges().get(FIFTH_COURSE).getMin();
+                maxAge = (int) holder.getStudentCourseAgeRanges().get(FIFTH_COURSE).getMax();
                 break;
             default:
                 minAge = 0;
@@ -145,7 +136,10 @@ public class StudentParametersGenerator {
     }
 
     public Integer generateRandomStudentMark() {
-        return randomIntRange(MIN_STUDENT_MARK, MAX_STUDENT_MARK);
+        int minMark = (int) holder.getStudentMarkRange().getMin();
+        int maxMark = (int) holder.getStudentMarkRange().getMax();
+
+        return randomIntRange(minMark, maxMark);
     }
 
     private boolean checkRange(final int min, final int max) {
@@ -157,10 +151,16 @@ public class StudentParametersGenerator {
     }
 
     private boolean checkAge(final int age) {
-        return MAX_STUDENT_AGE >= age && MIN_STUDENT_AGE <= age;
+        int minAge = (int) holder.getStudentAgeRange().getMin();
+        int maxAge = (int) holder.getStudentAgeRange().getMax();
+
+        return maxAge >= age && minAge <= age;
     }
 
     private boolean checkMark(final int mark) {
-        return MAX_STUDENT_MARK >= mark && MIN_STUDENT_MARK <= mark;
+        int minMark = (int) holder.getStudentMarkRange().getMin();
+        int maxMark = (int) holder.getStudentMarkRange().getMax();
+
+        return maxMark >= mark && minMark <= mark;
     }
 }

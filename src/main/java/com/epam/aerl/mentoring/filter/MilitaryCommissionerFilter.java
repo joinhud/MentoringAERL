@@ -4,7 +4,11 @@ import com.epam.aerl.mentoring.entity.Student;
 import com.epam.aerl.mentoring.type.Subject;
 import com.epam.aerl.mentoring.util.Printer;
 import com.epam.aerl.mentoring.util.StudentMarksCalculator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
+@Component("militaryCommissionerFilter")
 public class MilitaryCommissionerFilter extends EmployerFilter {
 
 	private static final int FIRST_COURSE_STUDENT_MIN_AGE = 18;
@@ -16,10 +20,23 @@ public class MilitaryCommissionerFilter extends EmployerFilter {
 	private static final int APPROPRIATE_PHYSICAL_EDUCATION_MARK = 9;
 	
 	private static final String CAPTION = "Employer a military Commissioner took:";
-	
-	private Printer printer = new Printer();
-	private StudentMarksCalculator calculator = new StudentMarksCalculator();
-	
+
+	@Autowired
+    @Qualifier("printer")
+	private Printer printer;
+
+    @Autowired
+    @Qualifier("studentMarksCalculator")
+    private StudentMarksCalculator calculator;
+
+    public void setPrinter(Printer printer) {
+        this.printer = printer;
+    }
+
+    public void setCalculator(StudentMarksCalculator calculator) {
+        this.calculator = calculator;
+    }
+
 	@Override
 	public boolean checkCriteria(final Student student) {
 		boolean result = false;
