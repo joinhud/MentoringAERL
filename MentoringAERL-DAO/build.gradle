@@ -1,0 +1,21 @@
+group 'com.epam.aerl.mentoring'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply from: 'libraries.gradle'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile rootProject
+    compile hibernateCore
+    compile apacheCommonsDBCP
+    compile postgreSQLJDBCDriver
+    compile springJDBC
+    compile springORM
+    compile springTX
+}

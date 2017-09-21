@@ -1,0 +1,8 @@
+ext {
+    hibernateCore = 'org.hibernate:hibernate-core:5.2.10.Final'
+    apacheCommonsDBCP = 'org.apache.commons:commons-dbcp2:2.1.1'
+    postgreSQLJDBCDriver = 'org.postgresql:postgresql:42.1.4'
+    springJDBC = 'org.springframework:spring-jdbc:4.3.10.RELEASE'
+    springORM = 'org.springframework:spring-orm:4.3.11.RELEASE'
+    springTX = 'org.springframework:spring-tx:4.3.11.RELEASE'
+}
