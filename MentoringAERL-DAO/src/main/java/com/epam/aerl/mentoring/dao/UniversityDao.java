@@ -1,10 +1,14 @@
 package com.epam.aerl.mentoring.dao;
 
-import com.epam.aerl.mentoring.entity.University;
+import com.epam.aerl.mentoring.entity.UniversityDTO;
 import com.epam.aerl.mentoring.exception.DaoLayerException;
+import com.epam.aerl.mentoring.type.UniversityStatus;
+
+import java.util.List;
 
 public interface UniversityDao {
-  University create(final University university) throws DaoLayerException;
-  University findById(final Long id);
-  University update(final University university) throws DaoLayerException;
+  UniversityDTO create(final UniversityDTO universityDTO) throws DaoLayerException;
+  UniversityDTO findById(final Long id);
+  UniversityDTO update(final UniversityDTO universityDTO) throws DaoLayerException;
+  List<UniversityDTO> findUniversitiesByStatus(final UniversityStatus status);
 }

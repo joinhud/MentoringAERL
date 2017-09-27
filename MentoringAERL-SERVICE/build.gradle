@@ -23,10 +23,6 @@ sourceSets {
 
 dependencies {
     compile project(':MentoringAERL-LEGACY')
-    compile hibernateCore
-    compile apacheCommonsDBCP
-    compile postgreSQLJDBCDriver
-    compile springJDBC
-    compile springORM
-    compile springTX
+    compile project(':MentoringAERL-DAO')
+    compile SimpleJSON
 }

@@ -25,9 +25,10 @@
         <property name="dataSource" ref="dataSource"/>
         <property name="annotatedClasses">
             <list>
-                <value>com.epam.aerl.mentoring.entity.Student</value>
-                <value>com.epam.aerl.mentoring.entity.University</value>
-                <value>com.epam.aerl.mentoring.entity.StudentMark</value>
+                <value>com.epam.aerl.mentoring.entity.StudentDTO</value>
+                <value>com.epam.aerl.mentoring.entity.UniversityDTO</value>
+                <value>com.epam.aerl.mentoring.entity.StudentMarkDTO</value>
+                <value>com.epam.aerl.mentoring.entity.UniversityStatusDTO</value>
             </list>
         </property>
         <property name="hibernateProperties">

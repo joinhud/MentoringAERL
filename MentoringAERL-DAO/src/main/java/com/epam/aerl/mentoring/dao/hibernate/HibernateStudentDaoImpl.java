@@ -1,33 +1,35 @@
 package com.epam.aerl.mentoring.dao.hibernate;
 
 import com.epam.aerl.mentoring.dao.StudentDao;
-import com.epam.aerl.mentoring.entity.Student;
+import com.epam.aerl.mentoring.entity.StudentDTO;
 import com.epam.aerl.mentoring.exception.DaoLayerException;
 import com.epam.aerl.mentoring.type.ErrorMessage;
+import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.IdentifierLoadAccess;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import javax.persistence.PersistenceException;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 @Repository("hibernateStudentDaoImpl")
 public class HibernateStudentDaoImpl extends HibernateAbstractDao implements StudentDao {
-  private static final String INCORRECT_INPUT_DATA_ERR_MSG = "Input data is incorrect. Student name or surname more than 20 symbols.";
+  private static final String INCORRECT_INPUT_DATA_ERR_MSG = "Input data is incorrect. StudentDTO name or surname more than 20 symbols.";
+  private static final String CRITERIA_UNIVERSITY_ID_PARAMETER = "universityDTO";
 
   @Override
-  public Student findStudentById(final Long id) {
-    Student result = null;
+  public StudentDTO findStudentById(final Long id) {
+    StudentDTO result = null;
 
     if (id != null) {
-      Transaction tx = sessionFactory.getCurrentSession().getTransaction();
+      final Transaction tx = sessionFactory.getCurrentSession().beginTransaction();
 
-      if (tx == null) {
-        tx = sessionFactory.getCurrentSession().beginTransaction();
-      }
-
-      final IdentifierLoadAccess<Student> identifier = sessionFactory.getCurrentSession().byId(Student.class);
+      final IdentifierLoadAccess<StudentDTO> identifier = sessionFactory.getCurrentSession().byId(StudentDTO.class);
       result = identifier.load(id);
       tx.commit();
     }
@@ -36,18 +38,18 @@ public class HibernateStudentDaoImpl extends HibernateAbstractDao implements Stu
   }
 
   @Override
-  public Student create(final Student student) throws DaoLayerException {
-    Student result = null;
+  public StudentDTO create(final StudentDTO studentDTO) throws DaoLayerException {
+    StudentDTO result = null;
     final Transaction tx = sessionFactory.getCurrentSession().beginTransaction();
 
-    if (student != null) {
+    if (studentDTO != null) {
       try {
-        student.setCreationInBD(LocalDateTime.now());
-        student.setLastUpdateInBD(LocalDateTime.now());
-        sessionFactory.getCurrentSession().save(student);
+        studentDTO.setCreationInBD(LocalDateTime.now());
+        studentDTO.setLastUpdateInBD(LocalDateTime.now());
+        sessionFactory.getCurrentSession().save(studentDTO);
         tx.commit();
 
-        result = student;
+        result = studentDTO;
       } catch (PersistenceException e) {
         tx.rollback();
         throw new DaoLayerException(INCORRECT_INPUT_DATA_ERR_MSG, e, ErrorMessage.NO_VALID_STUDENT_DATA.getCode());
@@ -62,8 +64,8 @@ public class HibernateStudentDaoImpl extends HibernateAbstractDao implements Stu
     boolean result = false;
 
     if (id != null) {
+      StudentDTO founded = findStudentById(id);
       final Transaction tx = sessionFactory.getCurrentSession().beginTransaction();
-      Student founded = findStudentById(id);
 
       if (founded != null) {
         sessionFactory.getCurrentSession().delete(founded);
@@ -76,21 +78,43 @@ public class HibernateStudentDaoImpl extends HibernateAbstractDao implements Stu
   }
 
   @Override
-  public Student update(final Student student) throws DaoLayerException {
-    Student result = null;
-    final Transaction tx = sessionFactory.getCurrentSession().beginTransaction();
+  public StudentDTO update(final StudentDTO studentDTO) throws DaoLayerException {
+    StudentDTO result = null;
 
-    if (findStudentById(student.getId()) != null) {
+    if (findStudentById(studentDTO.getId()) != null) {
+      final Transaction tx = sessionFactory.getCurrentSession().beginTransaction();
+
       try {
         Session session = sessionFactory.getCurrentSession();
         session.clear();
-        session.update(student);
+        session.update(studentDTO);
         tx.commit();
-        result = student;
+        result = studentDTO;
       } catch (PersistenceException e) {
         tx.rollback();
         throw new DaoLayerException(INCORRECT_INPUT_DATA_ERR_MSG, e, ErrorMessage.NO_VALID_STUDENT_DATA.getCode());
       }
+    }
+
+    return result;
+  }
+
+  @Override
+  public List<StudentDTO> findNotAssignedStudents() {
+    List<StudentDTO> result = null;
+
+    final Transaction tx = sessionFactory.getCurrentSession().beginTransaction();
+    final CriteriaBuilder builder = sessionFactory.getCurrentSession().getCriteriaBuilder();
+
+    final CriteriaQuery<StudentDTO> criteria = builder.createQuery(StudentDTO.class);
+    Root<StudentDTO> root = criteria.from(StudentDTO.class);
+    criteria.select(root);
+    criteria.where(builder.isNull(root.get(CRITERIA_UNIVERSITY_ID_PARAMETER)));
+
+    List resultList = sessionFactory.getCurrentSession().createQuery(criteria).getResultList();
+
+    if (CollectionUtils.isNotEmpty(resultList)) {
+      result = resultList;
     }
 
     return result;
