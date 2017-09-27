@@ -144,7 +144,7 @@ public class UniversityDomainModel extends AbstractDomainModel {
     }
 
     if (students != null) {
-      builder.append(", studentDTOs=").append(students);
+      builder.append(", students=").append(students);
     }
 
     builder.append('}');

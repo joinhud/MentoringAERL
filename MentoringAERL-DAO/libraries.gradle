@@ -5,4 +5,5 @@ ext {
     springJDBC = 'org.springframework:spring-jdbc:4.3.10.RELEASE'
     springORM = 'org.springframework:spring-orm:4.3.11.RELEASE'
     springTX = 'org.springframework:spring-tx:4.3.11.RELEASE'
+    dozer = 'net.sf.dozer:dozer:5.5.1'
 }

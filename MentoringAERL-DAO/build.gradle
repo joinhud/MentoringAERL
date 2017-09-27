@@ -29,4 +29,5 @@ dependencies {
     compile springJDBC
     compile springORM
     compile springTX
+    compile dozer
 }

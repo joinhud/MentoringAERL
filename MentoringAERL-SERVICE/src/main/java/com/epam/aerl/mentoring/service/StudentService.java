@@ -6,6 +6,7 @@ import static com.epam.aerl.mentoring.type.UniversityStatus.PENDING_GOVERNMENT_A
 import com.epam.aerl.mentoring.dao.StudentDao;
 import com.epam.aerl.mentoring.entity.StudentDTO;
 import com.epam.aerl.mentoring.entity.StudentDomainModel;
+import com.epam.aerl.mentoring.entity.UniversityDTO;
 import com.epam.aerl.mentoring.entity.UniversityDomainModel;
 import com.epam.aerl.mentoring.exception.DaoLayerException;
 import com.epam.aerl.mentoring.exception.ServiceLayerException;
@@ -14,12 +15,11 @@ import com.epam.aerl.mentoring.type.ErrorMessage;
 import com.epam.aerl.mentoring.type.GenerationClass;
 import com.epam.aerl.mentoring.type.UniversityStatus;
 import com.epam.aerl.mentoring.util.CriteriaAnalyser;
-import com.epam.aerl.mentoring.util.StudentDomainModelDTOConverter;
 import com.epam.aerl.mentoring.util.StudentsGenerator;
-import com.epam.aerl.mentoring.util.UniversityDomainModelDTOConverter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dozer.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -38,6 +38,10 @@ public class StudentService {
   private static final Logger LOG = LogManager.getLogger(StudentService.class);
 
   @Autowired
+  @Qualifier("maxStudentsAmount")
+  private Integer maxAmount;
+
+  @Autowired
   @Qualifier("studentDaoImpl")
   private StudentDao studentDao;
 
@@ -54,12 +58,8 @@ public class StudentService {
   private StudentsGenerator randomStudentsGenerator;
 
   @Autowired
-  @Qualifier("studentDomainModelDTOConverter")
-  private StudentDomainModelDTOConverter studentDomainModelDTOConverter;
-
-  @Autowired
-  @Qualifier("universityDomainModelDTOConverter")
-  private UniversityDomainModelDTOConverter universityDomainModelDTOConverter;
+  @Qualifier("dozerBeanMapper")
+  private Mapper mapper;
 
   public void setStudentDao(StudentDao studentDao) {
     this.studentDao = studentDao;
@@ -77,14 +77,12 @@ public class StudentService {
     this.randomStudentsGenerator = randomStudentsGenerator;
   }
 
-  public void setStudentDomainModelDTOConverter(
-      StudentDomainModelDTOConverter studentDomainModelDTOConverter) {
-    this.studentDomainModelDTOConverter = studentDomainModelDTOConverter;
+  public void setMaxAmount(Integer maxAmount) {
+    this.maxAmount = maxAmount;
   }
 
-  public void setUniversityDomainModelDTOConverter(
-      UniversityDomainModelDTOConverter universityDomainModelDTOConverter) {
-    this.universityDomainModelDTOConverter = universityDomainModelDTOConverter;
+  public void setMapper(Mapper mapper) {
+    this.mapper = mapper;
   }
 
   public List<StudentDomainModel> generateStudentsByCriteria(final String criteriaString) throws ServiceLayerException {
@@ -96,7 +94,7 @@ public class StudentService {
       if (parsedCriteria != null) {
         final Integer generationCount = parsedCriteria.get(GenerationClass.S.toString());
 
-        if (generationCount != null && generationCount <= 30) {
+        if (generationCount != null && generationCount <= maxAmount) {
           try {
             final List<StudentDomainModel> generatedStudents = criteriaStudentsGenerator.generateStudents(parsedCriteria);
 
@@ -104,9 +102,9 @@ public class StudentService {
               result = new ArrayList<>();
 
               for (StudentDomainModel student : generatedStudents) {
-                final StudentDTO studentDTO = studentDomainModelDTOConverter.convertModelToDTO(student);
+                final StudentDTO studentDTO = mapper.map(student, StudentDTO.class);
                 final StudentDTO savedStudentDTO = studentDao.create(studentDTO);
-                result.add(studentDomainModelDTOConverter.convertDTOToModel(savedStudentDTO));
+                result.add(mapper.map(savedStudentDTO, StudentDomainModel.class));
               }
             }
           } catch (StudentsGeneratorException e) {
@@ -126,7 +124,7 @@ public class StudentService {
   public List<StudentDomainModel> generateCertainAmountOfStudents(final int amount) throws ServiceLayerException {
     List<StudentDomainModel> result = null;
 
-    if (amount <= 30) {
+    if (amount <= maxAmount) {
       final Map<String, Integer> criteria = new HashMap<>();
       criteria.put(GenerationClass.S.toString(), amount);
 
@@ -137,9 +135,9 @@ public class StudentService {
           result = new ArrayList<>();
 
           for (StudentDomainModel student : generatedStudents) {
-            final StudentDTO studentDTO = studentDomainModelDTOConverter.convertModelToDTO(student);
+            final StudentDTO studentDTO = mapper.map(student, StudentDTO.class);
             final StudentDTO savedStudentDTO = studentDao.create(studentDTO);
-            result.add(studentDomainModelDTOConverter.convertDTOToModel(savedStudentDTO));
+            result.add(mapper.map(savedStudentDTO, StudentDomainModel.class));
           }
         }
       } catch (StudentsGeneratorException e) {
@@ -164,7 +162,7 @@ public class StudentService {
         final StudentDTO foundedStudent = studentDao.findStudentById(id);
 
         if (foundedStudent != null) {
-          result.add(studentDomainModelDTOConverter.convertDTOToModel(foundedStudent));
+          result.add(mapper.map(foundedStudent, StudentDomainModel.class));
         }
       }
     }
@@ -199,8 +197,8 @@ public class StudentService {
           final UniversityStatus status = university.getStatus();
 
           if (!CLOSED.equals(status) && !PENDING_GOVERNMENT_APPROVAL.equals(status)) {
-            final StudentDTO studentDTO = studentDomainModelDTOConverter.convertModelToDTO(student);
-            studentDTO.setUniversityDTO(universityDomainModelDTOConverter.convertModelToDTO(university));
+            final StudentDTO studentDTO = mapper.map(student, StudentDTO.class);
+            studentDTO.setUniversityDTO(mapper.map(university, UniversityDTO.class));
 
             final StudentDTO assignedStudent = studentDao.update(studentDTO);
 
@@ -225,16 +223,16 @@ public class StudentService {
 
       for (StudentDomainModel student : students) {
         final StudentDTO founded = studentDao.findStudentById(student.getId());
-        final StudentDomainModel foundedStudentModel = studentDomainModelDTOConverter.convertDTOToModel(founded);
+        final StudentDomainModel foundedStudentModel = mapper.map(founded, StudentDomainModel.class);
 
         final StudentDomainModel modifiedStudent = compareStudentsModels(foundedStudentModel, student);
 
         if (modifiedStudent != null) {
           try {
-            final StudentDTO updatedStudentDTO = studentDao.update(studentDomainModelDTOConverter.convertModelToDTO(modifiedStudent));
+            final StudentDTO updatedStudentDTO = studentDao.update(mapper.map(modifiedStudent, StudentDTO.class));
 
             if (updatedStudentDTO != null) {
-              result.add(studentDomainModelDTOConverter.convertDTOToModel(updatedStudentDTO));
+              result.add(mapper.map(updatedStudentDTO, StudentDomainModel.class));
             }
           } catch (DaoLayerException e) {
             LOG.warn(e);
@@ -246,7 +244,8 @@ public class StudentService {
     return result;
   }
 
-  private StudentDomainModel compareStudentsModels(final StudentDomainModel original, final StudentDomainModel modificationModel) {
+  private StudentDomainModel compareStudentsModels(final StudentDomainModel original,
+      final StudentDomainModel modificationModel) {
     final StudentDomainModel result = original;
 
     if (modificationModel.getName() != null) {

@@ -18,6 +18,7 @@ import com.epam.aerl.mentoring.util.UniversityDomainModelDTOConverter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dozer.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -43,12 +44,8 @@ public class UniversityService {
   private StudentDao studentDao;
 
   @Autowired
-  @Qualifier("universityDomainModelDTOConverter")
-  private UniversityDomainModelDTOConverter universityDomainModelDTOConverter;
-
-  @Autowired
-  @Qualifier("studentDomainModelDTOConverter")
-  private StudentDomainModelDTOConverter studentDomainModelDTOConverter;
+  @Qualifier("dozerBeanMapper")
+  private Mapper mapper;
 
   public void setUniversityDao(UniversityDao universityDao) {
     this.universityDao = universityDao;
@@ -58,14 +55,8 @@ public class UniversityService {
     this.studentDao = studentDao;
   }
 
-  public void setUniversityDomainModelDTOConverter(
-      UniversityDomainModelDTOConverter universityDomainModelDTOConverter) {
-    this.universityDomainModelDTOConverter = universityDomainModelDTOConverter;
-  }
-
-  public void setStudentDomainModelDTOConverter(
-      StudentDomainModelDTOConverter studentDomainModelDTOConverter) {
-    this.studentDomainModelDTOConverter = studentDomainModelDTOConverter;
+  public void setMapper(Mapper mapper) {
+    this.mapper = mapper;
   }
 
   public UniversityDomainModel createNewUniversity(final UniversityDomainModel university) throws ServiceLayerException {
@@ -73,10 +64,10 @@ public class UniversityService {
 
     if (university != null) {
       try {
-        final UniversityDTO createdUniversity = universityDao.create(universityDomainModelDTOConverter.convertModelToDTO(university));
+        final UniversityDTO createdUniversity = universityDao.create(mapper.map(university, UniversityDTO.class));
 
         if (createdUniversity != null) {
-          result = universityDomainModelDTOConverter.convertDTOToModel(createdUniversity);
+          result = mapper.map(createdUniversity, UniversityDomainModel.class);
         }
       } catch (DaoLayerException e) {
         throw new ServiceLayerException(ErrorMessage.FAILED_ACCESS_TO_DB.getCode(), WRITE_TO_DB_ERR_MSG, e);
@@ -96,7 +87,7 @@ public class UniversityService {
 
         if (!CLOSED.equals(foundedUniversity.getUniversityStatusDTO().getStatusName())
             && !PENDING_GOVERNMENT_APPROVAL.equals(foundedUniversity.getUniversityStatusDTO().getStatusName())) {
-          final UniversityDomainModel foundedUniversityModel = universityDomainModelDTOConverter.convertDTOToModel(foundedUniversity);
+          final UniversityDomainModel foundedUniversityModel = mapper.map(foundedUniversity, UniversityDomainModel.class);
 
           if (foundedUniversityModel.getStudents() != null) {
             result = new ArrayList<>(foundedUniversityModel.getStudents());
@@ -123,7 +114,7 @@ public class UniversityService {
       List<StudentDomainModel> notAssignedModels = new ArrayList<>();
 
       for (StudentDTO studentDTO : notAssigned) {
-        StudentDomainModel model = studentDomainModelDTOConverter.convertDTOToModel(studentDTO);
+        StudentDomainModel model = mapper.map(studentDTO, StudentDomainModel.class);
 
         if (model != null) {
           notAssignedModels.add(model);
@@ -139,7 +130,7 @@ public class UniversityService {
       List<StudentDomainModel> assignedToClosed = new ArrayList<>();
 
       for (UniversityDTO universityDTO : closedUniversities) {
-        UniversityDomainModel closedModel = universityDomainModelDTOConverter.convertDTOToModel(universityDTO);
+        UniversityDomainModel closedModel = mapper.map(universityDTO, UniversityDomainModel.class);
 
         if (closedModel.getStudents() != null) {
           assignedToClosed.addAll(closedModel.getStudents());
@@ -155,7 +146,7 @@ public class UniversityService {
       List<StudentDomainModel> assignedToPendingGovernmentApproval = new ArrayList<>();
 
       for (UniversityDTO universityDTO : pendingGovernmentAppUniversities) {
-        UniversityDomainModel pendingModel = universityDomainModelDTOConverter.convertDTOToModel(universityDTO);
+        UniversityDomainModel pendingModel = mapper.map(universityDTO, UniversityDomainModel.class);
 
         if (pendingModel.getStudents() != null) {
           assignedToPendingGovernmentApproval.addAll(pendingModel.getStudents());
@@ -178,11 +169,11 @@ public class UniversityService {
 
       for (UniversityDomainModel university : universities) {
         university.setStatus(newStatus);
-        final UniversityDTO universityDTO = universityDomainModelDTOConverter.convertModelToDTO(university);
+        final UniversityDTO universityDTO = mapper.map(university, UniversityDTO.class);
 
         try {
           final UniversityDTO updatedDTO = universityDao.update(universityDTO);
-          result.add(universityDomainModelDTOConverter.convertDTOToModel(updatedDTO));
+          result.add(mapper.map(updatedDTO, UniversityDomainModel.class));
         } catch (DaoLayerException e) {
           LOG.warn(e);
         }

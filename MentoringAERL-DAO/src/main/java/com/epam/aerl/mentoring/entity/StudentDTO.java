@@ -162,7 +162,12 @@ public class StudentDTO extends BaseDTO {
     if (universityDTO != null) {
       builder.append(", universityDTO [ID=").append(universityDTO.getId());
       builder.append(", name='").append(universityDTO.getName()).append("'");
-      builder.append(", status='").append(universityDTO.getUniversityStatusDTO().getStatusName().toString() ).append("']");
+
+      if (universityDTO.getUniversityStatusDTO() != null) {
+        builder.append(", status='").append(universityDTO.getUniversityStatusDTO().getStatusName().toString() ).append("']");
+      } else {
+        builder.append("]");
+      }
     }
 
     builder.append(", name='").append(name).append("'");

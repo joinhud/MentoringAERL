@@ -11,6 +11,7 @@ public class StudentDomainModel extends AbstractDomainModel {
   private String surname;
   private Integer age;
   private Integer course;
+  private UniversityDomainModel university;
   private Map<Subject, Integer> marks;
   private LocalDateTime creationInDbDate;
   private LocalDateTime lastUpdateInDbDate;
@@ -82,6 +83,14 @@ public class StudentDomainModel extends AbstractDomainModel {
     this.lastUpdateInDbDate = lastUpdateInDbDate;
   }
 
+  public UniversityDomainModel getUniversity() {
+    return university;
+  }
+
+  public void setUniversity(UniversityDomainModel university) {
+    this.university = university;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -134,6 +143,17 @@ public class StudentDomainModel extends AbstractDomainModel {
       builder.append(", course=").append(course);
     }
 
+    if (university != null) {
+      builder.append(", universityDomainModel [ID=").append(university.getId());
+      builder.append(", name='").append(university.getName()).append("'");
+
+      if (university.getStatus() != null) {
+        builder.append(", status='").append(university.getStatus().toString()).append("']");
+      } else {
+        builder.append(']');
+      }
+    }
+
     if (marks != null) {
       builder.append(", marks=").append(marks);
     }
@@ -141,7 +161,6 @@ public class StudentDomainModel extends AbstractDomainModel {
     if (creationInDbDate != null) {
       builder.append(", creationInBD=").append(creationInDbDate);
     }
-
 
     if (lastUpdateInDbDate != null) {
       builder.append(", lastUpdateInBD=").append(lastUpdateInDbDate).append('}');

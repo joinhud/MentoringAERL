@@ -4,7 +4,11 @@ import static com.epam.aerl.mentoring.entity.StudentRangeCriteria.createRangeCri
 import static com.epam.aerl.mentoring.util.StudentPropertiesHolder.createStudentPropertiesHolderBuilder;
 
 import com.epam.aerl.mentoring.entity.StudentRangeCriteria;
+import com.epam.aerl.mentoring.util.MarksDozerConverter;
 import com.epam.aerl.mentoring.util.StudentPropertiesHolder;
+import com.epam.aerl.mentoring.util.UniversityStatusDozerConverter;
+import org.dozer.CustomConverter;
+import org.dozer.DozerBeanMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -13,13 +17,19 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 @Configuration
 @ComponentScan(value = {"com.epam.aerl.mentoring.service", "com.epam.aerl.mentoring.util"})
 @ImportResource("classpath:dao-spring-context.xml")
-@PropertySource({"classpath:students.properties", "classpath:database.properties"})
+@PropertySource({
+    "classpath:students.properties",
+    "classpath:database.properties",
+    "classpath:students.generation.constraints.properties"
+})
 public class ServiceLayerConfig {
   @Value("${student.min.course}")
   private String minCourse;
@@ -69,6 +79,9 @@ public class ServiceLayerConfig {
   @Value("${student.max.age.fifth.course}")
   private String maxFifthCourseAge;
 
+  @Value("${max.amount}")
+  private String maxAmount;
+
   @Bean
   public StudentPropertiesHolder studentPropertiesHolder() {
     StudentRangeCriteria courseRange = createRangeCriteriaBuilder()
@@ -116,6 +129,25 @@ public class ServiceLayerConfig {
         .studentMarkRange(markRange)
         .studentCourseAgeRanges(courseAgeRanges)
         .build();
+  }
+
+  @Bean(name = "maxStudentsAmount")
+  public Integer maxStudentsAmount() {
+    return Integer.valueOf(maxAmount);
+  }
+
+  @Bean(name = "dozerBeanMapper")
+  public DozerBeanMapper dozerBeanMapper() {
+    DozerBeanMapper mapper = new DozerBeanMapper();
+    List<String> mappingFiles = new ArrayList<>();
+    mappingFiles.add("mappings/dozer-mapping.xml");
+    mapper.setMappingFiles(mappingFiles);
+    List<CustomConverter> converters = new ArrayList<>();
+    converters.add(new MarksDozerConverter());
+    converters.add(new UniversityStatusDozerConverter());
+    mapper.setCustomConverters(converters);
+
+    return mapper;
   }
 
   @Bean

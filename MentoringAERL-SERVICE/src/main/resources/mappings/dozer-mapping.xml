@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mappings xmlns="http://dozer.sourceforge.net"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://dozer.sourceforge.net
+          http://dozer.sourceforge.net/schema/beanmapping.xsd">
+
+    <mapping>
+        <class-a>com.epam.aerl.mentoring.entity.StudentDTO</class-a>
+        <class-b>com.epam.aerl.mentoring.entity.StudentDomainModel</class-b>
+        <field>
+            <a>id</a>
+            <b>id</b>
+        </field>
+        <field>
+            <a>name</a>
+            <b>name</b>
+        </field>
+        <field>
+            <a>surname</a>
+            <b>surname</b>
+        </field>
+        <field>
+            <a>age</a>
+            <b>age</b>
+        </field>
+        <field>
+            <a>course</a>
+            <b>course</b>
+        </field>
+        <field>
+            <a>universityDTO</a>
+            <b>university</b>
+        </field>
+        <field custom-converter="com.epam.aerl.mentoring.util.MarksDozerConverter">
+            <a>marks</a>
+            <b>marks</b>
+        </field>
+        <field copy-by-reference="true">
+            <a>creationInBD</a>
+            <b>creationInDbDate</b>
+        </field>
+        <field copy-by-reference="true">
+            <a>lastUpdateInBD</a>
+            <b>lastUpdateInDbDate</b>
+        </field>
+    </mapping>
+
+    <mapping>
+        <class-a>com.epam.aerl.mentoring.entity.UniversityDTO</class-a>
+        <class-b>com.epam.aerl.mentoring.entity.UniversityDomainModel</class-b>
+        <field>
+            <a>id</a>
+            <b>id</b>
+        </field>
+        <field>
+            <a>name</a>
+            <b>name</b>
+        </field>
+        <field>
+            <a>description</a>
+            <b>description</b>
+        </field>
+        <field custom-converter="com.epam.aerl.mentoring.util.UniversityStatusDozerConverter">
+            <a>universityStatusDTO</a>
+            <b>status</b>
+        </field>
+        <field copy-by-reference="true">
+            <a>foundationDate</a>
+            <b>foundationDate</b>
+        </field>
+        <field copy-by-reference="true">
+            <a>creationInDB</a>
+            <b>creationInDbDate</b>
+        </field>
+        <field copy-by-reference="true">
+            <a>lastUpdateInDB</a>
+            <b>lastUpdateInDbDate</b>
+        </field>
+        <field>
+            <a>studentDTOs</a>
+            <b>students</b>
+        </field>
+    </mapping>
+</mappings>
