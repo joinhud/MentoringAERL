@@ -1,0 +1,7 @@
+ext {
+    springWebMVC = 'org.springframework:spring-webmvc:4.3.11.RELEASE'
+    springWeb = 'org.springframework:spring-web:4.3.11.RELEASE'
+    springCore = 'org.springframework:spring-core:4.3.11.RELEASE'
+    servletApi = 'javax.servlet:javax.servlet-api:4.0.0'
+    jacksonDatabind = 'com.fasterxml.jackson.core:jackson-databind:2.9.1'
+}

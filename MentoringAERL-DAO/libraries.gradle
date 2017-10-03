@@ -5,5 +5,9 @@ ext {
     springJDBC = 'org.springframework:spring-jdbc:4.3.10.RELEASE'
     springORM = 'org.springframework:spring-orm:4.3.11.RELEASE'
     springTX = 'org.springframework:spring-tx:4.3.11.RELEASE'
+    springContext = 'org.springframework:spring-context:4.3.10.RELEASE'
+    springContextSuppot = 'org.springframework:spring-context-support:4.3.10.RELEASE'
+    apacheCollections = 'org.apache.commons:commons-collections4:4.1'
+    apacheCommonsLang = 'org.apache.commons:commons-lang3:3.6'
     dozer = 'net.sf.dozer:dozer:5.5.1'
 }

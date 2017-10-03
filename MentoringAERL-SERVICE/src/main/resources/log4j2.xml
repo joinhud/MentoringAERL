@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration universityStatusDTO="debug">
     <Properties>
-        <Property name="filepath">logs</Property>
-        <Property name="errorFilePath">errors</Property>
+        <Property name="filepath">C:/Program Files/Apache Software Foundation/Tomcat 9.0/logs/MentoringAERL_logs</Property>
+        <Property name="errorFilePath">C:/Program Files/Apache Software Foundation/Tomcat 9.0/logs/MentoringAERL_error_logs</Property>
         <Property name="pattern">%d{yyy-MM-dd HH:mm:ss} [%t] %-5level %logger{36}: %msg%n</Property>
     </Properties>
 
@@ -13,7 +13,7 @@
             <PatternLayout pattern="${pattern}"/>
             <Policies>
                 <TimeBasedTriggeringPolicy />
-                <SizeBasedTriggeringPolicy size="5 KB"/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
             </Policies>
         </RollingFile>
         <RollingFile name="ErrorFile" fileName="${errorFilePath}/error.log"
@@ -22,7 +22,7 @@
             <PatternLayout pattern="${pattern}"/>
             <Policies>
                 <TimeBasedTriggeringPolicy />
-                <SizeBasedTriggeringPolicy size="523 KB"/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
             </Policies>
         </RollingFile>
     </Appenders>

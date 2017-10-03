@@ -5,6 +5,7 @@ import com.epam.aerl.mentoring.type.Subject;
 import org.dozer.DozerConverter;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -34,6 +35,8 @@ public class MarksDozerConverter extends DozerConverter<Set, Map> {
     Set<StudentMarkDTO> result = null;
 
     if (source != null) {
+      result = new HashSet<>();
+
       for (Object mark : source.entrySet()) {
         StudentMarkDTO markDTO = new StudentMarkDTO();
         markDTO.setSubject(((Map.Entry<Subject, Integer>)mark).getKey());

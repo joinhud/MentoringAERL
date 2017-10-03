@@ -22,7 +22,14 @@ sourceSets {
 }
 
 dependencies {
-    compile project(':MentoringAERL-LEGACY')
     compile project(':MentoringAERL-DAO')
     compile SimpleJSON
+    compile log4j
+}
+
+
+task copyResources(type: Copy) {
+    from 'src/main/resources/first-names.json'
+    from 'src/main/resources/surnames.json'
+    into 'C:/Work/ProjectSources/MentoringAERL/'
 }

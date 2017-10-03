@@ -22,12 +22,15 @@ sourceSets {
 }
 
 dependencies {
-    compile project(':MentoringAERL-LEGACY')
     compile hibernateCore
     compile apacheCommonsDBCP
     compile postgreSQLJDBCDriver
+    compile dozer
+    compile springContext
+    compile springContextSuppot
     compile springJDBC
     compile springORM
     compile springTX
-    compile dozer
+    compile apacheCollections
+    compile apacheCommonsLang
 }

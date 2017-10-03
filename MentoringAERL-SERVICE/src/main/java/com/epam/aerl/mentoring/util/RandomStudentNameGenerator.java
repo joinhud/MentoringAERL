@@ -16,8 +16,8 @@ import javax.annotation.PostConstruct;
 public class RandomStudentNameGenerator {
   private static final String FILE_ERROR_MSG = "Cannot read data from json file with names.";
   private static final Random RANDOM = new Random();
-  private static final String NAMES_JSON_FILE = "MentoringAERL-SERVICE/src/main/resources/first-names.json";
-  private static final String SURNAME_JSON_FILE = "MentoringAERL-SERVICE/src/main/resources/surnames.json";
+  private static final String NAMES_JSON_FILE = "C:/Work/ProjectSources/MentoringAERL/first-names.json";
+  private static final String SURNAME_JSON_FILE = "C:/Work/ProjectSources/MentoringAERL/surnames.json";
 
   private JSONArray names;
   private JSONArray surnames;

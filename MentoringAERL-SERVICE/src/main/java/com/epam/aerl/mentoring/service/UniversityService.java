@@ -13,8 +13,6 @@ import com.epam.aerl.mentoring.exception.DaoLayerException;
 import com.epam.aerl.mentoring.exception.ServiceLayerException;
 import com.epam.aerl.mentoring.type.ErrorMessage;
 import com.epam.aerl.mentoring.type.UniversityStatus;
-import com.epam.aerl.mentoring.util.StudentDomainModelDTOConverter;
-import com.epam.aerl.mentoring.util.UniversityDomainModelDTOConverter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -70,6 +68,7 @@ public class UniversityService {
           result = mapper.map(createdUniversity, UniversityDomainModel.class);
         }
       } catch (DaoLayerException e) {
+        LOG.error(e);
         throw new ServiceLayerException(ErrorMessage.FAILED_ACCESS_TO_DB.getCode(), WRITE_TO_DB_ERR_MSG, e);
       }
     }

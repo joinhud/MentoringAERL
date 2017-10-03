@@ -93,11 +93,20 @@ public class StudentMarkDTO extends BaseDTO {
 
   @Override
   public String toString() {
-    return "StudentMarkDTO{" +
-        "id=" + id +
-        ", studentDTO [ID=" + studentDTO.getId() + "]" +
-        ", subject=" + subject +
-        ", mark=" + mark +
-        '}';
+    String result = "StudentMarkDTO{";
+    StringBuilder builder = new StringBuilder(result);
+    builder.append("id=").append(id);
+
+    if (studentDTO != null) {
+      builder.append(", studentDTO [ID=").append(studentDTO.getId()).append("]");
+    }
+
+    builder.append(", subject=").append(subject);
+    builder.append(", mark=").append(mark);
+    builder.append("}");
+
+    result = builder.toString();
+
+    return result;
   }
 }

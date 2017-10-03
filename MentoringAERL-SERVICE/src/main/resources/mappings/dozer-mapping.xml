@@ -4,29 +4,9 @@
           xsi:schemaLocation="http://dozer.sourceforge.net
           http://dozer.sourceforge.net/schema/beanmapping.xsd">
 
-    <mapping>
+    <mapping map-null="false">
         <class-a>com.epam.aerl.mentoring.entity.StudentDTO</class-a>
         <class-b>com.epam.aerl.mentoring.entity.StudentDomainModel</class-b>
-        <field>
-            <a>id</a>
-            <b>id</b>
-        </field>
-        <field>
-            <a>name</a>
-            <b>name</b>
-        </field>
-        <field>
-            <a>surname</a>
-            <b>surname</b>
-        </field>
-        <field>
-            <a>age</a>
-            <b>age</b>
-        </field>
-        <field>
-            <a>course</a>
-            <b>course</b>
-        </field>
         <field>
             <a>universityDTO</a>
             <b>university</b>
@@ -34,6 +14,8 @@
         <field custom-converter="com.epam.aerl.mentoring.util.MarksDozerConverter">
             <a>marks</a>
             <b>marks</b>
+            <a-hint>java.util.HashSet</a-hint>
+            <b-hint>java.util.HashMap</b-hint>
         </field>
         <field copy-by-reference="true">
             <a>creationInBD</a>
@@ -48,18 +30,6 @@
     <mapping>
         <class-a>com.epam.aerl.mentoring.entity.UniversityDTO</class-a>
         <class-b>com.epam.aerl.mentoring.entity.UniversityDomainModel</class-b>
-        <field>
-            <a>id</a>
-            <b>id</b>
-        </field>
-        <field>
-            <a>name</a>
-            <b>name</b>
-        </field>
-        <field>
-            <a>description</a>
-            <b>description</b>
-        </field>
         <field custom-converter="com.epam.aerl.mentoring.util.UniversityStatusDozerConverter">
             <a>universityStatusDTO</a>
             <b>status</b>
@@ -79,6 +49,28 @@
         <field>
             <a>studentDTOs</a>
             <b>students</b>
+        </field>
+    </mapping>
+
+    <mapping map-null="false">
+        <class-a>com.epam.aerl.mentoring.entity.StudentDomainModel</class-a>
+        <class-b>com.epam.aerl.mentoring.entity.Student</class-b>
+        <field>
+            <a>marks</a>
+            <b>marks</b>
+        </field>
+    </mapping>
+
+    <mapping>
+        <class-a>com.epam.aerl.mentoring.entity.UniversityDomainModel</class-a>
+        <class-b>com.epam.aerl.mentoring.entity.University</class-b>
+        <field copy-by-reference="true">
+            <a>status</a>
+            <b>status</b>
+        </field>
+        <field copy-by-reference="true">
+            <a>foundationDate</a>
+            <b>foundationDate</b>
         </field>
     </mapping>
 </mappings>

@@ -4,12 +4,14 @@ import static com.epam.aerl.mentoring.type.UniversityStatus.CLOSED;
 import static com.epam.aerl.mentoring.type.UniversityStatus.PENDING_GOVERNMENT_APPROVAL;
 
 import com.epam.aerl.mentoring.dao.StudentDao;
+import com.epam.aerl.mentoring.dao.UniversityDao;
 import com.epam.aerl.mentoring.entity.StudentDTO;
 import com.epam.aerl.mentoring.entity.StudentDomainModel;
 import com.epam.aerl.mentoring.entity.UniversityDTO;
 import com.epam.aerl.mentoring.entity.UniversityDomainModel;
 import com.epam.aerl.mentoring.exception.DaoLayerException;
 import com.epam.aerl.mentoring.exception.ServiceLayerException;
+import com.epam.aerl.mentoring.exception.StudentClassCriteriaException;
 import com.epam.aerl.mentoring.exception.StudentsGeneratorException;
 import com.epam.aerl.mentoring.type.ErrorMessage;
 import com.epam.aerl.mentoring.type.GenerationClass;
@@ -34,6 +36,7 @@ public class StudentService {
   private static final String GENERATION_ERROR_MSG = "Can not generate students by criteria.";
   private static final String WRITE_TO_DB_MSG_ERR = "Can not write data to database.";
   private static final String INCORRECT_NUMBER_OF_STUDENTS_MSG_ERR = "The number of students more than 30.";
+  private static final String CONFLICTS_IN_CRITERIA_MSG_ERR = "Criteria string has conflicts.";
 
   private static final Logger LOG = LogManager.getLogger(StudentService.class);
 
@@ -44,6 +47,10 @@ public class StudentService {
   @Autowired
   @Qualifier("studentDaoImpl")
   private StudentDao studentDao;
+
+  @Autowired
+  @Qualifier("universityDaoImpl")
+  private UniversityDao universityDao;
 
   @Autowired
   @Qualifier("criteriaAnalyser")
@@ -89,7 +96,14 @@ public class StudentService {
     List<StudentDomainModel> result = null;
 
     if (StringUtils.isNotBlank(criteriaString)) {
-      final Map<String, Integer> parsedCriteria = criteriaAnalyser.parse(criteriaString);
+      Map<String, Integer> parsedCriteria = criteriaAnalyser.parse(criteriaString);
+
+      try {
+        parsedCriteria = criteriaAnalyser.validate(parsedCriteria);
+      } catch (StudentClassCriteriaException e) {
+        LOG.error(e);
+        throw new ServiceLayerException(ErrorMessage.CONFLICTS_INPUT_CRITERIA.getCode(), CONFLICTS_IN_CRITERIA_MSG_ERR, e);
+      }
 
       if (parsedCriteria != null) {
         final Integer generationCount = parsedCriteria.get(GenerationClass.S.toString());
@@ -108,8 +122,10 @@ public class StudentService {
               }
             }
           } catch (StudentsGeneratorException e) {
+            LOG.error(e);
             throw new ServiceLayerException(ErrorMessage.GENERATION_ERROR.getCode(), GENERATION_ERROR_MSG, e);
           } catch (DaoLayerException e) {
+            LOG.error(e);
             throw new ServiceLayerException(ErrorMessage.FAILED_ACCESS_TO_DB.getCode(), WRITE_TO_DB_MSG_ERR, e);
           }
         } else {
@@ -141,8 +157,10 @@ public class StudentService {
           }
         }
       } catch (StudentsGeneratorException e) {
+        LOG.error(e);
         throw new ServiceLayerException(ErrorMessage.GENERATION_ERROR.getCode(), GENERATION_ERROR_MSG, e);
       } catch (DaoLayerException e) {
+        LOG.error(e);
         throw new ServiceLayerException(ErrorMessage.FAILED_ACCESS_TO_DB.getCode(), WRITE_TO_DB_MSG_ERR, e);
       }
     } else {
@@ -190,24 +208,29 @@ public class StudentService {
     List<Long> result = null;
 
     if (students != null && university != null) {
-      result = new ArrayList<>();
+      if (university.getId() != null) {
+        result = new ArrayList<>();
 
-      for (StudentDomainModel student : students) {
-        try {
-          final UniversityStatus status = university.getStatus();
+        final UniversityDTO universityDTO = universityDao.findById(university.getId());
+        final UniversityDomainModel model = mapper.map(universityDTO, UniversityDomainModel.class);
 
-          if (!CLOSED.equals(status) && !PENDING_GOVERNMENT_APPROVAL.equals(status)) {
-            final StudentDTO studentDTO = mapper.map(student, StudentDTO.class);
-            studentDTO.setUniversityDTO(mapper.map(university, UniversityDTO.class));
+        for (StudentDomainModel student : students) {
+          try {
+            final UniversityStatus status = model.getStatus();
 
-            final StudentDTO assignedStudent = studentDao.update(studentDTO);
+            if (!CLOSED.equals(status) && !PENDING_GOVERNMENT_APPROVAL.equals(status)) {
+              final StudentDTO studentDTO = studentDao.findStudentById(student.getId());
+              studentDTO.setUniversityDTO(mapper.map(university, UniversityDTO.class));
 
-            if (assignedStudent != null) {
-              result.add(assignedStudent.getId());
+              final StudentDTO assignedStudent = studentDao.update(studentDTO);
+
+              if (assignedStudent != null) {
+                result.add(assignedStudent.getId());
+              }
             }
+          } catch (DaoLayerException e) {
+            LOG.warn(e);
           }
-        } catch (DaoLayerException e) {
-          LOG.warn(e);
         }
       }
     }
@@ -223,19 +246,21 @@ public class StudentService {
 
       for (StudentDomainModel student : students) {
         final StudentDTO founded = studentDao.findStudentById(student.getId());
-        final StudentDomainModel foundedStudentModel = mapper.map(founded, StudentDomainModel.class);
 
-        final StudentDomainModel modifiedStudent = compareStudentsModels(foundedStudentModel, student);
+        if (founded != null) {
+          final StudentDomainModel foundedStudentModel = mapper.map(founded, StudentDomainModel.class);
+          final StudentDomainModel modifiedStudent = compareStudentsModels(foundedStudentModel, student);
 
-        if (modifiedStudent != null) {
-          try {
-            final StudentDTO updatedStudentDTO = studentDao.update(mapper.map(modifiedStudent, StudentDTO.class));
+          if (modifiedStudent != null) {
+            try {
+              final StudentDTO updatedStudentDTO = studentDao.update(mapper.map(modifiedStudent, StudentDTO.class));
 
-            if (updatedStudentDTO != null) {
-              result.add(mapper.map(updatedStudentDTO, StudentDomainModel.class));
+              if (updatedStudentDTO != null) {
+                result.add(mapper.map(updatedStudentDTO, StudentDomainModel.class));
+              }
+            } catch (DaoLayerException e) {
+              LOG.warn(e);
             }
-          } catch (DaoLayerException e) {
-            LOG.warn(e);
           }
         }
       }

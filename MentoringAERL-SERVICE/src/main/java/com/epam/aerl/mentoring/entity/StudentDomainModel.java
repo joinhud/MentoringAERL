@@ -163,8 +163,10 @@ public class StudentDomainModel extends AbstractDomainModel {
     }
 
     if (lastUpdateInDbDate != null) {
-      builder.append(", lastUpdateInBD=").append(lastUpdateInDbDate).append('}');
+      builder.append(", lastUpdateInBD=").append(lastUpdateInDbDate);
     }
+
+    builder.append('}');
 
     result = builder.toString();
 

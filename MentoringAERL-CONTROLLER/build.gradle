@@ -1,0 +1,37 @@
+group 'com.epam.aerl.mentoring'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'war'
+apply from: 'libraries.gradle'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/java'
+        }
+        resources {
+            srcDirs {
+                'src/main/resources'
+                project(':MentoringAERL-SERVICE').file('src/main/resources')
+            }
+        }
+    }
+}
+
+dependencies {
+    providedCompile 'org.apache.tomcat:tomcat-servlet-api:9.0.0.M26'
+    compile project(':MentoringAERL-SERVICE')
+    compile servletApi
+    compile springCore
+    compile springWeb
+    compile springWebMVC
+    compile jacksonDatabind
+}

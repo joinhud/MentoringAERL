@@ -60,7 +60,7 @@ public class StudentDaoImpl extends AbstractDao implements StudentDao {
       "\"STMRK_SUBJECT\", \"STMRK_MARK\" " +
       "FROM \"STUDENT\" LEFT JOIN \"UNIVERSITY\" ON \"STDN_UNVR_ID\" = \"UNVR_ID\" " +
       "LEFT JOIN \"STUDENT_MARK\" ON \"STDN_ID\" = \"STMRK_STDN_ID\" " +
-      "JOIN \"UNIVERSITY_STATUS\" ON \"UNVR_STAT_ID\" = \"STAT_ID\" " +
+      "LEFT JOIN \"UNIVERSITY_STATUS\" ON \"UNVR_STAT_ID\" = \"STAT_ID\" " +
       "WHERE \"STDN_ID\" = ?";
   private static final String SELECT_BY_UNIVERSITY_ID_SQL = "SELECT \"STDN_ID\", \"STDN_NAME\", \"STDN_SURNAME\", " +
       "\"STDN_AGE\", \"STDN_COURSE\", \"STDN_CREATION_IN_DB\", \"STDN_LAST_UPDATE\", \"STMRK_ID\", " +

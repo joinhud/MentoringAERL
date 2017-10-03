@@ -2,4 +2,5 @@ rootProject.name = 'MentoringAERL'
 include 'MentoringAERL-DAO'
 include 'MentoringAERL-SERVICE'
 include 'MentoringAERL-LEGACY'
+include 'MentoringAERL-CONTROLLER'
 
