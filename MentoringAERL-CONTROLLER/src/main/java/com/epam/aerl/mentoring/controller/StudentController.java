@@ -12,6 +12,7 @@ import com.epam.aerl.mentoring.entity.GenerateStudentsResponse;
 import com.epam.aerl.mentoring.entity.MentoringAERLResponse;
 import com.epam.aerl.mentoring.entity.RemoveStudentsRequest;
 import com.epam.aerl.mentoring.entity.RemoveStudentsResponse;
+import com.epam.aerl.mentoring.entity.ResponseErrorWithMessage;
 import com.epam.aerl.mentoring.entity.Student;
 import com.epam.aerl.mentoring.entity.StudentDomainModel;
 import com.epam.aerl.mentoring.entity.UniversityDomainModel;
@@ -116,7 +117,7 @@ public class StudentController {
     final List<StudentDomainModel> foundedStudents = studentService.findStudentsByIds(ids);
 
     if (CollectionUtils.isEmpty(foundedStudents)) {
-      response.addErrorMessage(NO_ONE_VALID_ID_FOUNDED);
+      response.addError(new ResponseErrorWithMessage(NO_ONE_VALID_ID_FOUNDED));
     } else {
       if (ids.size() != foundedStudents.size()) {
         foundedStudents.forEach(studentDomainModel -> ids.removeIf(i -> i.equals(studentDomainModel.getId())));
@@ -139,7 +140,7 @@ public class StudentController {
     final List<Long> removedStudentsIds = studentService.removeStudentsByIds(request.getData());
 
     if (CollectionUtils.isEmpty(removedStudentsIds)) {
-      response.addErrorMessage(NOT_REMOVED_STUDENTS_BY_IDS_ERROR);
+      response.addError(new ResponseErrorWithMessage(NOT_REMOVED_STUDENTS_BY_IDS_ERROR));
     } else {
       if (request.getData().size() != removedStudentsIds.size()) {
         request.getData().removeAll(removedStudentsIds);
@@ -205,7 +206,7 @@ public class StudentController {
     final List<StudentDomainModel> updatedStudents = studentService.updateStudentsInformation(studentModels);
 
     if (CollectionUtils.isEmpty(updatedStudents)) {
-      response.addErrorMessage(NOT_UPDATE_STUDENTS_INFORMATION_ERROR);
+      response.addError(new ResponseErrorWithMessage(NOT_UPDATE_STUDENTS_INFORMATION_ERROR));
     } else {
       if (studentModels.size() != updatedStudents.size()) {
         final List<Long> notUpdatedStudentsIds = new ArrayList<>();
@@ -237,7 +238,7 @@ public class StudentController {
 
     ResponseEntity<MentoringAERLResponse> result;
     final MentoringAERLResponse response = new MentoringAERLResponse();
-    response.addErrorMessage(ErrorMessage.getByCode(e.getCode()).getMessage());
+    response.addError(new ResponseErrorWithMessage(ErrorMessage.getByCode(e.getCode()).getMessage()));
 
     switch (ErrorMessage.getByCode(e.getCode())) {
       case INCORRECT_STUDENTS_GENERATION_NUMBER: {

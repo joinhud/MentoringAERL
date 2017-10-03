@@ -1,6 +1,10 @@
 package com.epam.aerl.mentoring.entity;
 
 import com.epam.aerl.mentoring.type.UniversityStatus;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 
 import java.time.LocalDate;
 
@@ -9,6 +13,9 @@ public class University extends Entity {
   private String name;
   private String description;
   private UniversityStatus status;
+
+  @JsonDeserialize(using = LocalDateDeserializer.class)
+  @JsonSerialize(using = LocalDateSerializer.class)
   private LocalDate foundationDate;
 
   public University() {

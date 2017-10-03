@@ -176,6 +176,15 @@ public class UniversityDaoImpl extends AbstractDao implements UniversityDao {
       final List<UniversityDTO> returnedData = jdbcTemplate.query(SELECT_UNIVERSITIES_BY_STATUS_SQL, new UniversityMapper(), status.toString());
 
       if (CollectionUtils.isNotEmpty(returnedData)) {
+        for (UniversityDTO universityDTO : returnedData) {
+          final Set<StudentDTO> studentDTOS = jdbcTemplate.query(SELECT_STUDENTS_BY_ID_SQL, new StudentExtractor(), universityDTO.getId());
+
+          if (studentDTOS != null) {
+            studentDTOS.forEach(student -> student.setUniversityDTO(universityDTO));
+            universityDTO.setStudentDTOs(studentDTOS);
+          }
+        }
+
         result = returnedData;
       }
     }

@@ -34,4 +34,5 @@ dependencies {
     compile springWeb
     compile springWebMVC
     compile jacksonDatabind
+    compile jacksonDatabindJSR310
 }

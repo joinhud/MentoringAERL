@@ -6,7 +6,7 @@ import java.util.List;
 
 public class MentoringAERLResponse<T> implements Serializable {
   private T data;
-  private List<String> errors = new ArrayList<>();
+  private List<ResponseError> errors = new ArrayList<>();
   private List<Warning> warnings = new ArrayList<>();
 
   public MentoringAERLResponse() {
@@ -20,15 +20,15 @@ public class MentoringAERLResponse<T> implements Serializable {
     this.data = data;
   }
 
-  public void addErrorMessage(String errorMessage) {
-    errors.add(errorMessage);
+  public void addError(ResponseError error) {
+    errors.add(error);
   }
 
   public void addWarning(Warning warning) {
     warnings.add(warning);
   }
 
-  public List<String> getErrors() {
+  public List<ResponseError> getErrors() {
     return errors;
   }
 
@@ -41,11 +41,11 @@ public class MentoringAERLResponse<T> implements Serializable {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
 
-    MentoringAERLResponse<?> that = (MentoringAERLResponse<?>) o;
+    MentoringAERLResponse<?> response = (MentoringAERLResponse<?>) o;
 
-    if (data != null ? !data.equals(that.data) : that.data != null) return false;
-    if (errors != null ? !errors.equals(that.errors) : that.errors != null) return false;
-    return warnings != null ? warnings.equals(that.warnings) : that.warnings == null;
+    if (data != null ? !data.equals(response.data) : response.data != null) return false;
+    if (errors != null ? !errors.equals(response.errors) : response.errors != null) return false;
+    return warnings != null ? warnings.equals(response.warnings) : response.warnings == null;
   }
 
   @Override

@@ -9,6 +9,7 @@ import com.epam.aerl.mentoring.entity.StudentDTO;
 import com.epam.aerl.mentoring.entity.StudentDomainModel;
 import com.epam.aerl.mentoring.entity.UniversityDTO;
 import com.epam.aerl.mentoring.entity.UniversityDomainModel;
+import com.epam.aerl.mentoring.entity.UniversityStatusDTO;
 import com.epam.aerl.mentoring.exception.DaoLayerException;
 import com.epam.aerl.mentoring.exception.ServiceLayerException;
 import com.epam.aerl.mentoring.type.ErrorMessage;
@@ -76,24 +77,22 @@ public class UniversityService {
     return result;
   }
 
-  public List<StudentDomainModel> findStudentsByUniversityId(final Long universityId) throws ServiceLayerException {
-    List<StudentDomainModel> result = null;
+  public Map<UniversityStatus, List<StudentDomainModel>> findStudentsByUniversityId(final Long universityId) throws ServiceLayerException {
+    Map<UniversityStatus, List<StudentDomainModel>> result = null;
 
     if (universityId != null) {
       final UniversityDTO foundedUniversity = universityDao.findById(universityId);
 
       if (foundedUniversity != null) {
+        result = new HashMap<>();
+        final UniversityDomainModel foundedUniversityModel = mapper.map(foundedUniversity, UniversityDomainModel.class);
+        List<StudentDomainModel> foundedStudents = new ArrayList<>();
 
-        if (!CLOSED.equals(foundedUniversity.getUniversityStatusDTO().getStatusName())
-            && !PENDING_GOVERNMENT_APPROVAL.equals(foundedUniversity.getUniversityStatusDTO().getStatusName())) {
-          final UniversityDomainModel foundedUniversityModel = mapper.map(foundedUniversity, UniversityDomainModel.class);
-
-          if (foundedUniversityModel.getStudents() != null) {
-            result = new ArrayList<>(foundedUniversityModel.getStudents());
-          } else {
-            result = new ArrayList<>();
-          }
+        if (foundedUniversityModel.getStudents() != null) {
+          foundedStudents = new ArrayList<>(foundedUniversityModel.getStudents());
         }
+
+        result.put(foundedUniversityModel.getStatus(), foundedStudents);
       } else {
         throw new ServiceLayerException(ErrorMessage.INCORRECT_UNIVERSITY_ID.getCode(), CANNOT_FIND_UNIVERSITY_ERR_MSG);
       }
@@ -102,8 +101,8 @@ public class UniversityService {
     return result;
   }
 
-  public Map<UniversityStatus, List<StudentDomainModel>> findNotAssignedStudents() {
-    final Map<UniversityStatus, List<StudentDomainModel>> result = new HashMap<>();
+  public Map<UniversityDomainModel, List<StudentDomainModel>> findNotAssignedStudents() {
+    final Map<UniversityDomainModel, List<StudentDomainModel>> result = new HashMap<>();
 
     List<StudentDTO> notAssigned = studentDao.findNotAssignedStudents();
     List<UniversityDTO> closedUniversities = universityDao.findUniversitiesByStatus(UniversityStatus.CLOSED);
@@ -126,34 +125,32 @@ public class UniversityService {
     }
 
     if (closedUniversities != null) {
-      List<StudentDomainModel> assignedToClosed = new ArrayList<>();
-
       for (UniversityDTO universityDTO : closedUniversities) {
-        UniversityDomainModel closedModel = mapper.map(universityDTO, UniversityDomainModel.class);
+        final List<StudentDomainModel> assignedToClosed = new ArrayList<>();
+        final UniversityDomainModel closedModel = mapper.map(universityDTO, UniversityDomainModel.class);
 
         if (closedModel.getStudents() != null) {
           assignedToClosed.addAll(closedModel.getStudents());
+          final UniversityDomainModel closedUniversityResultModel = new UniversityDomainModel();
+          closedUniversityResultModel.setStatus(closedModel.getStatus());
+          closedUniversityResultModel.setName(closedModel.getName());
+          result.put(closedUniversityResultModel, assignedToClosed);
         }
-      }
-
-      if (CollectionUtils.isNotEmpty(assignedToClosed)) {
-        result.put(UniversityStatus.CLOSED, assignedToClosed);
       }
     }
 
     if (pendingGovernmentAppUniversities != null) {
-      List<StudentDomainModel> assignedToPendingGovernmentApproval = new ArrayList<>();
-
       for (UniversityDTO universityDTO : pendingGovernmentAppUniversities) {
+        final List<StudentDomainModel> assignedToPendingGovernmentApproval = new ArrayList<>();
         UniversityDomainModel pendingModel = mapper.map(universityDTO, UniversityDomainModel.class);
 
         if (pendingModel.getStudents() != null) {
           assignedToPendingGovernmentApproval.addAll(pendingModel.getStudents());
+          final UniversityDomainModel pendingGovernmentApprovalResultModel = new UniversityDomainModel();
+          pendingGovernmentApprovalResultModel.setStatus(pendingModel.getStatus());
+          pendingGovernmentApprovalResultModel.setName(pendingModel.getName());
+          result.put(pendingGovernmentApprovalResultModel, assignedToPendingGovernmentApproval);
         }
-      }
-
-      if (CollectionUtils.isNotEmpty(assignedToPendingGovernmentApproval)) {
-        result.put(UniversityStatus.PENDING_GOVERNMENT_APPROVAL, assignedToPendingGovernmentApproval);
       }
     }
 
@@ -167,14 +164,20 @@ public class UniversityService {
       result = new ArrayList<>();
 
       for (UniversityDomainModel university : universities) {
-        university.setStatus(newStatus);
-        final UniversityDTO universityDTO = mapper.map(university, UniversityDTO.class);
+        final UniversityDTO universityDTO = universityDao.findById(university.getId());
 
-        try {
-          final UniversityDTO updatedDTO = universityDao.update(universityDTO);
-          result.add(mapper.map(updatedDTO, UniversityDomainModel.class));
-        } catch (DaoLayerException e) {
-          LOG.warn(e);
+        if (universityDTO != null) {
+          UniversityStatusDTO statusDTO = new UniversityStatusDTO();
+          statusDTO.setId((long) newStatus.ordinal() + 1);
+          statusDTO.setStatusName(newStatus);
+          universityDTO.setUniversityStatusDTO(statusDTO);
+
+          try {
+            final UniversityDTO updatedDTO = universityDao.update(universityDTO);
+            result.add(mapper.map(updatedDTO, UniversityDomainModel.class));
+          } catch (DaoLayerException e) {
+            LOG.warn(e);
+          }
         }
       }
     }
