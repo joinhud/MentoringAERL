@@ -81,7 +81,7 @@ public class UniversityController {
     return response;
   }
 
-  @GetMapping(value = "/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+  @GetMapping(value = "/students/{id}", produces = APPLICATION_JSON_VALUE)
   @ResponseBody
   public GetStudentsOfUniversityResponse getStudentsOfUniversity(@PathVariable Long id) {
     final GetStudentsOfUniversityResponse response = new GetStudentsOfUniversityResponse();

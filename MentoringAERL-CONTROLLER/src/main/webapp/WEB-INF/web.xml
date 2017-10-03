@@ -18,5 +18,15 @@
         <servlet-name>dispatcher</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
+    
+    <filter>
+        <filter-name>httpFilter</filter-name>
+        <filter-class>com.epam.aerl.mentoring.filter.HttpFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>httpFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
 </web-app>
