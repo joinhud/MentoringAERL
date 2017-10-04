@@ -51,6 +51,8 @@ public class UniversityController {
   private static final String UNIVERSITY_STATUS_WARNING = "University has status 'Closed' or 'Pending Government Approval'.";
   private static final String NOT_UPDATE_UNIVERSITY_WARNING = "Cannot find universities for ids provided in request. Please " +
       "check ypu input and try again later.";
+  private static final String NULL_REQUEST_DATA_ERROR = "Request data is null. Please check your input and try again later.";
+  private static final String CREATE_UNIVERSITY_FAIL_ERROR = "Cannot create university. Please check your input and try again later.";
 
   @Autowired
   @Qualifier("universityService")
@@ -62,45 +64,55 @@ public class UniversityController {
 
   @PostMapping(value = "/", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
   @ResponseBody
-  public AddNewUniversityResponse addNewuniversity(@RequestBody AddNewUniversityRequest request) {
+  public AddNewUniversityResponse addNewUniversity(@RequestBody AddNewUniversityRequest request) {
     final AddNewUniversityResponse response = new AddNewUniversityResponse();
-
     final University newUniversity = request.getData();
-    try {
-      final UniversityDomainModel model = universityService.createNewUniversity(mapper.map(newUniversity, UniversityDomainModel.class));
 
-      if (model != null) {
-        final University createdUniversity = mapper.map(model, University.class);
-        response.setData(createdUniversity);
+    if (newUniversity != null) {
+      try {
+        final UniversityDomainModel model = universityService.createNewUniversity(mapper.map(newUniversity, UniversityDomainModel.class));
+
+        if (model != null) {
+          final University createdUniversity = mapper.map(model, University.class);
+          response.setData(createdUniversity);
+        } else {
+          response.addError(new ResponseErrorWithMessage(CREATE_UNIVERSITY_FAIL_ERROR));
+        }
+      } catch (ServiceLayerException e) {
+        LOG.error(e);
+        response.addError(new ResponseErrorWithMessage(ErrorMessage.getByCode(e.getCode()).getMessage()));
       }
-    } catch (ServiceLayerException e) {
-      LOG.error(e);
-      response.addError(new ResponseErrorWithMessage(ErrorMessage.getByCode(e.getCode()).getMessage()));
+    } else {
+      response.addError(new ResponseErrorWithMessage(NULL_REQUEST_DATA_ERROR));
     }
 
     return response;
   }
 
-  @GetMapping(value = "/students/{id}", produces = APPLICATION_JSON_VALUE)
+  @GetMapping(value = "{id}/students", produces = APPLICATION_JSON_VALUE)
   @ResponseBody
   public GetStudentsOfUniversityResponse getStudentsOfUniversity(@PathVariable Long id) {
     final GetStudentsOfUniversityResponse response = new GetStudentsOfUniversityResponse();
 
-    try {
-      final Map<UniversityStatus, List<StudentDomainModel>> founded = universityService.findStudentsByUniversityId(id);
+    if (id != null) {
+      try {
+        final Map<UniversityStatus, List<StudentDomainModel>> founded = universityService.findStudentsByUniversityId(id);
 
-      for (Map.Entry<UniversityStatus, List<StudentDomainModel>> entry : founded.entrySet()) {
-        if (CLOSED.equals(entry.getKey()) || PENDING_GOVERNMENT_APPROVAL.equals(entry.getKey())) {
-          response.addWarning(new WarningWithMessage(UNIVERSITY_STATUS_WARNING));
+        for (Map.Entry<UniversityStatus, List<StudentDomainModel>> entry : founded.entrySet()) {
+          if (CLOSED.equals(entry.getKey()) || PENDING_GOVERNMENT_APPROVAL.equals(entry.getKey())) {
+            response.addWarning(new WarningWithMessage(UNIVERSITY_STATUS_WARNING));
+          }
+
+          final List<Student> foundedStudents = new ArrayList<>();
+          entry.getValue().forEach(model -> foundedStudents.add(mapper.map(model, Student.class)));
+          response.setData(foundedStudents);
         }
-
-        final List<Student> foundedStudents = new ArrayList<>();
-        entry.getValue().forEach(model -> foundedStudents.add(mapper.map(model, Student.class)));
-        response.setData(foundedStudents);
+      } catch (ServiceLayerException e) {
+        LOG.error(e);
+        response.addError(new ResponseErrorWithMessage(ErrorMessage.getByCode(e.getCode()).getMessage()));
       }
-    } catch (ServiceLayerException e) {
-      LOG.error(e);
-      response.addError(new ResponseErrorWithMessage(ErrorMessage.getByCode(e.getCode()).getMessage()));
+    } else {
+      response.addError(new ResponseErrorWithMessage(NULL_REQUEST_DATA_ERROR));
     }
 
     return response;
@@ -136,36 +148,41 @@ public class UniversityController {
   @ResponseBody
   public SetUniversityStatusResponse setUniversityStatus(@RequestBody SetUniversityStatusRequest request) {
     final SetUniversityStatusResponse response = new SetUniversityStatusResponse();
-    final Map<String, UniversityStatus> updatedUniversitiesResponseList = new HashMap<>();
 
-    for (Map.Entry<UniversityStatus, List<University>> entry : request.getData().entrySet()) {
-      List<UniversityDomainModel> models = new ArrayList<>();
-      entry.getValue().forEach(provided -> models.add(mapper.map(provided, UniversityDomainModel.class)));
-      final List<UniversityDomainModel> updatedUniversities = universityService.setUniversitiesStatus(entry.getKey(), models);
+    if (request.getData() != null) {
+      final Map<String, UniversityStatus> updatedUniversitiesResponseList = new HashMap<>();
 
-      if (updatedUniversities.size() != models.size()) {
-        Iterator iterator = models.iterator();
+      for (Map.Entry<UniversityStatus, List<University>> entry : request.getData().entrySet()) {
+        List<UniversityDomainModel> models = new ArrayList<>();
+        entry.getValue().forEach(provided -> models.add(mapper.map(provided, UniversityDomainModel.class)));
+        final List<UniversityDomainModel> updatedUniversities = universityService.setUniversitiesStatus(entry.getKey(), models);
 
-        while (iterator.hasNext()) {
-          UniversityDomainModel model = (UniversityDomainModel) iterator.next();
+        if (updatedUniversities.size() != models.size()) {
+          Iterator iterator = models.iterator();
 
-          for (UniversityDomainModel updatedModel : updatedUniversities) {
-            if (model.getId().equals(updatedModel.getId())) {
-              iterator.remove();
+          while (iterator.hasNext()) {
+            UniversityDomainModel model = (UniversityDomainModel) iterator.next();
+
+            for (UniversityDomainModel updatedModel : updatedUniversities) {
+              if (model.getId().equals(updatedModel.getId())) {
+                iterator.remove();
+              }
             }
           }
+
+          final List<Long> warningIds = new ArrayList<>();
+          models.forEach(model -> warningIds.add(model.getId()));
+
+          response.addWarning(new SetUniversitiesWarning(NOT_UPDATE_UNIVERSITY_WARNING, warningIds));
         }
 
-        final List<Long> warningIds = new ArrayList<>();
-        models.forEach(model -> warningIds.add(model.getId()));
-
-        response.addWarning(new SetUniversitiesWarning(NOT_UPDATE_UNIVERSITY_WARNING, warningIds));
+        updatedUniversities.forEach(updated -> updatedUniversitiesResponseList.put(updated.getName(), updated.getStatus()));
       }
 
-      updatedUniversities.forEach(updated -> updatedUniversitiesResponseList.put(updated.getName(), updated.getStatus()));
+      response.setData(updatedUniversitiesResponseList);
+    } else {
+      response.addError(new ResponseErrorWithMessage(NULL_REQUEST_DATA_ERROR));
     }
-
-    response.setData(updatedUniversitiesResponseList);
 
     return response;
   }

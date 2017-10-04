@@ -20,8 +20,15 @@ sourceSets {
         resources {
             srcDirs {
                 'src/main/resources'
-                project(':MentoringAERL-SERVICE').file('src/main/resources')
             }
+        }
+    }
+    test {
+        java {
+            srcDir 'src/test/java'
+        }
+        resources {
+            srcDir 'src/test/resources'
         }
     }
 }
@@ -29,6 +36,7 @@ sourceSets {
 dependencies {
     providedCompile 'org.apache.tomcat:tomcat-servlet-api:9.0.0.M26'
     compile project(':MentoringAERL-SERVICE')
+    testCompile project(':MentoringAERL-SERVICE')
     compile servletApi
     compile springCore
     compile springWeb

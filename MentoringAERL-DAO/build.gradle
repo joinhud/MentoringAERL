@@ -19,6 +19,14 @@ sourceSets {
             srcDir 'src/main/resources'
         }
     }
+    test {
+        java {
+            srcDir 'src/test/java'
+        }
+        resources {
+            srcDir 'src/test/resources'
+        }
+    }
 }
 
 dependencies {
@@ -33,4 +41,7 @@ dependencies {
     compile springTX
     compile apacheCollections
     compile apacheCommonsLang
+    compile jUnit
+    compile mockito
+    compile hamcrest
 }

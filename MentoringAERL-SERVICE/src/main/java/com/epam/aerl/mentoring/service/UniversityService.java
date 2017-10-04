@@ -1,8 +1,5 @@
 package com.epam.aerl.mentoring.service;
 
-import static com.epam.aerl.mentoring.type.UniversityStatus.CLOSED;
-import static com.epam.aerl.mentoring.type.UniversityStatus.PENDING_GOVERNMENT_APPROVAL;
-
 import com.epam.aerl.mentoring.dao.StudentDao;
 import com.epam.aerl.mentoring.dao.UniversityDao;
 import com.epam.aerl.mentoring.entity.StudentDTO;

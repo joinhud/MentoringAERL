@@ -2,6 +2,7 @@ group 'com.epam.aerl.mentoring'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
+apply plugin: 'idea'
 apply from: 'libraries.gradle'
 
 sourceCompatibility = 1.8
@@ -19,10 +20,19 @@ sourceSets {
             srcDir 'src/main/resources'
         }
     }
+    test {
+        java {
+            srcDir 'src/test/java'
+        }
+        resources {
+            srcDir 'src/test/resources'
+        }
+    }
 }
 
 dependencies {
     compile project(':MentoringAERL-DAO')
+    testCompile project(':MentoringAERL-DAO')
     compile SimpleJSON
     compile log4j
 }
