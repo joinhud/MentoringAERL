@@ -35,6 +35,9 @@ dependencies {
     testCompile project(':MentoringAERL-DAO')
     compile SimpleJSON
     compile log4j
+    compile aspectJRuntime
+    compile aspectJTools
+    compile springAOP
 }
 
 

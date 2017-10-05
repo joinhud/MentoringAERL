@@ -24,7 +24,7 @@ import java.util.Map;
 
 @Configuration
 @ComponentScan(value = {"com.epam.aerl.mentoring.service", "com.epam.aerl.mentoring.util"})
-@ImportResource("classpath:dao-spring-context.xml")
+@ImportResource({"classpath:dao-spring-context.xml", "classpath:aop-context.xml"})
 @PropertySource({
     "classpath:students.properties",
     "classpath:database.properties",

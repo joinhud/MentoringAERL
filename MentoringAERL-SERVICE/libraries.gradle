@@ -1,4 +1,7 @@
 ext {
     SimpleJSON = 'com.googlecode.json-simple:json-simple:1.1.1'
     log4j = 'org.apache.logging.log4j:log4j-core:2.8.2'
+    aspectJRuntime = 'org.aspectj:aspectjrt:1.8.11'
+    aspectJTools = 'org.aspectj:aspectjtools:1.8.11'
+    springAOP = 'org.springframework:spring-aop:4.3.11.RELEASE'
 }
