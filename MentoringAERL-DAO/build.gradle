@@ -44,4 +44,7 @@ dependencies {
     compile jUnit
     compile mockito
     compile hamcrest
+    compile powerMockApiMockito
+    compile powerMockJUnit4RuleAgent
+    compile springTest
 }

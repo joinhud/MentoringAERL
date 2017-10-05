@@ -80,39 +80,41 @@ public class UniversityDaoImpl extends AbstractDao implements UniversityDao {
     final KeyHolder keyHolder = new GeneratedKeyHolder();
     final UniversityStatusDTO status;
 
-    if (universityDTO.getName() != null) {
-      try {
-        if (universityDTO.getUniversityStatusDTO() == null) {
-          status = new UniversityStatusDTO();
-          status.setId((long) UniversityStatus.PENDING_GOVERNMENT_APPROVAL.ordinal() + 1);
-          status.setStatusName(UniversityStatus.PENDING_GOVERNMENT_APPROVAL);
-        } else {
-          status = universityDTO.getUniversityStatusDTO();
+    if (universityDTO != null) {
+      if (universityDTO.getName() != null) {
+        try {
+          if (universityDTO.getUniversityStatusDTO() == null) {
+            status = new UniversityStatusDTO();
+            status.setId((long) UniversityStatus.PENDING_GOVERNMENT_APPROVAL.ordinal() + 1);
+            status.setStatusName(UniversityStatus.PENDING_GOVERNMENT_APPROVAL);
+          } else {
+            status = universityDTO.getUniversityStatusDTO();
+          }
+
+          final int affectedRowsCount = jdbcTemplate.update((Connection con) -> {
+            PreparedStatement statement = con.prepareStatement(INSERT_UNIVERSITY_SQL, Statement.RETURN_GENERATED_KEYS);
+            statement.setString(1, universityDTO.getName());
+            statement.setString(2, universityDTO.getDescription());
+            statement.setTimestamp(3, Timestamp.valueOf(universityDTO.getFoundationDate().atStartOfDay()));
+            statement.setTimestamp(4, Timestamp.valueOf(now));
+            statement.setTimestamp(5, Timestamp.valueOf(now));
+            statement.setLong(6, status.getId());
+
+            return statement;
+          }, keyHolder);
+
+          final Long resultUniversityId = (Long) keyHolder.getKeys().get(UNIVERSITY_ID);
+
+          if (affectedRowsCount > 0) {
+            result = universityDTO;
+            result.setUniversityStatusDTO(status);
+            result.setCreationInDB(now);
+            result.setLastUpdateInDB(now);
+            result.setId(resultUniversityId);
+          }
+        } catch (DataIntegrityViolationException e) {
+          throw new DaoLayerException(INCORRECT_INPUT_DATA_ERR_MSG, e, ErrorMessage.NO_VALID_UNIVERSITY_DATA.getCode());
         }
-
-        final int affectedRowsCount = jdbcTemplate.update((Connection con) -> {
-          PreparedStatement statement = con.prepareStatement(INSERT_UNIVERSITY_SQL, Statement.RETURN_GENERATED_KEYS);
-          statement.setString(1, universityDTO.getName());
-          statement.setString(2, universityDTO.getDescription());
-          statement.setTimestamp(3, Timestamp.valueOf(universityDTO.getFoundationDate().atStartOfDay()));
-          statement.setTimestamp(4, Timestamp.valueOf(now));
-          statement.setTimestamp(5, Timestamp.valueOf(now));
-          statement.setLong(6, status.getId());
-
-          return statement;
-        }, keyHolder);
-
-        final Long resultUniversityId = (Long) keyHolder.getKeys().get(UNIVERSITY_ID);
-
-        if (affectedRowsCount > 0) {
-          result = universityDTO;
-          result.setUniversityStatusDTO(status);
-          result.setCreationInDB(now);
-          result.setLastUpdateInDB(now);
-          result.setId(resultUniversityId);
-        }
-      } catch (DataIntegrityViolationException e) {
-        throw new DaoLayerException(INCORRECT_INPUT_DATA_ERR_MSG, e, ErrorMessage.NO_VALID_UNIVERSITY_DATA.getCode());
       }
     }
 
@@ -145,22 +147,24 @@ public class UniversityDaoImpl extends AbstractDao implements UniversityDao {
     UniversityDTO result = null;
 
     try {
-      final Long universityId = universityDTO.getId();
+      if (universityDTO != null) {
+        final Long universityId = universityDTO.getId();
 
-      if (universityId != null) {
-        UniversityStatusDTO status = universityDTO.getUniversityStatusDTO();
+        if (universityId != null) {
+          UniversityStatusDTO status = universityDTO.getUniversityStatusDTO();
 
-        if (status == null) {
-          status = new UniversityStatusDTO();
-          status.setId((long) UniversityStatus.PENDING_GOVERNMENT_APPROVAL.ordinal() + 1);
-          status.setStatusName(UniversityStatus.PENDING_GOVERNMENT_APPROVAL);
-        }
+          if (status == null) {
+            status = new UniversityStatusDTO();
+            status.setId((long) UniversityStatus.PENDING_GOVERNMENT_APPROVAL.ordinal() + 1);
+            status.setStatusName(UniversityStatus.PENDING_GOVERNMENT_APPROVAL);
+          }
 
-        final int affectedRowsCount = jdbcTemplate.update(UPDATE_UNIVERSITY_SQL, universityDTO.getName(), universityDTO.getDescription(),
-            universityDTO.getFoundationDate(), Timestamp.valueOf(LocalDateTime.now()), status.getId(), universityDTO.getId());
+          final int affectedRowsCount = jdbcTemplate.update(UPDATE_UNIVERSITY_SQL, universityDTO.getName(), universityDTO.getDescription(),
+              universityDTO.getFoundationDate(), Timestamp.valueOf(LocalDateTime.now()), status.getId(), universityDTO.getId());
 
-        if (affectedRowsCount > 0) {
-          result = findById(universityDTO.getId());
+          if (affectedRowsCount > 0) {
+            result = findById(universityDTO.getId());
+          }
         }
       }
     } catch (DataIntegrityViolationException e) {
