@@ -1,0 +1,745 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Swagger MentoringAERL Students Service"
+  },
+  "host": "localhost:8080",
+  "basePath": "/MentoringAERL-CONTROLLER-1.0-SNAPSHOT",
+  "tags": [
+    {
+      "name": "students",
+      "description": "Everything about Students"
+    },
+    {
+      "name": "universities",
+      "description": "Everything about Universities"
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/students/{parameter}": {
+      "post": {
+        "tags": [
+          "students"
+        ],
+        "summary": "Generate students and add into database by Criteria",
+        "description": "Returns generated students",
+        "operationId": "generateStudentByCriteria",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "parameter",
+            "in": "path",
+            "description": "Criteria string",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/StudentsListResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid input. Plese check your input and try again later."
+          },
+          "500": {
+            "description": "Some internal server errors has occured. Please try again later."
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "students"
+        ],
+        "summary": "Finds students by IDs",
+        "description": "Returns founded students",
+        "operationId": "findStudentsById",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "parameter",
+            "in": "path",
+            "description": "Students' IDs",
+            "required": true,
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "integer64"
+            },
+            "collectionFormat": "csv"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/StudentsListResponse"
+            }
+          },
+          "404": {
+            "description": "Can not find ids specified in request. Please check your input and try again later."
+          },
+          "500": {
+            "description": "Some internal server errors has occured. Please try again later."
+          }
+        }
+      }
+    },
+    "/students/": {
+      "post": {
+        "tags": [
+          "students"
+        ],
+        "summary": "Generate certain amount of random students and add them into database",
+        "description": "Returns generated students",
+        "operationId": "generateStudentsByStudentsNumber",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Number of students to be generated",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/GenerationStudentsNumber"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/StudentsListResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid input. Please check your input and try again later."
+          },
+          "500": {
+            "description": "Some internal server errors has occured. Please try again later."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "students"
+        ],
+        "summary": "Delete students by IDs",
+        "description": "Returns deleted students' IDs",
+        "operationId": "removeStudentsBySpecificIds",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Students' IDs which should be deleted",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ListOfIdRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/ListOfIdResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid input. Please check your input and try again later."
+          },
+          "500": {
+            "description": "Some internal server errors has occured. Please try again later."
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "students"
+        ],
+        "summary": "Update students information",
+        "description": "Returns updated students",
+        "operationId": "updateStudents",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Students' information",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateStudentsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/UpdateStudentsResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid input. Please check your input and try again later."
+          },
+          "404": {
+            "description": "Students with IDs specified in request was no founded. Please check your input and try again later."
+          },
+          "500": {
+            "description": "Some internal server errors has occured. Please try again later."
+          }
+        }
+      }
+    },
+    "/students/assign/": {
+      "put": {
+        "tags": [
+          "students"
+        ],
+        "summary": "Assign students to the university",
+        "description": "Returns assigned students' IDs",
+        "operationId": "assignStudentsToUniversities",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Assigning pairs",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AssignStudentsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/AssignStudentsResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid input. Please check your input and try again later."
+          },
+          "500": {
+            "description": "Some internal server errors has occured. Please try again later."
+          }
+        }
+      }
+    },
+    "/universities/": {
+      "post": {
+        "tags": [
+          "universities"
+        ],
+        "summary": "Create new university",
+        "description": "Return created university",
+        "operationId": "addNewUniversity",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "University information",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AddNewUniversityRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/AddNewUniversityResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid input. Please check your input and try again later."
+          },
+          "500": {
+            "description": "Some internal server errors has occured. Please try again later."
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "universities"
+        ],
+        "summary": "Set universities status",
+        "description": "Return statuses with updated universies",
+        "operationId": "setUniversityStatus",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Statuses with usiversities",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SetUniversityStatusRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/SetUniversityStatusResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid input. Please check your input and try again later."
+          },
+          "404": {
+            "description": "University not found"
+          },
+          "500": {
+            "description": "Some internal server errors has occured. Please try again later."
+          }
+        }
+      }
+    },
+    "/universities/{id}/students": {
+      "get": {
+        "tags": [
+          "universities"
+        ],
+        "summary": "Get information about students of the universit by university ID",
+        "description": "Return information about students",
+        "operationId": "getStudentsOfUniversity",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of university",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/GetStudentsOfUniversityResponse"
+            }
+          },
+          "400": {
+            "description": "Invalid input. Please check your input and try again later."
+          },
+          "404": {
+            "description": "Students or university not found"
+          },
+          "500": {
+            "description": "Some internal server errors has occured. Please try again later."
+          }
+        }
+      }
+    },
+    "/universities/notAssigned": {
+      "get": {
+        "tags": [
+          "universities"
+        ],
+        "summary": "Returns students that are not assigned to university or assigned to closed one or that is pending government approval",
+        "operationId": "getNotAssignedStudents",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/GetNotAssignedStudentsResponse"
+            }
+          },
+          "404": {
+            "description": "Students or university not found"
+          },
+          "500": {
+            "description": "Some internal server errors has occured. Please try again later."
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "GenerationStudentsNumber": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "StudentsListResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Student"
+          }
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "ListOfIdRequest": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "xml": {
+        "name": "Order"
+      }
+    },
+    "ListOfIdResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "AssignStudentsRequest": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "university": {
+                "$ref": "#/definitions/University"
+              },
+              "students": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Student"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "AssignStudentsResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "UpdateStudentsRequest": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Student"
+          }
+        }
+      }
+    },
+    "UpdateStudentsResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Student"
+          }
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "AddNewUniversityRequest": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/University"
+        }
+      }
+    },
+    "AddNewUniversityResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/University"
+        }
+      }
+    },
+    "GetStudentsOfUniversityResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Student"
+          }
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "GetNotAssignedStudentsResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "university": {
+                "$ref": "#/definitions/University"
+              },
+              "students": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Student"
+                }
+              }
+            }
+          }
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "SetUniversityStatusRequest": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/University"
+            }
+          }
+        }
+      }
+    },
+    "SetUniversityStatusResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/UniversityStatus"
+          }
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "UniversityStatus": {
+      "type": "string",
+      "enum": [
+        "OPEN",
+        "CLOSED",
+        "ON_HOLIDAYS",
+        "PENDING_GOVERNMENT_APPROVAL"
+      ]
+    },
+    "University": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "foundationDate": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "Student": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "surname": {
+          "type": "string"
+        },
+        "age": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "course": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "marks": {
+          "type": "object",
+          "properties": {
+            "MATH": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "PHYSICAL_EDUCATION": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "PHILOSOPHY": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        }
+      }
+    }
+  }
+}

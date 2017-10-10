@@ -10,11 +10,13 @@ import com.epam.aerl.mentoring.type.ErrorMessage;
 import com.epam.aerl.mentoring.type.Subject;
 import com.epam.aerl.mentoring.type.UniversityStatus;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
@@ -30,54 +32,37 @@ import java.util.List;
 import java.util.Set;
 
 @Repository("universityDaoImpl")
-public class UniversityDaoImpl extends AbstractDao implements UniversityDao {
-  private static final String UNIVERSITY_ID = "UNVR_ID";
-  private static final String UNIVERSITY_NAME = "UNVR_NAME";
-  private static final String UNIVERSITY_DESCRIPTION = "UNVR_DESCRIPTION";
-  private static final String UNIVERSITY_FOUNDATION = "UNVR_FOUNDATION_DATE";
-  private static final String UNIVERSITY_CREATION_IN_DB = "UNVR_CREATION_IN_DB";
-  private static final String UNIVERSITY_LAST_UPDATE = "UNVR_LAST_UPDATE";
-  private static final String STUDENT_ID = "STDN_ID";
-  private static final String STUDENT_NAME = "STDN_NAME";
-  private static final String STUDENT_SURNAME = "STDN_SURNAME";
-  private static final String STUDENT_AGE = "STDN_AGE";
-  private static final String STUDENT_COURSE = "STDN_COURSE";
-  private static final String STUDENT_CREATION_IN_DB = "STDN_CREATION_IN_DB";
-  private static final String STUDENT_LAST_UPDATE_DB = "STDN_LAST_UPDATE";
-  private static final String STUDENT_MARK_ID = "STMRK_ID";
-  private static final String STUDENT_MARK_SUBJECT = "STMRK_SUBJECT";
-  private static final String STUDENT_MARK_VALUE = "STMRK_MARK";
-  private static final String STATUS_ID = "STAT_ID";
-  private static final String STATUS_NAME = "STAT_NAME";
-
+public class UniversityDaoImpl extends BidirectionalStudentUniversityAbstractDao implements UniversityDao {
   private static final String INCORRECT_INPUT_DATA_ERR_MSG = "Input data is incorrect. UniversityDTO name more than " +
       "15 symbols or university description more than 300 symbols.";
 
-  private static final String INSERT_UNIVERSITY_SQL = "INSERT INTO \"UNIVERSITY\"(\"UNVR_NAME\", \"UNVR_DESCRIPTION\", " +
-      "\"UNVR_FOUNDATION_DATE\", \"UNVR_CREATION_IN_DB\", \"UNVR_LAST_UPDATE\", \"UNVR_STAT_ID\") " +
-      "VALUES (?, ?, ?, ?, ?, ?)";
-  private static final String SELECT_UNIVERSITY_BY_ID_SQL = "SELECT \"UNVR_ID\", \"UNVR_NAME\", \"UNVR_DESCRIPTION\", " +
-      "\"UNVR_FOUNDATION_DATE\", \"UNVR_CREATION_IN_DB\", \"UNVR_LAST_UPDATE\", \"STAT_ID\", \"STAT_NAME\" " +
-      "FROM \"UNIVERSITY\" JOIN \"UNIVERSITY_STATUS\" ON \"UNVR_STAT_ID\" = \"STAT_ID\" " +
-      "WHERE \"UNVR_ID\"=?";
-  private static final String SELECT_UNIVERSITIES_BY_STATUS_SQL = "SELECT \"UNVR_ID\", \"UNVR_NAME\", \"UNVR_DESCRIPTION\", " +
-      "\"UNVR_FOUNDATION_DATE\", \"UNVR_CREATION_IN_DB\", \"UNVR_LAST_UPDATE\", \"STAT_ID\", \"STAT_NAME\" " +
-      "FROM \"UNIVERSITY\" JOIN \"UNIVERSITY_STATUS\" ON \"UNVR_STAT_ID\" = \"STAT_ID\" " +
-      "WHERE \"STAT_NAME\"=?";
-  private static final String SELECT_STUDENTS_BY_ID_SQL = "SELECT \"STDN_ID\", \"STDN_UNVR_ID\", \"STDN_NAME\", \"STDN_SURNAME\", " +
-      "\"STDN_AGE\", \"STDN_COURSE\", \"STDN_CREATION_IN_DB\", \"STDN_LAST_UPDATE\", \"STMRK_ID\", \"STMRK_SUBJECT\", " +
-      "\"STMRK_MARK\" " +
-      "FROM \"STUDENT\" LEFT JOIN \"STUDENT_MARK\" ON \"STDN_ID\" = \"STMRK_STDN_ID\" " +
-      "WHERE \"STDN_UNVR_ID\"=?";
-  private static final String UPDATE_UNIVERSITY_SQL = "UPDATE \"UNIVERSITY\" SET \"UNVR_NAME\"=?, \"UNVR_DESCRIPTION\"=?, " +
-      "\"UNVR_FOUNDATION_DATE\"=?, \"UNVR_LAST_UPDATE\"=?, \"UNVR_STAT_ID\"=? WHERE \"UNVR_ID\"=?";
+  @Value("${SQL_INSERT_UNIVERSITY}")
+  private String insertUniversity;
 
+  @Value("${SQL_SELECT_UNIVERSITY_BY_ID}")
+  private String selectUniversityById;
+
+  @Value("${SQL_SELECT_UNIVERSITIES_BY_STATUS}")
+  private String selectUniversitiesByStatus;
+
+  @Value("${SQL_SELECT_STUDENTS_BY_UNIVERSITY_ID}")
+  private String selectStudentsById;
+
+  @Value("${SQL_UPDATE_UNIVERSITY}")
+  private String updateUniversity;
+
+  @Autowired
+  @Qualifier("generatedKeyHolder")
+  private KeyHolder keyHolder;
+
+  public void setKeyHolder(KeyHolder keyHolder) {
+    this.keyHolder = keyHolder;
+  }
 
   @Override
   public UniversityDTO create(final UniversityDTO universityDTO) throws DaoLayerException {
     UniversityDTO result = null;
     final LocalDateTime now = LocalDateTime.now();
-    final KeyHolder keyHolder = new GeneratedKeyHolder();
     final UniversityStatusDTO status;
 
     if (universityDTO != null) {
@@ -92,7 +77,7 @@ public class UniversityDaoImpl extends AbstractDao implements UniversityDao {
           }
 
           final int affectedRowsCount = jdbcTemplate.update((Connection con) -> {
-            PreparedStatement statement = con.prepareStatement(INSERT_UNIVERSITY_SQL, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement statement = con.prepareStatement(insertUniversity, Statement.RETURN_GENERATED_KEYS);
             statement.setString(1, universityDTO.getName());
             statement.setString(2, universityDTO.getDescription());
             statement.setTimestamp(3, Timestamp.valueOf(universityDTO.getFoundationDate().atStartOfDay()));
@@ -123,13 +108,13 @@ public class UniversityDaoImpl extends AbstractDao implements UniversityDao {
 
   @Override
   public UniversityDTO findById(final Long id) {
-    final List<UniversityDTO> returnedData = jdbcTemplate.query(SELECT_UNIVERSITY_BY_ID_SQL, new UniversityMapper(), id);
+    final List<UniversityDTO> returnedData = jdbcTemplate.query(selectUniversityById, new UniversityMapper(), id);
     UniversityDTO result = null;
 
     if (1 == returnedData.size()) {
       result = returnedData.get(0);
 
-      final Set<StudentDTO> studentDTOS = jdbcTemplate.query(SELECT_STUDENTS_BY_ID_SQL, new StudentExtractor(), id);
+      final Set<StudentDTO> studentDTOS = jdbcTemplate.query(selectStudentsById, new StudentExtractor(), id);
 
       if (studentDTOS != null) {
         final UniversityDTO universityDTO = result;
@@ -159,7 +144,7 @@ public class UniversityDaoImpl extends AbstractDao implements UniversityDao {
             status.setStatusName(UniversityStatus.PENDING_GOVERNMENT_APPROVAL);
           }
 
-          final int affectedRowsCount = jdbcTemplate.update(UPDATE_UNIVERSITY_SQL, universityDTO.getName(), universityDTO.getDescription(),
+          final int affectedRowsCount = jdbcTemplate.update(updateUniversity, universityDTO.getName(), universityDTO.getDescription(),
               universityDTO.getFoundationDate(), Timestamp.valueOf(LocalDateTime.now()), status.getId(), universityDTO.getId());
 
           if (affectedRowsCount > 0) {
@@ -179,11 +164,11 @@ public class UniversityDaoImpl extends AbstractDao implements UniversityDao {
     List<UniversityDTO> result = null;
 
     if (status != null) {
-      final List<UniversityDTO> returnedData = jdbcTemplate.query(SELECT_UNIVERSITIES_BY_STATUS_SQL, new UniversityMapper(), status.toString());
+      final List<UniversityDTO> returnedData = jdbcTemplate.query(selectUniversitiesByStatus, new UniversityMapper(), status.toString());
 
       if (CollectionUtils.isNotEmpty(returnedData)) {
         for (UniversityDTO universityDTO : returnedData) {
-          final Set<StudentDTO> studentDTOS = jdbcTemplate.query(SELECT_STUDENTS_BY_ID_SQL, new StudentExtractor(), universityDTO.getId());
+          final Set<StudentDTO> studentDTOS = jdbcTemplate.query(selectStudentsById, new StudentExtractor(), universityDTO.getId());
 
           if (studentDTOS != null) {
             studentDTOS.forEach(student -> student.setUniversityDTO(universityDTO));
@@ -198,16 +183,16 @@ public class UniversityDaoImpl extends AbstractDao implements UniversityDao {
     return result;
   }
 
-  private static class UniversityMapper implements RowMapper<UniversityDTO> {
+  private class UniversityMapper implements RowMapper<UniversityDTO> {
     @Override
     public UniversityDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
       UniversityDTO universityDTO = new UniversityDTO();
       universityDTO.setId(rs.getLong(UNIVERSITY_ID));
       universityDTO.setName(rs.getString(UNIVERSITY_NAME));
       universityDTO.setDescription(rs.getString(UNIVERSITY_DESCRIPTION));
-      universityDTO.setFoundationDate(rs.getTimestamp(UNIVERSITY_FOUNDATION).toLocalDateTime().toLocalDate());
+      universityDTO.setFoundationDate(rs.getTimestamp(UNIVERSITY_FOUNDATION_DATE).toLocalDateTime().toLocalDate());
       universityDTO.setCreationInDB(rs.getTimestamp(UNIVERSITY_CREATION_IN_DB).toLocalDateTime());
-      universityDTO.setLastUpdateInDB(rs.getTimestamp(UNIVERSITY_LAST_UPDATE).toLocalDateTime());
+      universityDTO.setLastUpdateInDB(rs.getTimestamp(UNIVERSITY_LAST_UPDATE_DB).toLocalDateTime());
 
       UniversityStatusDTO statusDTO = new UniversityStatusDTO();
       statusDTO.setId(rs.getLong(STATUS_ID));
@@ -218,7 +203,7 @@ public class UniversityDaoImpl extends AbstractDao implements UniversityDao {
     }
   }
 
-  private static class StudentExtractor implements ResultSetExtractor<Set<StudentDTO>> {
+  private class StudentExtractor implements ResultSetExtractor<Set<StudentDTO>> {
 
     @Override
     public Set<StudentDTO> extractData(ResultSet rs) throws SQLException, DataAccessException {

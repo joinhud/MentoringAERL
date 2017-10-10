@@ -28,6 +28,7 @@ import java.util.Map;
 @PropertySource({
     "classpath:students.properties",
     "classpath:database.properties",
+    "classpath:database.queries.properties",
     "classpath:students.generation.constraints.properties"
 })
 public class ServiceLayerConfig {

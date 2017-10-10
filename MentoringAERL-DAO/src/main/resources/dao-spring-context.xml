@@ -13,6 +13,7 @@
         <property name="locations">
             <list>
                 <value>classpath:database.properties</value>
+                <value>classpath:database.queries.properties</value>
             </list>
         </property>
     </bean>
@@ -50,4 +51,10 @@
         <property name="maxTotal" value="${db.maxActive}"/>
     </bean>
 
+    <bean id="namedParameterJdbcTemplate" class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
+        <constructor-arg name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <bean id="generatedKeyHolder" class="org.springframework.jdbc.support.GeneratedKeyHolder" scope="prototype"/>
+    <bean id="sqlParameterSource" class="org.springframework.jdbc.core.namedparam.MapSqlParameterSource" scope="prototype"/>
 </beans>

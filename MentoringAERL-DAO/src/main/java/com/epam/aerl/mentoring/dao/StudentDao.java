@@ -11,4 +11,5 @@ public interface StudentDao {
   boolean deleteById(final Long id);
   StudentDTO update(final StudentDTO studentDTO) throws DaoLayerException;
   List<StudentDTO> findNotAssignedStudents();
+  List<StudentDTO> findStudentsByIds(final List<Long> ids);
 }

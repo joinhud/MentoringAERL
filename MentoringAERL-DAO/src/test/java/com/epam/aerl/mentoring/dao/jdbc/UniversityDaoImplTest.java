@@ -3,9 +3,7 @@ package com.epam.aerl.mentoring.dao.jdbc;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 import com.epam.aerl.mentoring.entity.UniversityDTO;
 import com.epam.aerl.mentoring.entity.UniversityStatusDTO;
@@ -16,12 +14,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.rule.PowerMockRule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -37,6 +36,9 @@ public class UniversityDaoImplTest {
 
   @Rule
   public PowerMockRule rule = new PowerMockRule();
+
+  @Mock
+  private KeyHolder keyHolderMock;
 
   @Autowired
   @Qualifier("universityDaoImpl")
@@ -93,14 +95,12 @@ public class UniversityDaoImplTest {
     expectedDTO.setUniversityStatusDTO(expectedUniversityStatusDTO);
     expectedDTO.setCreationInDB(returnedTime);
     expectedDTO.setLastUpdateInDB(returnedTime);
-    final GeneratedKeyHolder keyHolderMock = mock(GeneratedKeyHolder.class);
     final Map<String, Object> returnedKeys = new HashMap<>();
     returnedKeys.put("UNVR_ID", 1L);
     mockStatic(LocalDateTime.class);
 
     // When
     when(LocalDateTime.now()).thenReturn(returnedTime);
-    whenNew(GeneratedKeyHolder.class).withNoArguments().thenReturn(keyHolderMock);
     when(keyHolderMock.getKeys()).thenReturn(returnedKeys);
     final UniversityDTO actualDTO = universityDao.create(universityDTO);
 
@@ -128,14 +128,12 @@ public class UniversityDaoImplTest {
     expectedDTO.setUniversityStatusDTO(universityStatusDTO);
     expectedDTO.setCreationInDB(returnedTime);
     expectedDTO.setLastUpdateInDB(returnedTime);
-    final GeneratedKeyHolder keyHolderMock = mock(GeneratedKeyHolder.class);
     final Map<String, Object> returnedKeys = new HashMap<>();
     returnedKeys.put("UNVR_ID", 1L);
     mockStatic(LocalDateTime.class);
 
     // When
     when(LocalDateTime.now()).thenReturn(returnedTime);
-    whenNew(GeneratedKeyHolder.class).withNoArguments().thenReturn(keyHolderMock);
     when(keyHolderMock.getKeys()).thenReturn(returnedKeys);
     final UniversityDTO actualDTO = universityDao.create(universityDTO);
 

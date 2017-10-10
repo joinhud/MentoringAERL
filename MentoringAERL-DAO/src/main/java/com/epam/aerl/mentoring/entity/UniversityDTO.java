@@ -43,7 +43,7 @@ public class UniversityDTO extends BaseDTO {
   @Column(name = "\"UNVR_LAST_UPDATE\"", nullable = false)
   private LocalDateTime lastUpdateInDB;
 
-  @OneToMany(fetch = FetchType.EAGER, mappedBy = "universityDTO")
+  @OneToMany(fetch = FetchType.LAZY, mappedBy = "universityDTO")
   private Set<StudentDTO> studentDTOs;
 
   public UniversityDTO() {

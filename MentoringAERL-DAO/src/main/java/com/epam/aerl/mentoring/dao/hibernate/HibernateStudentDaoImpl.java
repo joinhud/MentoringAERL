@@ -8,6 +8,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.IdentifierLoadAccess;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -15,12 +16,14 @@ import java.util.List;
 import javax.persistence.PersistenceException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 @Repository("hibernateStudentDaoImpl")
 public class HibernateStudentDaoImpl extends HibernateAbstractDao implements StudentDao {
   private static final String INCORRECT_INPUT_DATA_ERR_MSG = "Input data is incorrect. StudentDTO name or surname more than 20 symbols.";
   private static final String CRITERIA_UNIVERSITY_ID_PARAMETER = "universityDTO";
+  private static final String ID_PARAMETER = "id";
 
   @Override
   public StudentDTO findStudentById(final Long id) {
@@ -110,6 +113,27 @@ public class HibernateStudentDaoImpl extends HibernateAbstractDao implements Stu
     Root<StudentDTO> root = criteria.from(StudentDTO.class);
     criteria.select(root);
     criteria.where(builder.isNull(root.get(CRITERIA_UNIVERSITY_ID_PARAMETER)));
+
+    List resultList = sessionFactory.getCurrentSession().createQuery(criteria).getResultList();
+
+    if (CollectionUtils.isNotEmpty(resultList)) {
+      result = resultList;
+    }
+
+    return result;
+  }
+
+  @Override
+  public List<StudentDTO> findStudentsByIds(List<Long> ids) {
+    List<StudentDTO> result = null;
+
+    final Transaction tx = sessionFactory.getCurrentSession().beginTransaction();
+    final CriteriaBuilder builder = sessionFactory.getCurrentSession().getCriteriaBuilder();
+
+    final CriteriaQuery<StudentDTO> criteria = builder.createQuery(StudentDTO.class);
+    Root<StudentDTO> root = criteria.from(StudentDTO.class);
+    criteria.select(root);
+    criteria.where((Predicate) Restrictions.in(ID_PARAMETER, ids.toArray()));
 
     List resultList = sessionFactory.getCurrentSession().createQuery(criteria).getResultList();
 

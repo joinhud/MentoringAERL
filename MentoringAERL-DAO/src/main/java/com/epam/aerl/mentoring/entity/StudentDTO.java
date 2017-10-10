@@ -23,7 +23,7 @@ public class StudentDTO extends BaseDTO {
   @SequenceGenerator(name = "STDN_SEQ_GEN", sequenceName = "\"STUDENT_STDN_ID_seq\"", allocationSize = 1)
 	private Long id;
 
-  @ManyToOne(fetch = FetchType.EAGER)
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "\"STDN_UNVR_ID\"")
 	private UniversityDTO universityDTO;
 
