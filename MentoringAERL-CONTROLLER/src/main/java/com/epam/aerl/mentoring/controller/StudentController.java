@@ -59,6 +59,7 @@ public class StudentController {
       "Please check your input and try again later.";
   private static final String NOT_UPDATE_STUDENTS_INFORMATION_WARNING = "Some of provided students cannot be updated. " +
       "Please check your input and try again later.";
+  private static final String NULL_REQUEST_DATA_ERROR = "Request data is null. Please check your input and try again later.";
 
   @Autowired
   @Qualifier("studentService")
@@ -199,34 +200,38 @@ public class StudentController {
 
     final List<StudentDomainModel> studentModels = new ArrayList<>();
 
-    for (Student student : request.getData()) {
-      studentModels.add(mapper.map(student, StudentDomainModel.class));
-    }
+    if (request.getData() != null) {
+      for (Student student : request.getData()) {
+        studentModels.add(mapper.map(student, StudentDomainModel.class));
+      }
 
-    final List<StudentDomainModel> updatedStudents = studentService.updateStudentsInformation(studentModels);
+      final List<StudentDomainModel> updatedStudents = studentService.updateStudentsInformation(studentModels);
 
-    if (CollectionUtils.isEmpty(updatedStudents)) {
-      response.addError(new ResponseErrorWithMessage(NOT_UPDATE_STUDENTS_INFORMATION_ERROR));
-    } else {
-      if (studentModels.size() != updatedStudents.size()) {
-        final List<Long> notUpdatedStudentsIds = new ArrayList<>();
+      if (CollectionUtils.isEmpty(updatedStudents)) {
+        response.addError(new ResponseErrorWithMessage(NOT_UPDATE_STUDENTS_INFORMATION_ERROR));
+      } else {
+        if (studentModels.size() != updatedStudents.size()) {
+          final List<Long> notUpdatedStudentsIds = new ArrayList<>();
 
-        for (StudentDomainModel model : studentModels) {
-          if (!updatedStudents.contains(model)) {
-            notUpdatedStudentsIds.add(model.getId());
+          for (StudentDomainModel model : studentModels) {
+            if (!updatedStudents.contains(model)) {
+              notUpdatedStudentsIds.add(model.getId());
+            }
           }
+
+          response.addWarning(new FindStudentsByIdsWarning(NOT_UPDATE_STUDENTS_INFORMATION_WARNING, notUpdatedStudentsIds));
         }
 
-        response.addWarning(new FindStudentsByIdsWarning(NOT_UPDATE_STUDENTS_INFORMATION_WARNING, notUpdatedStudentsIds));
+        final List<Student> resultList = new ArrayList<>();
+
+        for (StudentDomainModel model : updatedStudents) {
+          resultList.add(mapper.map(model, Student.class));
+        }
+
+        response.setData(resultList);
       }
-
-      final List<Student> resultList = new ArrayList<>();
-
-      for (StudentDomainModel model : updatedStudents) {
-        resultList.add(mapper.map(model, Student.class));
-      }
-
-      response.setData(resultList);
+    } else {
+      response.addError(new ResponseErrorWithMessage(NULL_REQUEST_DATA_ERROR));
     }
 
     return response;

@@ -6,6 +6,9 @@ public class FindStudentsByIdsWarning implements Warning {
   private String message;
   private List<Long> ids;
 
+  public FindStudentsByIdsWarning() {
+  }
+
   public FindStudentsByIdsWarning(String message, List<Long> ids) {
     this.message = message;
     this.ids = ids;

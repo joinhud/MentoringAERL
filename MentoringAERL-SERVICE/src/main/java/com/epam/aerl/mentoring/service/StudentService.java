@@ -178,8 +178,10 @@ public class StudentService {
 
       final List<StudentDTO> foundedStudents = studentDao.findStudentsByIds(ids);
 
-      for (StudentDTO studentDTO : foundedStudents) {
-        result.add(mapper.map(studentDTO, StudentDomainModel.class));
+      if (foundedStudents != null) {
+        for (StudentDTO studentDTO : foundedStudents) {
+          result.add(mapper.map(studentDTO, StudentDomainModel.class));
+        }
       }
     }
 

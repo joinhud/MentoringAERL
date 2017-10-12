@@ -1,6 +1,6 @@
 package com.epam.aerl.mentoring.entity;
 
-public class ErrorResponse {
+public class ErrorResponse implements ResponseError {
   private String message;
 
   public ErrorResponse() {
