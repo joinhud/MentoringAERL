@@ -14,4 +14,38 @@
     <context:component-scan base-package="com.epam.aerl.mentoring"/>
     <mvc:annotation-driven/>
 
+    <bean id="currentDate" class="java.time.LocalDate" scope="prototype" factory-method="now"/>
+    <bean id="dateFormatter" class="java.time.format.DateTimeFormatter" factory-method="ofPattern">
+        <constructor-arg name="pattern" value="yyyy-MM-dd"/>
+    </bean>
+
+    <bean id="loggingJobUtil" class="com.epam.aerl.mentoring.util.LoggingJobUtil"/>
+
+    <bean id="loggingStudentsJob" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass" value="com.epam.aerl.mentoring.job.LoggingStudentsJob"/>
+        <property name="jobDataAsMap">
+            <map>
+                <entry key="loggingJobUtil" value-ref="loggingJobUtil"/>
+            </map>
+        </property>
+        <property name="durability" value="true" />
+    </bean>
+
+    <bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="loggingStudentsJob" />
+        <property name="cronExpression" value="0 0/3 * * * ?" />
+    </bean>
+
+    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="jobDetails">
+            <list>
+                <ref bean="loggingStudentsJob"/>
+            </list>
+        </property>
+        <property name="triggers">
+            <list>
+                <ref bean="cronTrigger"/>
+            </list>
+        </property>
+    </bean>
 </beans>

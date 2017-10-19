@@ -9,6 +9,7 @@ import com.epam.aerl.mentoring.entity.FindStudentsByIdsWarning;
 import com.epam.aerl.mentoring.entity.FindStudentsResponse;
 import com.epam.aerl.mentoring.entity.GenerateStudentsRequest;
 import com.epam.aerl.mentoring.entity.GenerateStudentsResponse;
+import com.epam.aerl.mentoring.entity.LogStudentByIdResponse;
 import com.epam.aerl.mentoring.entity.MentoringAERLResponse;
 import com.epam.aerl.mentoring.entity.RemoveStudentsRequest;
 import com.epam.aerl.mentoring.entity.RemoveStudentsResponse;
@@ -21,6 +22,8 @@ import com.epam.aerl.mentoring.entity.UpdateStudentsResponse;
 import com.epam.aerl.mentoring.exception.ServiceLayerException;
 import com.epam.aerl.mentoring.service.StudentService;
 import com.epam.aerl.mentoring.type.ErrorMessage;
+import com.epam.aerl.mentoring.util.EntityLogger;
+import com.epam.aerl.mentoring.util.StudentLogger;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -60,6 +63,7 @@ public class StudentController {
   private static final String NOT_UPDATE_STUDENTS_INFORMATION_WARNING = "Some of provided students cannot be updated. " +
       "Please check your input and try again later.";
   private static final String NULL_REQUEST_DATA_ERROR = "Request data is null. Please check your input and try again later.";
+  private static final String NOT_WRITE_STUDENT_TO_XML_ERROR = "Can not log student information. Please try again later.";
 
   @Autowired
   @Qualifier("studentService")
@@ -68,6 +72,10 @@ public class StudentController {
   @Autowired
   @Qualifier("dozerBeanMapper")
   private Mapper mapper;
+
+  @Autowired
+  @Qualifier("studentLogger")
+  private EntityLogger<Student> studentLogger;
 
   @PostMapping(value = "/{criteriaString}", produces = APPLICATION_JSON_VALUE)
   @ResponseBody
@@ -237,6 +245,35 @@ public class StudentController {
     return response;
   }
 
+  @GetMapping(value = "/log/{id}")
+  @ResponseBody
+  public LogStudentByIdResponse logStudentById(@PathVariable Long id) throws ServiceLayerException {
+    final LogStudentByIdResponse response = new LogStudentByIdResponse();
+
+    if (id != null) {
+      final List<Long> ids = new ArrayList<>();
+      ids.add(id);
+      final List<StudentDomainModel> foundedStudents = studentService.findStudentsByIds(ids);
+
+      if (CollectionUtils.isEmpty(foundedStudents)) {
+        response.addError(new ResponseErrorWithMessage(NO_ONE_VALID_ID_FOUNDED));
+      } else {
+        final Student foundedStudent = mapper.map(foundedStudents.get(0), Student.class);
+        final boolean logged = studentLogger.logEntity(foundedStudent);
+
+        if (logged) {
+          response.setData(foundedStudent);
+        } else {
+          response.addError(new ResponseErrorWithMessage(NOT_WRITE_STUDENT_TO_XML_ERROR));
+        }
+      }
+    } else {
+      response.addError(new ResponseErrorWithMessage(NULL_REQUEST_DATA_ERROR));
+    }
+
+    return response;
+  }
+
   @ExceptionHandler(ServiceLayerException.class)
   public ResponseEntity handleServiceLayerException(ServiceLayerException e) {
     LOG.error(e);
@@ -250,11 +287,9 @@ public class StudentController {
         result = ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         break;
       }
-      case GENERATION_ERROR: {
-        result = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        break;
-      }
-      case FAILED_ACCESS_TO_DB: {
+      case GENERATION_ERROR:
+      case FAILED_ACCESS_TO_DB:
+      case OUTPUT_FILE_ERROR: {
         result = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         break;
       }

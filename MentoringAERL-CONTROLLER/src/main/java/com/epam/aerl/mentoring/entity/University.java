@@ -1,13 +1,20 @@
 package com.epam.aerl.mentoring.entity;
 
 import com.epam.aerl.mentoring.type.UniversityStatus;
+import com.epam.aerl.mentoring.util.LocalDateAdapter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 
 import java.time.LocalDate;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+@XmlRootElement(name = "University")
+@XmlType(propOrder = {"id", "name", "description", "status", "foundationDate"})
 public class University extends Entity {
   private Long id;
   private String name;
@@ -25,6 +32,7 @@ public class University extends Entity {
     return id;
   }
 
+  @XmlElement(name = "id")
   public void setId(Long id) {
     this.id = id;
   }
@@ -33,6 +41,7 @@ public class University extends Entity {
     return name;
   }
 
+  @XmlElement(name = "name")
   public void setName(String name) {
     this.name = name;
   }
@@ -41,6 +50,7 @@ public class University extends Entity {
     return description;
   }
 
+  @XmlElement(name = "description")
   public void setDescription(String description) {
     this.description = description;
   }
@@ -49,6 +59,7 @@ public class University extends Entity {
     return status;
   }
 
+  @XmlElement(name = "status")
   public void setStatus(UniversityStatus status) {
     this.status = status;
   }
@@ -57,6 +68,8 @@ public class University extends Entity {
     return foundationDate;
   }
 
+  @XmlElement(name = "foundationDate")
+  @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
   public void setFoundationDate(LocalDate foundationDate) {
     this.foundationDate = foundationDate;
   }

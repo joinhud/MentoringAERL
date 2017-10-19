@@ -5,4 +5,5 @@ ext {
     servletApi = 'javax.servlet:javax.servlet-api:4.0.0'
     jacksonDatabind = 'com.fasterxml.jackson.core:jackson-databind:2.9.1'
     jacksonDatabindJSR310 = 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.1'
+    quartz ='org.quartz-scheduler:quartz:2.3.0'
 }

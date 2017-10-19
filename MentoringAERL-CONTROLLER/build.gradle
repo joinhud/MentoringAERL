@@ -43,4 +43,5 @@ dependencies {
     compile springWebMVC
     compile jacksonDatabind
     compile jacksonDatabindJSR310
+    compile quartz
 }

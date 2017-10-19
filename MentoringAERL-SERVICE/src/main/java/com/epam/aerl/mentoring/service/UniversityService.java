@@ -181,4 +181,18 @@ public class UniversityService {
 
     return result;
   }
+
+  public UniversityDomainModel findUniversityById(final Long id) {
+    UniversityDomainModel result = null;
+
+    if (id != null) {
+      final UniversityDTO universityDTO = universityDao.findById(id);
+
+      if (universityDTO != null) {
+        result = mapper.map(universityDTO, UniversityDomainModel.class);
+      }
+    }
+
+    return result;
+  }
 }

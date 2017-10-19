@@ -3,7 +3,12 @@ package com.epam.aerl.mentoring.entity;
 import com.epam.aerl.mentoring.type.Subject;
 
 import java.util.Map;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
+@XmlRootElement(name = "Student")
+@XmlType(propOrder = {"id", "name", "surname", "age", "course", "marks"})
 public class Student extends Entity {
   private Long id;
   private String name;
@@ -19,6 +24,7 @@ public class Student extends Entity {
     return id;
   }
 
+  @XmlElement(name = "id")
   public void setId(Long id) {
     this.id = id;
   }
@@ -27,6 +33,7 @@ public class Student extends Entity {
     return name;
   }
 
+  @XmlElement(name = "name")
   public void setName(String name) {
     this.name = name;
   }
@@ -35,6 +42,7 @@ public class Student extends Entity {
     return surname;
   }
 
+  @XmlElement(name = "surname")
   public void setSurname(String surname) {
     this.surname = surname;
   }
@@ -43,6 +51,7 @@ public class Student extends Entity {
     return age;
   }
 
+  @XmlElement(name = "age")
   public void setAge(Integer age) {
     this.age = age;
   }
@@ -51,6 +60,7 @@ public class Student extends Entity {
     return course;
   }
 
+  @XmlElement(name = "course")
   public void setCourse(Integer course) {
     this.course = course;
   }
@@ -59,6 +69,7 @@ public class Student extends Entity {
     return marks;
   }
 
+  @XmlElement(name = "marks")
   public void setMarks(Map<Subject, Integer> marks) {
     this.marks = marks;
   }

@@ -4,9 +4,9 @@
         <Property name="filepath">C:/Program Files/Apache Software Foundation/Tomcat 9.0/logs/MentoringAERL_logs</Property>
         <Property name="errorFilePath">C:/Program Files/Apache Software Foundation/Tomcat 9.0/logs/MentoringAERL_error_logs</Property>
         <Property name="serviceInteractionsFilePath">C:/Program Files/Apache Software Foundation/Tomcat 9.0/logs/MentoringAERL_Service_Interactions_logs</Property>
+        <Property name="quartzLogsPath">C:/Program Files/Apache Software Foundation/Tomcat 9.0/logs/MentoringAERL_Quartz_logs</Property>
         <Property name="pattern">%d{yyy-MM-dd HH:mm:ss} [%t] %-5level %logger{36}: %msg%n</Property>
     </Properties>
-
     <Appenders>
         <RollingFile name="File" fileName="${filepath}/app.log"
                       filePattern="${filepath}/%d{yyyy-MM-dd}-app.log"
@@ -35,6 +35,15 @@
                 <SizeBasedTriggeringPolicy size="10 MB"/>
             </Policies>
         </RollingFile>
+        <RollingFile name="QuartzLogFile" fileName="${quartzLogsPath}/quartz-job.log"
+                     filePattern="${quartzLogsPath}/%d{yyyy-MM-dd}-%i-app.log"
+                     append="true">
+            <PatternLayout pattern="${pattern}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+        </RollingFile>
     </Appenders>
     <Loggers>
         <Root level="all">
@@ -43,6 +52,9 @@
         </Root>
         <Logger name="com.epam.aerl.mentoring.aspect" level="INFO">
             <AppenderRef ref="ServiceInteractionsFile" level="info"/>
+        </Logger>
+        <Logger name="com.epam.aerl.mentoring.job.LoggingStudentsJob" level="INFO">
+            <AppenderRef ref="QuartzLogFile" level="info"/>
         </Logger>
     </Loggers>
 </Configuration>

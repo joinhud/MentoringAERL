@@ -9,6 +9,7 @@ import com.epam.aerl.mentoring.entity.AddNewUniversityResponse;
 import com.epam.aerl.mentoring.entity.AssignPair;
 import com.epam.aerl.mentoring.entity.GetNotAssignedStudentsResponse;
 import com.epam.aerl.mentoring.entity.GetStudentsOfUniversityResponse;
+import com.epam.aerl.mentoring.entity.LogUniversityByIdResponse;
 import com.epam.aerl.mentoring.entity.ResponseErrorWithMessage;
 import com.epam.aerl.mentoring.entity.SetUniversitiesWarning;
 import com.epam.aerl.mentoring.entity.SetUniversityStatusRequest;
@@ -17,17 +18,19 @@ import com.epam.aerl.mentoring.entity.Student;
 import com.epam.aerl.mentoring.entity.StudentDomainModel;
 import com.epam.aerl.mentoring.entity.University;
 import com.epam.aerl.mentoring.entity.UniversityDomainModel;
-import com.epam.aerl.mentoring.entity.Warning;
 import com.epam.aerl.mentoring.entity.WarningWithMessage;
 import com.epam.aerl.mentoring.exception.ServiceLayerException;
 import com.epam.aerl.mentoring.service.UniversityService;
 import com.epam.aerl.mentoring.type.ErrorMessage;
 import com.epam.aerl.mentoring.type.UniversityStatus;
+import com.epam.aerl.mentoring.util.EntityLogger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dozer.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -53,6 +56,8 @@ public class UniversityController {
       "check ypu input and try again later.";
   private static final String NULL_REQUEST_DATA_ERROR = "Request data is null. Please check your input and try again later.";
   private static final String CREATE_UNIVERSITY_FAIL_ERROR = "Cannot create university. Please check your input and try again later.";
+  private static final String NO_ONE_VALID_ID_FOUNDED = "Can not find university with provided id. Please check your input and try again later.";
+  private static final String NOT_WRITE_UNIVERSITY_TO_XML_ERROR = "Can not log university information. Please try again later.";
 
   @Autowired
   @Qualifier("universityService")
@@ -61,6 +66,10 @@ public class UniversityController {
   @Autowired
   @Qualifier("dozerBeanMapper")
   private Mapper mapper;
+
+  @Autowired
+  @Qualifier("universityLogger")
+  private EntityLogger<University> universityLogger;
 
   @PostMapping(value = "/", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
   @ResponseBody
@@ -180,6 +189,39 @@ public class UniversityController {
       }
 
       response.setData(updatedUniversitiesResponseList);
+    } else {
+      response.addError(new ResponseErrorWithMessage(NULL_REQUEST_DATA_ERROR));
+    }
+
+    return response;
+  }
+
+  @GetMapping(value = "/log/{id}")
+  @ResponseBody
+  public LogUniversityByIdResponse logUniversityById(@PathVariable Long id) {
+    final LogUniversityByIdResponse response = new LogUniversityByIdResponse();
+
+    if (id != null) {
+      final UniversityDomainModel foundedUniversity = universityService.findUniversityById(id);
+
+      if (foundedUniversity == null) {
+        response.addError(new ResponseErrorWithMessage(NO_ONE_VALID_ID_FOUNDED));
+      } else {
+        final University university = mapper.map(foundedUniversity, University.class);
+
+        try {
+          final boolean logged = universityLogger.logEntity(university);
+
+          if (logged) {
+            response.setData(university);
+          } else {
+            response.addError(new ResponseErrorWithMessage(NOT_WRITE_UNIVERSITY_TO_XML_ERROR));
+          }
+        } catch (ServiceLayerException e) {
+          LOG.error(e);
+          response.addError(new ResponseErrorWithMessage(ErrorMessage.getByCode(e.getCode()).getMessage()));
+        }
+      }
     } else {
       response.addError(new ResponseErrorWithMessage(NULL_REQUEST_DATA_ERROR));
     }
